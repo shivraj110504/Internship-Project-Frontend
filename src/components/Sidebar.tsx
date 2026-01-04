@@ -15,16 +15,17 @@ import Link from "next/link";
 import React from "react";
 import { Badge } from "./ui/badge";
 
-const Sidebar = ({ isopen }: any) => {
+const Sidebar = ({ isopen, setsidebaropen }: any) => {
   return (
-    <div>
+    <>
       <aside
         className={cn(
-          " top-[53px]  w-48 lg:w-64 min-h-screen bg-white shadow-sm border-r transition-transform duration-200 ease-in-out md:translate-x-0",
-          isopen ? "translate-x-0" : "-translate-x-full"
+          "fixed md:sticky top-[53px] z-50 md:z-10 w-64 h-[calc(100vh-53px)] bg-white shadow-sm border-r transition-transform duration-300 ease-in-out",
+          isopen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          "md:block" // Always block on md+
         )}
       >
-        <nav className="p-2 lg:p-4">
+        <nav className="p-2 lg:p-4 overflow-y-auto h-full">
           <ul className="space-y-1">
             <li>
               <Link
@@ -37,13 +38,14 @@ const Sidebar = ({ isopen }: any) => {
             </li>
             <li>
               <Link
-                href="/questions"
+                href="/"
                 className="flex items-center px-2 py-2 text-gray-700 hover:bg-gray-100 rounded text-sm"
               >
                 <MessageSquareIcon className="w-4 h-4 mr-2 lg:mr-3" />
                 Questions
               </Link>
             </li>
+            {/* ... other items (truncated for brevity in edit, but I'll keep them) */}
             <li>
               <Link
                 href="#"
@@ -58,7 +60,7 @@ const Sidebar = ({ isopen }: any) => {
             </li>
             <li>
               <Link
-                href="/tags"
+                href="#"
                 className="flex items-center px-2 py-2 text-gray-700 hover:bg-gray-100 rounded text-sm"
               >
                 <Tag className="w-4 h-4 mr-2 lg:mr-3" />
@@ -129,7 +131,7 @@ const Sidebar = ({ isopen }: any) => {
           </ul>
         </nav>
       </aside>
-    </div>
+    </>
   );
 };
 

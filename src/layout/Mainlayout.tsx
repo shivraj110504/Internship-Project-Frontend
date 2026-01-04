@@ -7,24 +7,20 @@ interface MainlayoutProps {
 }
 const Mainlayout = ({ children }: MainlayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  useEffect(() => {
-    if (window.innerWidth <= 768) {
-      setSidebarOpen(false);
-    }
-  }, []);
+
   const handleslidein = () => {
-    if (window.innerWidth <= 768) {
-      setSidebarOpen((state) => !state);
-    }
+    setSidebarOpen((state) => !state);
   };
 
   return (
     <div className="bg-[#f8f9fa] text-[#3a3a3a] min-h-screen">
-      <Navbar handleslidein={handleslidein} />
-      <div className="flex max-w-full py-1">
-        <Sidebar isopen={sidebarOpen} />
-        <main className="flex-1 min-w-0 p-4 lg:p-6 bg-white">{children}</main>
-        <div className="hidden lg:block border-1 borde-gray-200">
+      <Navbar handleslidein={handleslidein} isSidebarOpen={sidebarOpen} />
+      <div className="flex w-full max-w-[1440px] mx-auto min-h-[calc(100vh-53px)]">
+        <Sidebar isopen={sidebarOpen} setsidebaropen={setSidebarOpen} />
+        <main className="flex-1 min-w-0 p-4 lg:p-6 bg-white border-l border-r border-gray-200">
+          {children}
+        </main>
+        <div className="hidden xl:block">
           <RightSideBar />
         </div>
       </div>

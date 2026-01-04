@@ -1,5 +1,5 @@
 import { useAuth } from "@/lib/AuthContext";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 //   name: "Alice Johnson",
 // };
 
-const Navbar = ({ handleslidein }: any) => {
+const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
   const { user, Logout } = useAuth();
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
@@ -22,10 +22,14 @@ const Navbar = ({ handleslidein }: any) => {
       <div className="w-[90%] max-w-[1440px] flex items-center justify-between mx-auto py-1">
         <button
           aria-label="Toggle sidebar"
-          className="sm:block md:hidden p-2 rounded hover:bg-gray-100 transition"
+          className="md:hidden p-2 rounded hover:bg-gray-100 transition mr-2"
           onClick={handleslidein}
         >
-          <Menu className="w-5 h-5 text-gray-800" />
+          {isSidebarOpen ? (
+            <X className="w-5 h-5 text-gray-800" />
+          ) : (
+            <Menu className="w-5 h-5 text-gray-800" />
+          )}
         </button>
         <div className="flex items-center gap-2 flex-grow">
           <Link href="/" className="px-3 py-1">
@@ -43,7 +47,7 @@ const Navbar = ({ handleslidein }: any) => {
               </Link>
             ))}
           </div>
-          <form className="hidden lg:block flex-grow relative px-3">
+          <form className="hidden sm:block flex-grow relative px-3">
             <input
               type="text"
               placeholder="Search..."
@@ -53,7 +57,7 @@ const Navbar = ({ handleslidein }: any) => {
           </form>
         </div>
         <div className="flex items-center gap-2">
-           {!hasMounted ? null : !user ? (
+          {!hasMounted ? null : !user ? (
             <Link
               href="/auth"
               className="text-sm font-medium text-[#454545] bg-[#e7f8fe] hover:bg-[#d3e4eb] border border-blue-500 px-4 py-1.5 rounded transition"
