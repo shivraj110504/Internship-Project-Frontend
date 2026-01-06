@@ -158,12 +158,12 @@ const index = () => {
                         className="bg-orange-100 text-orange-800 flex items-center gap-1"
                       >
                         {tag}
-                        <button
+                        <Button
                           onClick={() => handleRemoveTag(tag)}
                           className="ml-1 hover:text-red-600"
                         >
                           <X className="w-3 h-3" />
-                        </button>
+                        </Button>
                       </Badge>
                     );
                   })}

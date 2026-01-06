@@ -18,7 +18,7 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
     Logout();
   };
   return (
-    <div className=" top-0 z-50 w-full min-h-[53px] bg-white border-t-[3px] border-[#ef8236] shadow-[0_1px_5px_#00000033] flex items-center justify-center">
+    <div className="fixed top-0 left-0 z-50 w-full min-h-[53px] bg-white border-t-[3px] border-[#f48225] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_1px_4px_rgba(0,0,0,0.05)] flex items-center justify-center">
       <div className="w-[90%] max-w-[1440px] flex items-center justify-between mx-auto py-1">
         <button
           aria-label="Toggle sidebar"
@@ -58,12 +58,20 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
         </div>
         <div className="flex items-center gap-2">
           {!hasMounted ? null : !user ? (
-            <Link
-              href="/auth"
-              className="text-sm font-medium text-[#454545] bg-[#e7f8fe] hover:bg-[#d3e4eb] border border-blue-500 px-4 py-1.5 rounded transition"
-            >
-              Log in
-            </Link>
+            <div className="flex gap-2">
+              <Link
+                href="/auth"
+                className="text-sm font-medium text-[#3974C9] bg-[#FFFFFF] hover:bg-[#b3d3ea] border border-[#7aa7c7] px-4 py-1.5 rounded transition"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="text-sm font-medium text-white bg-[#3974C9] hover:bg-[#0077cc] px-4 py-1.5 rounded shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] transition"
+              >
+                Sign up
+              </Link>
+            </div>
           ) : (
             <>
               <Link
