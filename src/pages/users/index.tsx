@@ -5,6 +5,9 @@ import axiosInstance from "@/lib/axiosinstance";
 import { Calendar, Search } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { UserPlus, UserCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 const users = [
   {
     id: 1,
@@ -34,6 +37,7 @@ const users = [
 const index = () => {
   const [users, setusers] = useState<any>(null);
   const [loading, setloading] = useState(true);
+  const { addFriend, user: currentUser } = useAuth();
   useEffect(() => {
     const fetchuser = async () => {
       try {
@@ -73,15 +77,17 @@ const index = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {users.map((user: any) => (
-            <Link key={user._id} href={`/users/${user._id}`}>
-              <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+            <div key={user._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow relative">
+              <Link href={`/users/${user._id}`}>
                 <div className="flex items-center mb-3">
                   <Avatar className="w-12 h-12 mr-3">
                     <AvatarFallback className="text-lg">
                       {user.name
-                        .split(" ")
-                        .map((n: any) => n[0])
-                        .join("")}
+                        ? user.name
+                          .split(" ")
+                          .map((n: any) => n[0])
+                          .join("")
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
@@ -89,7 +95,7 @@ const index = () => {
                       {user.name}
                     </h3>
                     <p className="text-sm text-gray-600 truncate">
-                      @{user.name}
+                      @{user.name?.replace(/\s/g, "").toLowerCase()}
                     </p>
                   </div>
                 </div>
@@ -98,8 +104,29 @@ const index = () => {
                   <Calendar className="w-4 h-4 mr-1" />
                   <span>Joined {new Date(user.joinDate).getFullYear()}</span>
                 </div>
-              </div>
-            </Link>
+              </Link>
+
+              {currentUser && currentUser._id !== user._id && (
+                <div className="pt-2 border-t mt-auto">
+                  {currentUser.friends?.includes(user._id) ? (
+                    <Button variant="ghost" disabled className="w-full text-green-600 text-xs h-8">
+                      <UserCheck className="w-3 h-3 mr-1" /> Friends
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="w-full text-xs h-8 hover:bg-blue-50 hover:text-blue-600"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addFriend(user._id);
+                      }}
+                    >
+                      <UserPlus className="w-3 h-3 mr-1" /> Add Friend
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

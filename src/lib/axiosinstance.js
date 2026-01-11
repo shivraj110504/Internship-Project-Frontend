@@ -3,7 +3,7 @@ import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: (process.env.BACKEND_URL && process.env.BACKEND_URL.startsWith('http'))
     ? process.env.BACKEND_URL
-    : "https://innternship-project-backend.onrender.com",
+    : "http://localhost:5000",
   headers: {
     "Content-Type": "application/json",
   },

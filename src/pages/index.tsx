@@ -5,6 +5,15 @@ import axiosInstance from "@/lib/axiosinstance";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import PostCard from "@/components/PostCard";
+import QuestionCard from "@/components/QuestionCard";
+import { useAuth } from "@/lib/AuthContext";
+import { Plus, Image as ImageIcon, Video, X, MessageSquareIcon } from "lucide-react";
+import { toast } from "react-toastify";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const questions = [
   {
@@ -69,21 +78,64 @@ const questions = [
 ];
 export default function Home() {
   const [question, setquestion] = useState<any>(null);
+  const [posts, setPosts] = useState<any>([]);
   const [loading, setloading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"questions" | "public-space">("questions");
+  const [isPostDialogOpen, setIsPostDialogOpen] = useState(false);
+  const [newPost, setNewPost] = useState({ caption: "", mediaUrl: "", mediaType: "image" });
+
+  const { fetchPosts, createPost, likePost, commentPost, user } = useAuth();
   const router = useRouter();
+
   useEffect(() => {
-    const fetchquestion = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axiosInstance.get("/question/getallquestion");
-        setquestion(res.data.data);
+        const [qRes, pRes] = await Promise.all([
+          axiosInstance.get("/question/getallquestion"),
+          fetchPosts()
+        ]);
+        setquestion(qRes.data.data);
+        setPosts(pRes);
       } catch (error) {
         console.log(error);
       } finally {
         setloading(false);
       }
     };
-    fetchquestion();
-  }, []);
+    fetchData();
+  }, [fetchPosts]);
+
+  const handleCreatePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPost.mediaUrl) return toast.error("Media URL is required");
+    try {
+      await createPost(newPost);
+      setIsPostDialogOpen(false);
+      setNewPost({ caption: "", mediaUrl: "", mediaType: "image" });
+      const pRes = await fetchPosts();
+      setPosts(pRes);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    try {
+      const updatedPost = await likePost(postId);
+      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleComment = async (postId: string, text: string) => {
+    try {
+      const updatedPost = await commentPost(postId, text);
+      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+    } catch (err) {
+      console.error(err);
+    }
+  };
   if (loading) {
     return (
       <Mainlayout>
@@ -101,119 +153,198 @@ export default function Home() {
 
   return (
     <Mainlayout>
-      <main className="min-w-0 p-4 lg:p-6 ">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-xl lg:text-2xl font-semibold">Top Questions</h1>
-          <button
-            onClick={() => router.push("/ask")}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium whitespace-nowrap"
-          >
-            Ask Question
-          </button>
-        </div>
-        <div className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 text-sm gap-2 sm:gap-4">
-            <span className="text-gray-600">{question.length} questions</span>
-            <div className="flex flex-wrap gap-1 sm:gap-2">
-              <button className="px-2 sm:px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs sm:text-sm">
-                Newest
-              </button>
-              <button className="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 rounded text-xs sm:text-sm">
-                Active
-              </button>
-              <button className="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 rounded flex items-center text-xs sm:text-sm">
-                Bountied
-                <Badge variant="secondary" className="ml-1 text-xs">
-                  25
-                </Badge>
-              </button>
-              <button className="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 rounded text-xs sm:text-sm">
-                Unanswered
-              </button>
-              <button className="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 rounded text-xs sm:text-sm">
-                More ▼
-              </button>
-              <button className="px-2 sm:px-3 py-1 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded ml-auto text-xs sm:text-sm">
-                🔍 Filter
+      <main className="min-w-0 p-4 lg:p-6">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-xl lg:text-3xl font-medium text-[#232629] flex items-center">
+              <MessageSquareIcon className="w-6 h-6 mr-2 text-gray-800" />
+              Hey {user?.name || "Shivraj Taware"}, what do you want to learn today?
+            </h1>
+            <button
+              onClick={() => router.push("/ask")}
+              className="bg-[#0A95FF] hover:bg-[#0074CC] text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors"
+            >
+              Ask Question
+            </button>
+          </div>
+          <p className="text-xs text-[#6A737C] mb-6">
+            Get instant answers with AI Assist, grounded in community-verified knowledge.
+          </p>
+
+          {/* AI Assist Input Area */}
+          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm relative mb-8">
+            <textarea
+              placeholder="Start a chat with AI Assist..."
+              className="w-full h-24 p-0 border-none focus:ring-0 resize-none text-gray-600 placeholder-gray-400 text-sm"
+            />
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+              <span className="text-[10px] text-[#6A737C]">
+                By using AI Assist, you agree to Stack Overflow's <span className="text-blue-600 cursor-pointer">Terms of Service</span> and <span className="text-blue-600 cursor-pointer">Privacy Policy</span>. Powered with the help of OpenAI.
+              </span>
+              <button className="bg-[#0A95FF] p-1.5 rounded text-white hover:bg-[#0074CC]">
+                <Plus className="w-5 h-5 rotate-45" />
               </button>
             </div>
           </div>
-          <div className="space-y-4">
-            {question.map((question: any) => (
-              <div key={question._id} className="border-b border-gray-200 pb-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex sm:flex-col items-center sm:items-center text-sm text-gray-600 sm:w-16 lg:w-20 gap-4 sm:gap-2">
-                    <div className="text-center">
-                      <div className="font-medium">
-                        {question.upvote.length}
-                      </div>
-                      <div className="text-xs">votes</div>
-                    </div>
-                    <div className="text-center">
-                      <div
-                        className={`font-medium ${
-                          question.answer.length > 0
-                            ? "text-green-600 bg-green-100 px-2 py-1 rounded"
-                            : ""
-                        }`}
-                      >
-                        {question.noofanswer}
-                      </div>
-                      <div className="text-xs">
-                        {question.noofanswer === 1
-                          ? "answer"
-                          : "answers"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      href={`/questions/${question._id}`}
-                      className="text-blue-600 hover:text-blue-800 text-base lg:text-lg font-medium mb-2 block"
-                    >
-                      {question.questiontitle}
-                    </Link>
-                    <p className="text-gray-700 text-sm mb-3 line-clamp-2">
-                      {question.questionbody}
-                    </p>
 
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                      <div className="flex flex-wrap gap-1">
-                        {question.questiontags.map((tag: any) => (
-                          <div key={tag}>
-                            <Badge
-                              variant="secondary"
-                              className="text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                            >
-                              {tag}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center text-xs text-gray-600 flex-shrink-0">
-                        <Link
-                          href={`/users/${question.userid}`}
-                          className="flex items-center"
-                        >
-                          <Avatar className="w-4 h-4 mr-1">
-                            <AvatarFallback className="text-xs">
-                              {question.userposted[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-blue-600 hover:text-blue-800 mr-1">
-                            {question.userposted}
-                          </span>
-                        </Link>
-
-                        <span>asked {new Date(question.askedon).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
+          {/* User Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {/* Reputation Card */}
+            <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Reputation</h3>
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-3xl font-medium text-[#232629]">1</span>
+                <div className="flex-1 h-2 bg-gray-100 rounded-full relative overflow-hidden">
+                  <div className="absolute inset-y-0 left-0 w-1/3 bg-blue-400 opacity-20" />
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 border-b border-dotted border-blue-400" />
                 </div>
               </div>
-            ))}
+              <p className="text-xs text-[#6A737C]">
+                Earn reputation by <span className="text-blue-600 cursor-pointer">Asking</span>, <span className="text-blue-600 cursor-pointer">Answering</span> & <span className="text-blue-600 cursor-pointer">Editing</span>.
+              </p>
+            </div>
+
+            {/* Badge Progress Card */}
+            <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Badge progress</h3>
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-1">
+                  <p className="text-xs text-[#6A737C] mb-4 leading-relaxed">
+                    Take the tour to earn your first badge!
+                  </p>
+                  <button className="bg-[#4051B5] hover:bg-[#303F9F] text-white text-xs px-4 py-2 rounded-md font-medium transition-colors">
+                    Get started here
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Watched Tags Card */}
+            <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-[#3B4045] text-sm">Watched tags</h3>
+                <Plus className="w-4 h-4 text-[#6A737C] cursor-pointer" />
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {["c++", "flutter", "html", "java", "next.js", "node.js"].map(tag => (
+                  <Badge key={tag} variant="secondary" className="bg-[#E1ECF4] text-[#39739D] hover:bg-[#D1E2EE] border-none text-xs px-2 py-1">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              <Link href="/tags" className="text-blue-600 text-xs hover:text-blue-800">See all</Link>
+            </div>
           </div>
+        </div>
+
+        {/* Tab Selection */}
+        <div className="flex space-x-6 border-b border-gray-200 mb-6">
+          <button
+            onClick={() => setActiveTab("questions")}
+            className={`text-lg font-medium pb-2 border-b-2 transition-all ${activeTab === "questions" ? "border-orange-500 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+          >
+            Interesting posts for you
+          </button>
+          <button
+            onClick={() => setActiveTab("public-space")}
+            className={`text-lg font-medium pb-2 border-b-2 transition-all ${activeTab === "public-space" ? "border-orange-500 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+          >
+            Public Space
+          </button>
+        </div>
+
+        <div className="w-full">
+          {activeTab === "questions" ? (
+            <div className="space-y-0 border-t border-gray-200 -mx-4 lg:-mx-6">
+              {question.map((q: any, index: number) => (
+                <QuestionCard
+                  key={q._id}
+                  question={q}
+                  alternating={index % 2 !== 0}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="max-w-xl mx-auto py-4">
+              {/* Share Post Button for Public Space */}
+              <div className="mb-6 flex justify-end">
+                <Dialog open={isPostDialogOpen} onOpenChange={setIsPostDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                      <Plus className="w-4 h-4 mr-2" /> Share Post
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Create New Post</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCreatePost} className="space-y-4 pt-4">
+                      <div className="space-y-2">
+                        <Label>Caption (Optional)</Label>
+                        <Input
+                          placeholder="What's on your mind?"
+                          value={newPost.caption}
+                          onChange={(e) => setNewPost({ ...newPost, caption: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Media URL</Label>
+                        <Input
+                          placeholder="https://example.com/image.jpg"
+                          value={newPost.mediaUrl}
+                          onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="flex space-x-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="mediaType"
+                            checked={newPost.mediaType === "image"}
+                            onChange={() => setNewPost({ ...newPost, mediaType: "image" })}
+                          />
+                          <span className="text-sm">Image</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="mediaType"
+                            checked={newPost.mediaType === "video"}
+                            onChange={() => setNewPost({ ...newPost, mediaType: "video" })}
+                          />
+                          <span className="text-sm">Video</span>
+                        </label>
+                      </div>
+                      <Button type="submit" className="w-full bg-blue-600">Post Now</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {posts.length > 0 ? (
+                posts.map((post: any) => (
+                  <PostCard
+                    key={post._id}
+                    post={post}
+                    onLike={handleLike}
+                    onComment={handleComment}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-20 text-gray-500">
+                  <div className="mb-4 flex justify-center">
+                    <div className="bg-gray-100 p-4 rounded-full">
+                      <Plus size={40} className="text-gray-400" />
+                    </div>
+                  </div>
+                  <p className="text-lg font-medium">No posts in the Public Space yet.</p>
+                  <p className="text-sm">Be the first to share something with your friends!</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </main>
     </Mainlayout>

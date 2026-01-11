@@ -131,6 +131,64 @@ export const AuthProvider = ({ children }) => {
     toast.info("Logged out");
   };
 
+  const createPost = async (postData) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/post/create", postData);
+      toast.success("Post created successfully");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to create post";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPosts = async () => {
+    try {
+      const res = await axiosInstance.get("/post/getall");
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      return [];
+    }
+  };
+
+  const likePost = async (postId) => {
+    try {
+      const res = await axiosInstance.patch(`/post/like/${postId}`);
+      return res.data;
+    } catch (err) {
+      toast.error("Failed to like post");
+      throw err;
+    }
+  };
+
+  const commentPost = async (postId, text) => {
+    try {
+      const res = await axiosInstance.post(`/post/comment/${postId}`, { text });
+      toast.success("Comment added");
+      return res.data;
+    } catch (err) {
+      toast.error("Failed to add comment");
+      throw err;
+    }
+  };
+
+  const addFriend = async (friendId) => {
+    try {
+      const res = await axiosInstance.post("/post/add-friend", { friendId });
+      toast.success("Friend added!");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to add friend";
+      toast.error(msg);
+      throw err;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -142,6 +200,11 @@ export const AuthProvider = ({ children }) => {
         verifyPhoneEmail, // <-- add here
         GetLoginHistory,
         Logout,
+        createPost,
+        fetchPosts,
+        likePost,
+        commentPost,
+        addFriend,
         loading,
         error,
       }}

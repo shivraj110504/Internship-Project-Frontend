@@ -1,85 +1,92 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 const RightSideBar = () => {
   return (
     <aside className="w-72 lg:w-80 p-4 lg:p-6 bg-white border-l border-gray-200 min-h-screen">
       <div className="space-y-4 lg:space-y-6">
-        <div className="bg-yellow-50 border border-yellow-200 rounded p-3 lg:p-4">
-          <h3 className="font-semibold text-gray-800 mb-3 text-sm lg:text-base">
+        {/* The Overflow Blog */}
+        <div className="bg-[#FEF9E7] border border-[#F9E79F] rounded shadow-sm">
+          <h3 className="font-bold text-[#3B4045] p-3 border-b border-[#F9E79F] text-xs uppercase">
             The Overflow Blog
           </h3>
-          <ul className="space-y-2 text-xs lg:text-sm">
+          <ul className="p-3 space-y-3 text-xs text-[#232629]">
             <li className="flex items-start">
-              <span className="text-gray-400 mr-2">✏️</span>
-              <span className="text-gray-700">A new era of Stack Overflow</span>
+              <span className="mr-2">✏️</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                You need quality engineers to turn AI into ROI
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="text-gray-400 mr-2">✏️</span>
-              <span className="text-gray-700">
-                How your favorite movie is changing language learning technology
+              <span className="mr-2">✏️</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                Every ecommerce hero needs a Sidekick
               </span>
             </li>
           </ul>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded p-3 lg:p-4">
-          <h3 className="font-semibold text-gray-800 mb-3 text-sm lg:text-base">
+        {/* Featured on Meta */}
+        <div className="bg-[#FEF9E7] border border-[#F9E79F] rounded shadow-sm">
+          <h3 className="font-bold text-[#3B4045] p-3 border-b border-[#F9E79F] text-xs uppercase">
             Featured on Meta
           </h3>
-          <ul className="space-y-2 text-xs lg:text-sm">
+          <ul className="p-3 space-y-3 text-xs text-[#232629]">
             <li className="flex items-start">
-              <span className="text-blue-500 mr-2">💬</span>
-              <span className="text-gray-700">
-                Results of the June 2025 Community Asks Sprint
+              <span className="text-blue-400 mr-2 text-[10px]">◯</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                A proposal for bringing back Community Promotion & Open Source Ads
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-blue-500 mr-2">💬</span>
-              <span className="text-gray-700">
-                Will you help build our new visual identity?
+              <span className="text-blue-400 mr-2 text-[10px]">◯</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                Community Asks Sprint Announcement – January 2026: Custom site-specific badges!
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-gray-400 mr-2">📋</span>
-              <span className="text-gray-700">
+              <span className="mr-2">📢</span>
+              <span className="hover:text-blue-600 cursor-pointer">
                 Policy: Generative AI (e.g., ChatGPT) is banned
               </span>
             </li>
+            <li className="flex items-start">
+              <span className="mr-2">📢</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                Modernizing curation: A proposal for The Workshop and The Archive
+              </span>
+            </li>
           </ul>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-gray-800 mb-3 text-sm lg:text-base">
-            Custom Filters
+        {/* Hot Meta Posts */}
+        <div className="bg-[#FEF9E7] border border-[#F9E79F] rounded shadow-sm">
+          <h3 className="font-bold text-[#3B4045] p-3 border-b border-[#F9E79F] text-xs uppercase">
+            Hot Meta Posts
           </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-blue-600 border-blue-600 hover:bg-blue-50 bg-transparent text-xs lg:text-sm"
-          >
-            Create a custom filter
-          </Button>
+          <ul className="p-3 space-y-3 text-xs text-[#232629]">
+            <li className="flex items-start">
+              <span className="text-gray-500 mr-2">23</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                Should we stop closing questions?
+              </span>
+            </li>
+          </ul>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-gray-800 mb-3 text-sm lg:text-base">
-            Watched Tags
-          </h3>
-          <div className="flex items-center justify-center py-6 lg:py-8">
-            <div className="text-center">
-              <Eye className="w-10 h-10 lg:w-12 lg:h-12 text-gray-300 mx-auto mb-2" />
-              <p className="text-xs lg:text-sm text-gray-500 mb-3">
-                Watch tags to curate your list of questions.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-blue-600 border-blue-600 hover:bg-blue-50 bg-transparent text-xs lg:text-sm"
-              >
-                👁️ Watch a tag
-              </Button>
-            </div>
+        {/* Watched Tags */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-[#3B4045] text-sm uppercase">
+              Watched Tags
+            </h3>
+            <button className="text-blue-600 text-xs hover:text-blue-800">edit</button>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {["c++", "flutter", "html", "java", "next.js", "node.js", "python", "sql", "typescript"].map(tag => (
+              <Badge key={tag} variant="secondary" className="bg-[#E1ECF4] text-[#39739D] hover:bg-[#D1E2EE] border-none text-[10px] px-1.5 py-0.5">
+                {tag}
+              </Badge>
+            ))}
           </div>
         </div>
       </div>
