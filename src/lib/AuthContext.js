@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { createContext } from "react";
+// lib/AuthContext.js
+import { useState, createContext, useContext } from "react";
 import axiosInstance from "./axiosinstance";
 import { toast } from "react-toastify";
-import { useContext } from "react";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -13,39 +13,36 @@ export const AuthProvider = ({ children }) => {
     }
     return null;
   });
-  const [loading, setloading] = useState(false);
-  const [error, seterror] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const Signup = async ({ name, email, password }) => {
-    setloading(true);
-    seterror(null);
+    setLoading(true);
+    setError(null);
     try {
-      const res = await axiosInstance.post("/user/signup", {
-        name,
-        email,
-        password,
-      });
+      const res = await axiosInstance.post("/user/signup", { name, email, password });
       const { data, token } = res.data;
       localStorage.setItem("user", JSON.stringify({ ...data, token }));
       setUser(data);
       toast.success("Signup Successful");
-    } catch (error) {
-      const msg = error.response?.data.message || "Signup failed";
-      seterror(msg);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Signup failed";
+      setError(msg);
       toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
+
   const Login = async ({ email, password }) => {
-    setloading(true);
-    seterror(null);
+    setLoading(true);
+    setError(null);
     try {
-      const res = await axiosInstance.post("/user/login", {
-        email,
-        password,
-      });
+      const res = await axiosInstance.post("/user/login", { email, password });
 
       if (res.data.otpRequired) {
-        setloading(false);
+        setLoading(false);
         return res.data; // Return to UI to show OTP input
       }
 
@@ -53,44 +50,77 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify({ ...data, token }));
       setUser(data);
       toast.success("Login Successful");
-      setloading(false);
       return res.data;
-    } catch (error) {
-      const msg = error.response?.data.message || "Login failed";
-      seterror(msg);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Login failed";
+      setError(msg);
       toast.error(msg);
-      setloading(false);
-      throw error;
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const VerifyOTP = async ({ userId, otp }) => {
-    setloading(true);
+    setLoading(true);
     try {
-      const res = await axiosInstance.post("/user/verify-otp", {
-        userId,
-        otp,
-      });
+      const res = await axiosInstance.post("/user/verify-otp", { userId, otp });
       const { data, token } = res.data;
       localStorage.setItem("user", JSON.stringify({ ...data, token }));
       setUser(data);
       toast.success("OTP Verified! Login Successful");
-      setloading(false);
       return res.data;
-    } catch (error) {
-      const msg = error.response?.data.message || "OTP Verification failed";
+    } catch (err) {
+      const msg = err.response?.data?.message || "OTP Verification failed";
       toast.error(msg);
-      setloading(false);
-      throw error;
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
+
+  // --- ADD THIS ---
+  const sendForgotPasswordEmail = async (email) => {
+    if (!email) throw new Error("Email is required");
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/user/forgot-password", { email });
+      toast.success("Password reset email sent! Check your inbox.");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to send reset email";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyPhoneEmail = async ({ user_json_url, resetPassword = false }) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/user/verify-phone-email", {
+        user_json_url,
+        resetPassword,
+      });
+      toast.success(res.data.message);
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Phone verification failed";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  // --- END ADD ---
 
   const GetLoginHistory = async (userId) => {
     try {
       const res = await axiosInstance.get(`/user/login-history/${userId}`);
       return res.data;
-    } catch (error) {
-      console.error("Error fetching history:", error);
+    } catch (err) {
+      console.error("Error fetching history:", err);
       return [];
     }
   };
@@ -108,6 +138,8 @@ export const AuthProvider = ({ children }) => {
         Signup,
         Login,
         VerifyOTP,
+        sendForgotPasswordEmail,
+        verifyPhoneEmail, // <-- add here
         GetLoginHistory,
         Logout,
         loading,
@@ -118,4 +150,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 export const useAuth = () => useContext(AuthContext);

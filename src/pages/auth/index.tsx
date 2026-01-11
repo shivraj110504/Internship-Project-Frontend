@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 
 const index = () => {
   const router = useRouter();
-  const { Login, VerifyOTP, loading } = useAuth();
+  const { Login, sendForgotPasswordEmail, VerifyOTP, loading } = useAuth();
   const [form, setform] = useState({ email: "", password: "" });
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState("");
@@ -58,6 +58,8 @@ const index = () => {
       console.log(error);
     }
   };
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -144,9 +146,13 @@ const index = () => {
                     <Label htmlFor="password" className="text-sm">
                       Password
                     </Label>
-                    <Link href="#" className="text-xs text-blue-600 hover:underline">
+                    <Link
+                      href="/auth/forgot-password"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
                       Forgot?
                     </Link>
+
                   </div>
                   <Input
                     id="password"
