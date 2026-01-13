@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
     ? process.env.NEXT_PUBLIC_BACKEND_URL
     : (process.env.BACKEND_URL && process.env.BACKEND_URL.startsWith('http'))
       ? process.env.BACKEND_URL
-      : "https://stackoverflow-server-2t2m.onrender.com", // Fallback to live Render server
+      : "https://innternship-project-backend.onrender.com", // Correct active Render server
   headers: {
     "Content-Type": "application/json",
   },

@@ -207,7 +207,12 @@ export const AuthProvider = ({ children }) => {
   const searchUsers = async (query) => {
     try {
       const res = await axiosInstance.get(`/post/search?query=${query}`);
-      return res.data;
+      console.log("Search result raw:", res.data);
+      // Normalize response: could be array, could be {data: []}, could be {value: []}
+      if (Array.isArray(res.data)) return res.data;
+      if (res.data && Array.isArray(res.data.value)) return res.data.value;
+      if (res.data && Array.isArray(res.data.data)) return res.data.data;
+      return [];
     } catch (err) {
       console.error("Error searching users:", err);
       return [];
