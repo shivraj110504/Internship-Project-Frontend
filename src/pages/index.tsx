@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import UserSearch from "@/components/UserSearch";
+import { Users } from "lucide-react";
 
 const questions = [
   {
@@ -266,83 +268,129 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="max-w-xl mx-auto py-4">
-              {/* Share Post Button for Public Space */}
-              <div className="mb-6 flex justify-end">
-                <Dialog open={isPostDialogOpen} onOpenChange={setIsPostDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                      <Plus className="w-4 h-4 mr-2" /> Share Post
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Create New Post</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleCreatePost} className="space-y-4 pt-4">
-                      <div className="space-y-2">
-                        <Label>Caption (Optional)</Label>
-                        <Input
-                          placeholder="What's on your mind?"
-                          value={newPost.caption}
-                          onChange={(e) => setNewPost({ ...newPost, caption: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Media URL</Label>
-                        <Input
-                          placeholder="https://example.com/image.jpg"
-                          value={newPost.mediaUrl}
-                          onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="flex space-x-4">
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="mediaType"
-                            checked={newPost.mediaType === "image"}
-                            onChange={() => setNewPost({ ...newPost, mediaType: "image" })}
-                          />
-                          <span className="text-sm">Image</span>
-                        </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="mediaType"
-                            checked={newPost.mediaType === "video"}
-                            onChange={() => setNewPost({ ...newPost, mediaType: "video" })}
-                          />
-                          <span className="text-sm">Video</span>
-                        </label>
-                      </div>
-                      <Button type="submit" className="w-full bg-blue-600">Post Now</Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              {posts.length > 0 ? (
-                posts.map((post: any) => (
-                  <PostCard
-                    key={post._id}
-                    post={post}
-                    onLike={handleLike}
-                    onComment={handleComment}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-20 text-gray-500">
-                  <div className="mb-4 flex justify-center">
-                    <div className="bg-gray-100 p-4 rounded-full">
-                      <Plus size={40} className="text-gray-400" />
+            <div className="max-w-2xl mx-auto py-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Left Side: Feed */}
+                <div className="md:col-span-2 space-y-6">
+                  {/* Posting Limit Info */}
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start gap-3">
+                    <div className="bg-blue-100 p-2 rounded-full text-blue-600">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-blue-900">
+                        Posting Status: {user?.followers?.length || 0} Followers
+                      </h4>
+                      <p className="text-xs text-blue-700">
+                        {user?.followers?.length === 0
+                          ? "You need at least 1 follower to post in the Public Space."
+                          : user?.followers?.length > 10
+                            ? "You have more than 10 followers! You can post unlimited times."
+                            : `With ${user?.followers?.length} follower${user?.followers?.length > 1 ? 's' : ''}, you can post ${user?.followers?.length} time${user?.followers?.length > 1 ? 's' : ''} a day.`}
+                      </p>
                     </div>
                   </div>
-                  <p className="text-lg font-medium">No posts in the Public Space yet.</p>
-                  <p className="text-sm">Be the first to share something with your friends!</p>
+
+                  {/* Share Post Button */}
+                  <div className="flex justify-end">
+                    <Dialog open={isPostDialogOpen} onOpenChange={setIsPostDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          className="bg-orange-500 hover:bg-orange-600 text-white"
+                          disabled={user?.followers?.length === 0}
+                        >
+                          <Plus className="w-4 h-4 mr-2" /> Share Post
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Create New Post</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={handleCreatePost} className="space-y-4 pt-4">
+                          <div className="space-y-2">
+                            <Label>Caption (Optional)</Label>
+                            <Input
+                              placeholder="What's on your mind?"
+                              value={newPost.caption}
+                              onChange={(e) => setNewPost({ ...newPost, caption: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Media URL</Label>
+                            <Input
+                              placeholder="https://example.com/image.jpg"
+                              value={newPost.mediaUrl}
+                              onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
+                              required
+                            />
+                          </div>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="mediaType"
+                                checked={newPost.mediaType === "image"}
+                                onChange={() => setNewPost({ ...newPost, mediaType: "image" })}
+                              />
+                              <span className="text-sm">Image</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="mediaType"
+                                checked={newPost.mediaType === "video"}
+                                onChange={() => setNewPost({ ...newPost, mediaType: "video" })}
+                              />
+                              <span className="text-sm">Video</span>
+                            </label>
+                          </div>
+                          <Button type="submit" className="w-full bg-blue-600">Post Now</Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+
+                  {posts.length > 0 ? (
+                    posts.map((post: any) => (
+                      <PostCard
+                        key={post._id}
+                        post={post}
+                        onLike={handleLike}
+                        onComment={handleComment}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-20 text-gray-500 bg-white border rounded-lg">
+                      <div className="mb-4 flex justify-center">
+                        <div className="bg-gray-100 p-4 rounded-full">
+                          <Plus size={40} className="text-gray-400" />
+                        </div>
+                      </div>
+                      <p className="text-lg font-medium">No posts in the Public Space yet.</p>
+                      <p className="text-sm">Be the first to share something with your friends!</p>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Right Side: Search & Stats */}
+                <div className="space-y-6">
+                  <UserSearch />
+
+                  <div className="bg-white border rounded-lg p-4 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-700 mb-4">Your Social Stats</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <p className="text-2xl font-bold text-gray-900">{user?.followers?.length || 0}</p>
+                        <p className="text-[10px] uppercase text-gray-500 font-bold">Followers</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <p className="text-2xl font-bold text-gray-900">{user?.following?.length || 0}</p>
+                        <p className="text-[10px] uppercase text-gray-500 font-bold">Following</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -125,6 +125,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    if (!user?._id) return;
+    try {
+      const res = await axiosInstance.get(`/user/get-user/${user._id}`);
+      const updatedUser = { ...res.data, token: user.token };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return res.data;
+    } catch (err) {
+      console.error("Error refreshing user:", err);
+    }
+  };
+
   const Logout = () => {
     setUser(null);
     localStorage.removeItem("user");
@@ -136,6 +149,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axiosInstance.post("/post/create", postData);
       toast.success("Post created successfully");
+      await refreshUser();
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to create post";
@@ -177,15 +191,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const addFriend = async (friendId) => {
+  const followUser = async (followId) => {
     try {
-      const res = await axiosInstance.post("/post/add-friend", { friendId });
-      toast.success("Friend added!");
+      const res = await axiosInstance.post("/post/follow", { followId });
+      toast.success(res.data.message);
+      await refreshUser();
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to add friend";
+      const msg = err.response?.data?.message || "Failed to follow user";
       toast.error(msg);
       throw err;
+    }
+  };
+
+  const searchUsers = async (query) => {
+    try {
+      const res = await axiosInstance.get(`/post/search?query=${query}`);
+      return res.data;
+    } catch (err) {
+      console.error("Error searching users:", err);
+      return [];
     }
   };
 
@@ -204,7 +229,9 @@ export const AuthProvider = ({ children }) => {
         fetchPosts,
         likePost,
         commentPost,
-        addFriend,
+        followUser,
+        searchUsers,
+        refreshUser,
         loading,
         error,
       }}
