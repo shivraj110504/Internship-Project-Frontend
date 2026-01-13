@@ -283,21 +283,31 @@ const index = () => {
                 Member since{" "}
                 {new Date(users.joinDate).toISOString().split("T")[0]}
               </div>
+              <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
+                <div>
+                  <span className="font-bold text-gray-900">{users.followers?.length || 0}</span>
+                  <span className="text-gray-600 ml-1">followers</span>
+                </div>
+                <div>
+                  <span className="font-bold text-gray-900">{users.following?.length || 0}</span>
+                  <span className="text-gray-600 ml-1">following</span>
+                </div>
+              </div>
             </div>
             <div className="flex flex-wrap items-center space-x-6 text-sm">
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                <span className="font-semibold">5</span>
+                <span className="font-semibold">{users.goldBadges || 0}</span>
                 <span className="text-gray-600 ml-1">gold badges</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-                <span className="font-semibold">23</span>
+                <span className="font-semibold">{users.silverBadges || 0}</span>
                 <span className="text-gray-600 ml-1">silver badges</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-amber-600 rounded-full mr-2"></div>
-                <span className="font-semibold">45</span>
+                <span className="font-semibold">{users.bronzeBadges || 0}</span>
                 <span className="text-gray-600 ml-1">bronze badges</span>
               </div>
             </div>

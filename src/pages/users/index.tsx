@@ -42,7 +42,13 @@ const index = () => {
     const fetchuser = async () => {
       try {
         const res = await axiosInstance.get("/user/getalluser");
-        setusers(res.data.data);
+        const allUsers = res.data.data;
+        if (currentUser) {
+          const onlyMe = allUsers.filter((u: any) => u._id === currentUser._id);
+          setusers(onlyMe);
+        } else {
+          setusers([]);
+        }
       } catch (error) {
         console.log(error);
       } finally {
