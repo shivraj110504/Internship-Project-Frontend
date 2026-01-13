@@ -209,15 +209,21 @@ export default function Home() {
 
             {/* Badge Progress Card */}
             <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
-              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Badge progress</h3>
-              <div className="flex items-start gap-4 mb-4">
-                <div className="flex-1">
-                  <p className="text-xs text-[#6A737C] mb-4 leading-relaxed">
-                    Take the tour to earn your first badge!
-                  </p>
-                  <button className="bg-[#4051B5] hover:bg-[#303F9F] text-white text-xs px-4 py-2 rounded-md font-medium transition-colors">
-                    Get started here
-                  </button>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-[#3B4045] text-sm">Badges</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">{user?.goldBadges || 0}</div>
+                  <div className="text-[10px] text-yellow-600 font-bold uppercase">Gold</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">{user?.silverBadges || 0}</div>
+                  <div className="text-[10px] text-gray-400 font-bold uppercase">Silver</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">{user?.bronzeBadges || 0}</div>
+                  <div className="text-[10px] text-orange-400 font-bold uppercase">Bronze</div>
                 </div>
               </div>
             </div>

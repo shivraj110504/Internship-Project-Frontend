@@ -3,7 +3,9 @@ import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: (process.env.BACKEND_URL && process.env.BACKEND_URL.startsWith('http'))
     ? process.env.BACKEND_URL
-    : "http://localhost:5000",
+    : (process.env.NEXT_PUBLIC_BACKEND_URL && process.env.NEXT_PUBLIC_BACKEND_URL.startsWith('http'))
+      ? process.env.NEXT_PUBLIC_BACKEND_URL
+      : "https://stackoverflow-server-2t2m.onrender.com", // Fallback to Render URL
   headers: {
     "Content-Type": "application/json",
   },
