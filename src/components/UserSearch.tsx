@@ -10,17 +10,19 @@ const UserSearch = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
-    const { searchUsers, followUser, user: currentUser } = useAuth();
+    const { searchUsers, followUser, user: currentUser, refreshUser } = useAuth();
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!query.trim()) return;
+        const cleanQuery = query.trim().replace(/^@/, ""); // Handle @username
+        if (!cleanQuery) return;
         setSearching(true);
         try {
-            const data = await searchUsers(query);
+            const data = await searchUsers(cleanQuery);
             setResults(data);
         } catch (err) {
             console.error(err);
+            toast.error("Search failed");
         } finally {
             setSearching(false);
         }
@@ -28,22 +30,27 @@ const UserSearch = () => {
 
     const handleFollow = async (userId: string) => {
         try {
-            await followUser(userId);
-            // Update local state to reflect follow/unfollow
+            const res = await followUser(userId);
+            // Update local results state
             setResults(prev => prev.map(u => {
                 if (u._id === userId) {
-                    const isFollowing = u.followers.includes(currentUser?._id);
+                    const willBeFollowing = res.isFollowing;
                     return {
                         ...u,
-                        followers: isFollowing
-                            ? u.followers.filter((id: string) => id !== currentUser?._id)
-                            : [...u.followers, currentUser?._id]
+                        followers: willBeFollowing
+                            ? [...(u.followers || []), currentUser?._id]
+                            : (u.followers || []).filter((id: string) => id !== currentUser?._id)
                     };
                 }
                 return u;
             }));
-        } catch (err) {
+
+            // CRITICAL: Refresh current user to update their "friend" count and enable posting
+            await refreshUser();
+            toast.success(res.message || "Updated successfully");
+        } catch (err: any) {
             console.error(err);
+            toast.error(err.response?.data?.message || "Action failed");
         }
     };
 
