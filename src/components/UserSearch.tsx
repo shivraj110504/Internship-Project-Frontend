@@ -79,22 +79,22 @@ const UserSearch = () => {
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-8 w-8">
                                     <AvatarFallback className="bg-orange-100 text-orange-600">
-                                        {u.name.charAt(0).toUpperCase()}
+                                        {u.name?.charAt(0).toUpperCase() || 'U'}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
                                     <p className="text-sm font-medium text-gray-900">{u.name}</p>
-                                    <p className="text-xs text-gray-500">{u.followers.length} followers</p>
+                                    <p className="text-xs text-gray-500">{u.followers?.length || 0} followers</p>
                                 </div>
                             </div>
                             {currentUser?._id !== u._id && (
                                 <Button
                                     size="sm"
-                                    variant={u.followers.includes(currentUser?._id) ? "outline" : "default"}
+                                    variant={u.followers?.includes(currentUser?._id) ? "outline" : "default"}
                                     className="h-8"
                                     onClick={() => handleFollow(u._id)}
                                 >
-                                    {u.followers.includes(currentUser?._id) ? (
+                                    {u.followers?.includes(currentUser?._id) ? (
                                         <><UserMinus className="w-3 h-3 mr-1" /> Unfollow</>
                                     ) : (
                                         <><UserPlus className="w-3 h-3 mr-1" /> Follow</>
@@ -104,7 +104,7 @@ const UserSearch = () => {
                         </div>
                     ))
                 ) : query && !searching ? (
-                    <p className="text-center text-xs text-gray-500 py-2">No users found</p>
+                    <p className="text-center text-xs text-gray-500 py-2">No users found for "{query}"</p>
                 ) : null}
             </div>
         </div>
