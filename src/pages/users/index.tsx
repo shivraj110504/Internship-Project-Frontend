@@ -44,11 +44,19 @@ const index = () => {
     setloading(true);
     try {
       if (query.trim()) {
+        // When searching, show search results
         const results = await searchUsers(query);
         setusers(results);
       } else {
+        // When not searching, show only current user
         const res = await axiosInstance.get("/user/getalluser");
-        setusers(res.data.data || res.data);
+        const allUsers = res.data.data || res.data;
+        if (currentUser) {
+          const onlyMe = allUsers.filter((u: any) => u._id === currentUser._id);
+          setusers(onlyMe);
+        } else {
+          setusers([]);
+        }
       }
     } catch (error) {
       console.error(error);

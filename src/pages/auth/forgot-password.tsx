@@ -95,8 +95,8 @@ const ForgotPassword = () => {
                                 <div className="flex bg-gray-100 p-1 rounded-lg">
                                     <button
                                         className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${method === "email"
-                                                ? "bg-white shadow-sm text-blue-600"
-                                                : "text-gray-500 hover:text-gray-700"
+                                            ? "bg-white shadow-sm text-blue-600"
+                                            : "text-gray-500 hover:text-gray-700"
                                             }`}
                                         onClick={() => setMethod("email")}
                                     >
@@ -104,8 +104,8 @@ const ForgotPassword = () => {
                                     </button>
                                     <button
                                         className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${method === "phone"
-                                                ? "bg-white shadow-sm text-blue-600"
-                                                : "text-gray-500 hover:text-gray-700"
+                                            ? "bg-white shadow-sm text-blue-600"
+                                            : "text-gray-500 hover:text-gray-700"
                                             }`}
                                         onClick={() => setMethod("phone")}
                                     >
@@ -150,17 +150,18 @@ const ForgotPassword = () => {
                                 )}
                             </>
                         ) : (
-                            <div className="space-y-4 py-4 text-center">
-                                <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                                    <p className="text-green-800 font-medium mb-1">
-                                        Success! Your new password is:
+                            <div className="space-y-4 py-4">
+                                <div className="bg-green-50 p-6 rounded-lg border border-green-200 text-center">
+                                    <div className="mb-4">
+                                        <svg className="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-green-800 font-semibold text-lg mb-2">
+                                        Password Reset Successful!
                                     </p>
-                                    <p className="text-2xl font-mono font-bold tracking-wider text-green-900 bg-white inline-block px-4 py-2 rounded shadow-inner mb-2">
-                                        {generatedPassword}
-                                    </p>
-                                    <p className="text-xs text-green-700">
-                                        Please copy this password and log in. You should change it
-                                        in your profile settings immediately.
+                                    <p className="text-green-700 text-sm">
+                                        A new password has been sent to your email address. Please check your inbox and use it to log in.
                                     </p>
                                 </div>
                                 <Button
