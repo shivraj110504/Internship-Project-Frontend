@@ -219,6 +219,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const addFriend = async (friendId) => {
+    return await followUser(friendId);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -235,6 +239,7 @@ export const AuthProvider = ({ children }) => {
         likePost,
         commentPost,
         followUser,
+        addFriend,
         searchUsers,
         refreshUser,
         loading,

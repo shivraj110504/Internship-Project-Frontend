@@ -95,9 +95,9 @@ const UserSearch = () => {
                                     onClick={() => handleFollow(u._id)}
                                 >
                                     {u.followers?.includes(currentUser?._id) ? (
-                                        <><UserMinus className="w-3 h-3 mr-1" /> Unfollow</>
+                                        <><UserMinus className="w-3 h-3 mr-1" /> Friends</>
                                     ) : (
-                                        <><UserPlus className="w-3 h-3 mr-1" /> Follow</>
+                                        <><UserPlus className="w-3 h-3 mr-1" /> Add Friend</>
                                     )}
                                 </Button>
                             )}
