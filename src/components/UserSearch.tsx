@@ -90,12 +90,14 @@ const UserSearch = () => {
                             {currentUser?._id !== u._id && (
                                 <Button
                                     size="sm"
-                                    variant={u.followers?.includes(currentUser?._id) ? "outline" : "default"}
-                                    className="h-8"
+                                    variant={currentUser?.following?.includes(u._id) ? "destructive" : "default"}
+                                    className={currentUser?.following?.includes(u._id)
+                                        ? "h-8 bg-red-600 hover:bg-red-700 text-white"
+                                        : "h-8 bg-blue-600 hover:bg-blue-700 text-white"}
                                     onClick={() => handleFollow(u._id)}
                                 >
-                                    {u.followers?.includes(currentUser?._id) ? (
-                                        <><UserMinus className="w-3 h-3 mr-1" /> Friends</>
+                                    {currentUser?.following?.includes(u._id) ? (
+                                        <><UserMinus className="w-3 h-3 mr-1" /> Unfollow</>
                                     ) : (
                                         <><UserPlus className="w-3 h-3 mr-1" /> Add Friend</>
                                     )}

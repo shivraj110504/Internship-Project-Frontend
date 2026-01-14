@@ -6,7 +6,7 @@ import { Calendar, Search } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { UserPlus, UserCheck } from "lucide-react";
+import { UserPlus, UserCheck, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 const users = [
   {
@@ -135,13 +135,20 @@ const index = () => {
                 {currentUser && currentUser._id !== user._id && (
                   <div className="pt-2 border-t mt-auto">
                     {currentUser.following?.includes(user._id) ? (
-                      <Button variant="ghost" disabled className="w-full text-green-600 text-xs h-8">
-                        <UserCheck className="w-3 h-3 mr-1" /> Friends
+                      <Button
+                        variant="destructive"
+                        className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addFriend(user._id);
+                        }}
+                      >
+                        <UserMinus className="w-3 h-3 mr-1" /> Unfollow
                       </Button>
                     ) : (
                       <Button
-                        variant="outline"
-                        className="w-full text-xs h-8 hover:bg-blue-50 hover:text-blue-600"
+                        variant="default"
+                        className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={(e) => {
                           e.preventDefault();
                           addFriend(user._id);
