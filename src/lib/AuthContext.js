@@ -223,6 +223,30 @@ export const AuthProvider = ({ children }) => {
     return await followUser(friendId);
   };
 
+  const getFollowers = async () => {
+    try {
+      const res = await axiosInstance.get("/post/followers");
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching followers:", err);
+      toast.error("Failed to fetch followers");
+      return [];
+    }
+  };
+
+  const removeFollower = async (followerId) => {
+    try {
+      const res = await axiosInstance.delete(`/post/follower/${followerId}`);
+      toast.success(res.data.message || "Follower removed");
+      await refreshUser();
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to remove follower";
+      toast.error(msg);
+      throw err;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -240,6 +264,8 @@ export const AuthProvider = ({ children }) => {
         commentPost,
         followUser,
         addFriend,
+        getFollowers,
+        removeFollower,
         searchUsers,
         refreshUser,
         loading,

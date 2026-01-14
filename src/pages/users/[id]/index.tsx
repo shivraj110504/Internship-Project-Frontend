@@ -15,10 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import Mainlayout from "@/layout/Mainlayout";
 import { useAuth } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
-import { Calendar, Edit, Plus, X } from "lucide-react";
+import { Calendar, Edit, Plus, X, Users } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import FollowersList from "@/components/FollowersList";
 const getUserData = (id: string) => {
   const users = {
     "1": {
@@ -46,6 +47,7 @@ const index = () => {
   const [users, setusers] = useState<any>(null);
   const [loading, setloading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [showFollowers, setShowFollowers] = useState(false);
   const [editForm, setEditForm] = useState({
     name: users?.name || "",
     about: users?.about || "",
@@ -142,6 +144,14 @@ const index = () => {
 
               {isOwnProfile && (
                 <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 bg-transparent border-gray-300"
+                    onClick={() => setShowFollowers(true)}
+                  >
+                    <Users className="w-4 h-4" />
+                    Followers ({users.followers?.length || 0})
+                  </Button>
                   <Button
                     variant="outline"
                     className="flex items-center gap-2 bg-transparent border-gray-300"
@@ -355,6 +365,14 @@ const index = () => {
             </Card>
           </div>
         </div>
+
+        {/* Followers List Dialog */}
+        {isOwnProfile && (
+          <FollowersList
+            open={showFollowers}
+            onOpenChange={setShowFollowers}
+          />
+        )}
       </div>
     </Mainlayout>
   );
