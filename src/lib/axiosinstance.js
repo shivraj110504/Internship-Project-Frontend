@@ -10,16 +10,26 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-axiosInstance.interceptors.request.use((req) => {
-  if (typeof window !== "undefined") {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const token = JSON.parse(user).token;
-      if (token) {
-        req.headers.Authorization = `Bearer ${token}`;
+axiosInstance.interceptors.request.use(
+  (req) => {
+    if (typeof window !== "undefined") {
+      try {
+        const user = localStorage.getItem("user");
+        if (user) {
+          const parsedUser = JSON.parse(user);
+          const token = parsedUser?.token;
+          if (token) {
+            req.headers.Authorization = `Bearer ${token}`;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
       }
     }
+    return req;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return req;
-});
+);
 export default axiosInstance;
