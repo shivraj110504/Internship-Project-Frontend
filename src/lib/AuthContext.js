@@ -254,16 +254,29 @@ export const AuthProvider = ({ children }) => {
   };
 
   const followUser = async (followId) => {
+    // Immediately dismiss any existing toasts
+    toast.dismiss();
+    
     try {
       const res = await axiosInstance.post("/post/follow", { followId });
-      toast.dismiss();
-      toast.success(res.data.message);
+      
+      // Show success message immediately
+      toast.success(res.data.message || "Action completed successfully", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      
+      // Refresh user data to update following/followers counts
       await refreshUser();
+      
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to follow user";
-      toast.dismiss();
-      toast.error(msg);
+      // Show error message immediately
+      const msg = err.response?.data?.message || err.message || "Failed to perform action. Please try again.";
+      toast.error(msg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
       throw err;
     }
   };

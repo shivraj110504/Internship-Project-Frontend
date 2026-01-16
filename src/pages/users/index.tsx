@@ -38,7 +38,7 @@ const index = () => {
   const [users, setusers] = useState<any>(null);
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { addFriend, user: currentUser, searchUsers } = useAuth();
+  const { addFriend, user: currentUser, searchUsers, refreshUser } = useAuth();
 
   const fetchuser = async (query = "") => {
     setloading(true);
@@ -140,9 +140,10 @@ const index = () => {
                         className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
                         onClick={async (e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           try {
                             const res = await addFriend(user._id);
-                            // Update target user in local state
+                            // Update target user in local state with fresh data from backend
                             if (res?.target?._id) {
                               setusers((prev: any[]) =>
                                 (prev || []).map((u) =>
@@ -152,7 +153,15 @@ const index = () => {
                                 )
                               );
                             }
-                          } catch (err) {
+                            // Ensure current user state is refreshed (already done in AuthContext, but ensure UI updates)
+                            await refreshUser();
+                            // Refresh the users list to get updated state if searching
+                            if (searchQuery.trim()) {
+                              const results = await searchUsers(searchQuery);
+                              setusers(results);
+                            }
+                          } catch (err: any) {
+                            // Error is already shown in AuthContext, but log for debugging
                             console.error("Error unfollowing:", err);
                           }
                         }}
@@ -165,9 +174,10 @@ const index = () => {
                         className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={async (e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           try {
                             const res = await addFriend(user._id);
-                            // Update target user in local state
+                            // Update target user in local state with fresh data from backend
                             if (res?.target?._id) {
                               setusers((prev: any[]) =>
                                 (prev || []).map((u) =>
@@ -177,7 +187,15 @@ const index = () => {
                                 )
                               );
                             }
-                          } catch (err) {
+                            // Ensure current user state is refreshed (already done in AuthContext, but ensure UI updates)
+                            await refreshUser();
+                            // Refresh the users list to get updated state if searching
+                            if (searchQuery.trim()) {
+                              const results = await searchUsers(searchQuery);
+                              setusers(results);
+                            }
+                          } catch (err: any) {
+                            // Error is already shown in AuthContext, but log for debugging
                             console.error("Error following:", err);
                           }
                         }}

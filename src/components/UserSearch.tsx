@@ -31,26 +31,23 @@ const UserSearch = () => {
     const handleFollow = async (userId: string) => {
         try {
             const res = await followUser(userId);
-            // Update local results state
+            // Update local results state with backend response data
             setResults(prev => prev.map(u => {
-                if (u._id === userId) {
-                    const willBeFollowing = res.isFollowing;
+                if (u._id === userId && res?.target) {
                     return {
                         ...u,
-                        followers: willBeFollowing
-                            ? [...(u.followers || []), currentUser?._id]
-                            : (u.followers || []).filter((id: string) => id !== currentUser?._id)
+                        followers: res.target.followers || [],
+                        following: res.target.following || []
                     };
                 }
                 return u;
             }));
-
-            // CRITICAL: Refresh current user to update their "friend" count and enable posting
-            await refreshUser();
-            toast.success(res.message || "Updated successfully");
+            
+            // Refresh current user to update their "friend" count (already done in followUser, but ensure state is updated)
+            // The toast is already shown in AuthContext followUser function
         } catch (err: any) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Action failed");
+            // Error toast is already shown in AuthContext, just log for debugging
+            console.error("Follow action error:", err);
         }
     };
 
