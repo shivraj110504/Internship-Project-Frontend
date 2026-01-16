@@ -85,28 +85,27 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/user/forgot-password", { email });
-      toast.success("Password reset email sent! Check your inbox.");
+      // Backend sends SMS OTP to the user's registered phone
+      toast.success("OTP sent to your registered mobile number.");
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to send reset email";
+      const msg = err.response?.data?.message || "Failed to send reset OTP";
       toast.error(msg);
       throw err;
     } finally {
       setLoading(false);
     }
   };
-
-  const verifyPhoneEmail = async ({ user_json_url, resetPassword = false }) => {
+  
+  const resetPasswordWithOtp = async ({ phone, otp }) => {
+    if (!phone || !otp) throw new Error("Phone and OTP are required");
     setLoading(true);
     try {
-      const res = await axiosInstance.post("/user/verify-phone-email", {
-        user_json_url,
-        resetPassword,
-      });
-      toast.success(res.data.message);
-      return res.data;
+      const res = await axiosInstance.post("/user/reset-password-otp", { phone, otp });
+      toast.success("Password reset successful");
+      return res.data; // contains newPassword
     } catch (err) {
-      const msg = err.response?.data?.message || "Phone verification failed";
+      const msg = err.response?.data?.message || "Failed to reset password";
       toast.error(msg);
       throw err;
     } finally {
@@ -255,7 +254,7 @@ export const AuthProvider = ({ children }) => {
         Login,
         VerifyOTP,
         sendForgotPasswordEmail,
-        verifyPhoneEmail, // <-- add here
+        resetPasswordWithOtp,
         GetLoginHistory,
         Logout,
         createPost,

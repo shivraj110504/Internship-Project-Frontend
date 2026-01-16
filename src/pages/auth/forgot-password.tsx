@@ -16,26 +16,12 @@ import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [otp, setOtp] = useState("");
     const [method, setMethod] = useState<"email" | "phone">("email");
     const [generatedPassword, setGeneratedPassword] = useState("");
-    const { sendForgotPasswordEmail, verifyPhoneEmail, loading } = useAuth();
+    const { sendForgotPasswordEmail, resetPasswordWithOtp, loading } = useAuth();
     const router = useRouter();
-
-    useEffect(() => {
-        // Define the phoneEmailListener function
-        (window as any).phoneEmailListener = async (userObj: any) => {
-            const { user_json_url } = userObj;
-            try {
-                const data = await verifyPhoneEmail({ user_json_url, resetPassword: true });
-                if (data.newPassword) {
-                    setGeneratedPassword(data.newPassword);
-                    toast.success("Password reset successful!");
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        };
-    }, [verifyPhoneEmail]);
 
     const handleEmailSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,18 +39,22 @@ const ForgotPassword = () => {
         }
     };
 
-    const loadPhoneScript = () => {
-        const script = document.createElement("script");
-        script.src = "https://www.phone.email/sign_in_button_v1.js";
-        script.async = true;
-        document.body.appendChild(script);
-    };
-
-    useEffect(() => {
-        if (method === "phone") {
-            loadPhoneScript();
+    const handleOtpReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!phone || !otp) {
+            toast.error("Enter phone and OTP");
+            return;
         }
-    }, [method]);
+        try {
+            const data = await resetPasswordWithOtp({ phone, otp });
+            if (data.newPassword) {
+                setGeneratedPassword(data.newPassword);
+                toast.success("Password reset successful");
+            }
+        } catch (err) {
+            // Error toast handled by context
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -86,7 +76,7 @@ const ForgotPassword = () => {
                     <CardHeader className="text-center">
                         <CardTitle className="text-2xl">Forgot Password</CardTitle>
                         <CardDescription>
-                            Choose a method to reset your password
+                            Reset your password using SMS OTP
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -131,22 +121,41 @@ const ForgotPassword = () => {
                                             className="w-full bg-blue-600 hover:bg-blue-700"
                                             disabled={loading}
                                         >
-                                            {loading ? "Sending..." : "Reset via Email"}
+                                            {loading ? "Sending..." : "Send OTP to Mobile"}
                                         </Button>
                                     </form>
                                 ) : (
-                                    <div className="flex flex-col items-center space-y-4 py-4">
-                                        <p className="text-sm text-gray-600 text-center">
-                                            Verify your identity using your phone number to generate a
-                                            new password.
-                                        </p>
-                                        <div id="signInContainer">
-                                            <div
-                                                className="pe_signin_button"
-                                                data-client-id="11350679121622574492"
-                                            ></div>
+                                    <form onSubmit={handleOtpReset} className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="phone">Phone Number</Label>
+                                            <Input
+                                                id="phone"
+                                                type="tel"
+                                                placeholder="e.g. 9876543210"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                required
+                                            />
                                         </div>
-                                    </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="otp">OTP</Label>
+                                            <Input
+                                                id="otp"
+                                                type="text"
+                                                placeholder="6-digit OTP"
+                                                value={otp}
+                                                onChange={(e) => setOtp(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            className="w-full bg-blue-600 hover:bg-blue-700"
+                                            disabled={loading}
+                                        >
+                                            {loading ? "Verifying..." : "Reset Password"}
+                                        </Button>
+                                    </form>
                                 )}
                             </>
                         ) : (
@@ -160,8 +169,8 @@ const ForgotPassword = () => {
                                     <p className="text-green-800 font-semibold text-lg mb-2">
                                         Password Reset Successful!
                                     </p>
-                                    <p className="text-green-700 text-sm">
-                                        A new password has been sent to your email address. Please check your inbox and use it to log in.
+                                    <p className="text-green-700 text-sm break-all">
+                                        Your new password is: <span className="font-mono font-semibold">{generatedPassword}</span>
                                     </p>
                                 </div>
                                 <Button
