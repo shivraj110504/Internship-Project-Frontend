@@ -44,9 +44,9 @@ const index = () => {
     }
 
     // Client-side validation for immediate feedback
-    const friendsCount = Array.isArray(user.following) ? user.following.length : 0;
+    const friendsCount = Array.isArray(user.friends) ? user.friends.length : 0;
     if (friendsCount === 0) {
-      toast.error("You are not allowed to post. You need at least 1 friend to ask questions.");
+      toast.error("You are not allowed to post. You need at least 1 confirmed friend to ask questions.");
       return;
     }
 

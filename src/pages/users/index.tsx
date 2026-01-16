@@ -38,7 +38,7 @@ const index = () => {
   const [users, setusers] = useState<any>(null);
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { addFriend, user: currentUser, searchUsers, refreshUser } = useAuth();
+  const { sendFriendRequest, confirmFriendRequest, rejectFriendRequest, user: currentUser, searchUsers, refreshUser } = useAuth();
 
   const fetchuser = async (query = "") => {
     setloading(true);
@@ -133,76 +133,103 @@ const index = () => {
                 </Link>
 
                 {currentUser && currentUser._id !== user._id && (
-                  <div className="pt-2 border-t mt-auto">
-                    {currentUser.following?.includes(user._id) ? (
-                      <Button
-                        variant="destructive"
-                        className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
-                        onClick={async (e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          try {
-                            const res = await addFriend(user._id);
-                            // Update target user in local state with fresh data from backend
-                            if (res?.target?._id) {
-                              setusers((prev: any[]) =>
-                                (prev || []).map((u) =>
-                                  u._id === res.target._id
-                                    ? { ...u, followers: res.target.followers || [], following: res.target.following || [] }
-                                    : u
-                                )
-                              );
-                            }
-                            // Ensure current user state is refreshed (already done in AuthContext, but ensure UI updates)
-                            await refreshUser();
-                            // Refresh the users list to get updated state if searching
-                            if (searchQuery.trim()) {
-                              const results = await searchUsers(searchQuery);
-                              setusers(results);
-                            }
-                          } catch (err: any) {
-                            // Error is already shown in AuthContext, but log for debugging
-                            console.error("Error unfollowing:", err);
-                          }
-                        }}
-                      >
-                        <UserMinus className="w-3 h-3 mr-1" /> Unfollow
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="default"
-                        className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={async (e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          try {
-                            const res = await addFriend(user._id);
-                            // Update target user in local state with fresh data from backend
-                            if (res?.target?._id) {
-                              setusers((prev: any[]) =>
-                                (prev || []).map((u) =>
-                                  u._id === res.target._id
-                                    ? { ...u, followers: res.target.followers || [], following: res.target.following || [] }
-                                    : u
-                                )
-                              );
-                            }
-                            // Ensure current user state is refreshed (already done in AuthContext, but ensure UI updates)
-                            await refreshUser();
-                            // Refresh the users list to get updated state if searching
-                            if (searchQuery.trim()) {
-                              const results = await searchUsers(searchQuery);
-                              setusers(results);
-                            }
-                          } catch (err: any) {
-                            // Error is already shown in AuthContext, but log for debugging
-                            console.error("Error following:", err);
-                          }
-                        }}
-                      >
-                        <UserPlus className="w-3 h-3 mr-1" /> Add Friend
-                      </Button>
-                    )}
+                  <div className="pt-2 border-t mt-auto space-y-2">
+                    {(() => {
+                      const friendStatus = user.friendStatus || "none";
+                      const isFriend = friendStatus === "friends" || (currentUser.friends || []).includes(user._id);
+                      const requestSent = friendStatus === "request_sent" || (currentUser.sentFriendRequests || []).includes(user._id);
+                      const requestReceived = friendStatus === "request_received" || (currentUser.receivedFriendRequests || []).includes(user._id);
+
+                      if (isFriend) {
+                        return (
+                          <Button
+                            variant="default"
+                            className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white"
+                            disabled
+                          >
+                            <UserCheck className="w-3 h-3 mr-1" /> Friends
+                          </Button>
+                        );
+                      } else if (requestReceived) {
+                        return (
+                          <>
+                            <Button
+                              variant="default"
+                              className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white"
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                  const res = await confirmFriendRequest(user._id);
+                                  if (searchQuery.trim()) {
+                                    const results = await searchUsers(searchQuery);
+                                    setusers(results);
+                                  }
+                                  await refreshUser();
+                                } catch (err: any) {
+                                  console.error("Error confirming friend request:", err);
+                                }
+                              }}
+                            >
+                              <UserCheck className="w-3 h-3 mr-1" /> Confirm Request
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                  const res = await rejectFriendRequest(user._id);
+                                  if (searchQuery.trim()) {
+                                    const results = await searchUsers(searchQuery);
+                                    setusers(results);
+                                  }
+                                  await refreshUser();
+                                } catch (err: any) {
+                                  console.error("Error rejecting friend request:", err);
+                                }
+                              }}
+                            >
+                              Reject
+                            </Button>
+                          </>
+                        );
+                      } else if (requestSent) {
+                        return (
+                          <Button
+                            variant="default"
+                            className="w-full text-xs h-8 bg-gray-400 hover:bg-gray-500 text-white"
+                            disabled
+                          >
+                            Request Sent
+                          </Button>
+                        );
+                      } else {
+                        return (
+                          <Button
+                            variant="default"
+                            className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              try {
+                                const res = await sendFriendRequest(user._id);
+                                if (searchQuery.trim()) {
+                                  const results = await searchUsers(searchQuery);
+                                  setusers(results);
+                                }
+                                await refreshUser();
+                              } catch (err: any) {
+                                console.error("Error sending friend request:", err);
+                              }
+                            }}
+                          >
+                            <UserPlus className="w-3 h-3 mr-1" /> Add Friend
+                          </Button>
+                        );
+                      }
+                    })()}
                   </div>
                 )}
               </div>

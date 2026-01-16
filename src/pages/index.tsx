@@ -115,9 +115,9 @@ export default function Home() {
     }
 
     // Client-side validation for immediate feedback
-    const friendsCount = Array.isArray(user?.following) ? user.following.length : 0;
+    const friendsCount = Array.isArray(user?.friends) ? user.friends.length : 0;
     if (friendsCount === 0) {
-      toast.error("You cannot post anything on the public page until you have at least 1 friend.");
+      toast.error("You cannot post anything on the public page until you have at least 1 confirmed friend.");
       setIsPostDialogOpen(false);
       return;
     }
@@ -299,14 +299,14 @@ export default function Home() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-blue-900">
-                        Posting Status: {user?.following?.length || 0} Friends
+                        Posting Status: {user?.friends?.length || 0} Friends
                       </h4>
                       <p className="text-xs text-blue-700">
-                        {user?.following?.length === 0
-                          ? "You need at least 1 friend to post in the Public Space."
-                          : user?.following?.length > 10
+                        {user?.friends?.length === 0
+                          ? "You need at least 1 confirmed friend to post in the Public Space."
+                          : user?.friends?.length > 10
                             ? "You have more than 10 friends! You can post unlimited times."
-                            : `With ${user?.following?.length} friend${user?.following?.length > 1 ? 's' : ''}, you can post ${user?.following?.length} time${user?.following?.length > 1 ? 's' : ''} a day.`}
+                            : `With ${user?.friends?.length} friend${user?.friends?.length > 1 ? 's' : ''}, you can post ${user?.friends?.length} time${user?.friends?.length > 1 ? 's' : ''} a day.`}
                       </p>
                     </div>
                   </div>
@@ -317,7 +317,7 @@ export default function Home() {
                       <DialogTrigger asChild>
                         <Button
                           className="bg-orange-500 hover:bg-orange-600 text-white"
-                          disabled={user?.following?.length === 0}
+                          disabled={user?.friends?.length === 0}
                         >
                           <Plus className="w-4 h-4 mr-2" /> Share Post
                         </Button>

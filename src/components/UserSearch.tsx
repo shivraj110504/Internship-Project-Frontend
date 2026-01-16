@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, UserMinus, Loader2 } from 'lucide-react';
+import { Search, UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -10,7 +10,7 @@ const UserSearch = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
-    const { searchUsers, followUser, user: currentUser, refreshUser } = useAuth();
+    const { searchUsers, sendFriendRequest, confirmFriendRequest, rejectFriendRequest, user: currentUser, refreshUser } = useAuth();
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,26 +28,26 @@ const UserSearch = () => {
         }
     };
 
-    const handleFollow = async (userId: string) => {
+    const handleFriendAction = async (userId: string, action: 'send' | 'confirm' | 'reject') => {
         try {
-            const res = await followUser(userId);
-            // Update local results state with backend response data
-            setResults(prev => prev.map(u => {
-                if (u._id === userId && res?.target) {
-                    return {
-                        ...u,
-                        followers: res.target.followers || [],
-                        following: res.target.following || []
-                    };
-                }
-                return u;
-            }));
+            let res;
+            if (action === 'send') {
+                res = await sendFriendRequest(userId);
+            } else if (action === 'confirm') {
+                res = await confirmFriendRequest(userId);
+            } else {
+                res = await rejectFriendRequest(userId);
+            }
             
-            // Refresh current user to update their "friend" count (already done in followUser, but ensure state is updated)
-            // The toast is already shown in AuthContext followUser function
+            // Refresh search results to get updated friend status
+            if (query.trim()) {
+                const data = await searchUsers(query.trim());
+                setResults(data);
+            }
+            
+            await refreshUser();
         } catch (err: any) {
-            // Error toast is already shown in AuthContext, just log for debugging
-            console.error("Follow action error:", err);
+            console.error("Friend action error:", err);
         }
     };
 
@@ -81,25 +81,61 @@ const UserSearch = () => {
                                 </Avatar>
                                 <div>
                                     <p className="text-sm font-medium text-gray-900">{u.name}</p>
-                                    <p className="text-xs text-gray-500">{u.followers?.length || 0} followers</p>
+                                    <p className="text-xs text-gray-500">{u.friendsCount || 0} friends</p>
                                 </div>
                             </div>
-                            {currentUser?._id !== u._id && (
-                                <Button
-                                    size="sm"
-                                    variant={currentUser?.following?.includes(u._id) ? "destructive" : "default"}
-                                    className={currentUser?.following?.includes(u._id)
-                                        ? "h-8 bg-red-600 hover:bg-red-700 text-white"
-                                        : "h-8 bg-blue-600 hover:bg-blue-700 text-white"}
-                                    onClick={() => handleFollow(u._id)}
-                                >
-                                    {currentUser?.following?.includes(u._id) ? (
-                                        <><UserMinus className="w-3 h-3 mr-1" /> Unfollow</>
-                                    ) : (
-                                        <><UserPlus className="w-3 h-3 mr-1" /> Add Friend</>
-                                    )}
-                                </Button>
-                            )}
+                            {currentUser?._id !== u._id && (() => {
+                                const friendStatus = u.friendStatus || "none";
+                                const isFriend = friendStatus === "friends" || (currentUser?.friends || []).includes(u._id);
+                                const requestSent = friendStatus === "request_sent" || (currentUser?.sentFriendRequests || []).includes(u._id);
+                                const requestReceived = friendStatus === "request_received" || (currentUser?.receivedFriendRequests || []).includes(u._id);
+
+                                if (isFriend) {
+                                    return (
+                                        <Button size="sm" variant="default" className="h-8 bg-green-600 text-white" disabled>
+                                            <UserCheck className="w-3 h-3 mr-1" /> Friends
+                                        </Button>
+                                    );
+                                } else if (requestReceived) {
+                                    return (
+                                        <div className="flex gap-1">
+                                            <Button
+                                                size="sm"
+                                                variant="default"
+                                                className="h-8 bg-green-600 hover:bg-green-700 text-white text-xs"
+                                                onClick={() => handleFriendAction(u._id, 'confirm')}
+                                            >
+                                                <UserCheck className="w-3 h-3 mr-1" /> Confirm
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                className="h-8 bg-red-600 hover:bg-red-700 text-white text-xs"
+                                                onClick={() => handleFriendAction(u._id, 'reject')}
+                                            >
+                                                Reject
+                                            </Button>
+                                        </div>
+                                    );
+                                } else if (requestSent) {
+                                    return (
+                                        <Button size="sm" variant="default" className="h-8 bg-gray-400 text-white" disabled>
+                                            Request Sent
+                                        </Button>
+                                    );
+                                } else {
+                                    return (
+                                        <Button
+                                            size="sm"
+                                            variant="default"
+                                            className="h-8 bg-blue-600 hover:bg-blue-700 text-white"
+                                            onClick={() => handleFriendAction(u._id, 'send')}
+                                        >
+                                            <UserPlus className="w-3 h-3 mr-1" /> Add Friend
+                                        </Button>
+                                    );
+                                }
+                            })()}
                         </div>
                     ))
                 ) : query && !searching ? (

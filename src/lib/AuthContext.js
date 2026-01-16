@@ -290,13 +290,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const followUser = async (followId) => {
-    // Immediately dismiss any existing toasts
+  // Send friend request
+  const sendFriendRequest = async (friendId) => {
     toast.dismiss();
     
-    // Check if user is logged in and has a token
     if (!user?._id) {
-      // Try to get from localStorage
       if (typeof window !== "undefined") {
         try {
           const stored = localStorage.getItem("user");
@@ -322,23 +320,18 @@ export const AuthProvider = ({ children }) => {
     }
     
     try {
-      const res = await axiosInstance.post("/post/follow", { followId });
+      const res = await axiosInstance.post("/post/friend/request", { friendId });
       
-      // Show success message immediately
-      toast.success(res.data.message || "Action completed successfully", {
+      toast.success(res.data.message || "Friend request sent successfully", {
         position: "top-right",
         autoClose: 2000,
       });
       
-      // Refresh user data to update following/followers counts
       await refreshUser();
-      
       return res.data;
     } catch (err) {
-      // Show error message immediately
-      const msg = err.response?.data?.message || err.message || "Failed to perform action. Please try again.";
+      const msg = err.response?.data?.message || err.message || "Failed to send friend request. Please try again.";
       
-      // If it's an auth error, suggest re-login
       if (err.response?.status === 401) {
         toast.error("Session expired. Please log in again", {
           position: "top-right",
@@ -354,6 +347,57 @@ export const AuthProvider = ({ children }) => {
       throw err;
     }
   };
+
+  // Confirm friend request
+  const confirmFriendRequest = async (friendId) => {
+    toast.dismiss();
+    
+    try {
+      const res = await axiosInstance.post("/post/friend/confirm", { friendId });
+      
+      toast.success(res.data.message || "Friend request confirmed!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      
+      await refreshUser();
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to confirm friend request.";
+      toast.error(msg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      throw err;
+    }
+  };
+
+  // Reject friend request
+  const rejectFriendRequest = async (friendId) => {
+    toast.dismiss();
+    
+    try {
+      const res = await axiosInstance.post("/post/friend/reject", { friendId });
+      
+      toast.success(res.data.message || "Friend request rejected", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      
+      await refreshUser();
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to reject friend request.";
+      toast.error(msg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      throw err;
+    }
+  };
+
+  // Backward compatibility
+  const followUser = sendFriendRequest;
 
   const searchUsers = async (query) => {
     try {
@@ -371,19 +415,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   const addFriend = async (friendId) => {
-    return await followUser(friendId);
+    return await sendFriendRequest(friendId);
   };
 
-  const getFollowers = async () => {
+  const getFriends = async () => {
     try {
-      const res = await axiosInstance.get("/post/followers");
+      const res = await axiosInstance.get("/post/friends");
       return res.data;
     } catch (err) {
-      console.error("Error fetching followers:", err);
-      toast.error("Failed to fetch followers");
+      console.error("Error fetching friends:", err);
+      toast.error("Failed to fetch friends");
       return [];
     }
   };
+
+  const getFriendRequests = async () => {
+    try {
+      const res = await axiosInstance.get("/post/friend-requests");
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching friend requests:", err);
+      return [];
+    }
+  };
+
+  // Backward compatibility
+  const getFollowers = getFriends;
 
   const removeFollower = async (followerId) => {
     try {
@@ -418,6 +475,11 @@ export const AuthProvider = ({ children }) => {
         commentPost,
         followUser,
         addFriend,
+        sendFriendRequest,
+        confirmFriendRequest,
+        rejectFriendRequest,
+        getFriends,
+        getFriendRequests,
         getFollowers,
         removeFollower,
         searchUsers,
