@@ -138,19 +138,23 @@ const index = () => {
                       <Button
                         variant="destructive"
                         className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.preventDefault();
-                          addFriend(user._id).then((res: any) => {
+                          try {
+                            const res = await addFriend(user._id);
+                            // Update target user in local state
                             if (res?.target?._id) {
                               setusers((prev: any[]) =>
                                 (prev || []).map((u) =>
                                   u._id === res.target._id
-                                    ? { ...u, followers: res.target.followers, following: res.target.following }
+                                    ? { ...u, followers: res.target.followers || [], following: res.target.following || [] }
                                     : u
                                 )
                               );
                             }
-                          });
+                          } catch (err) {
+                            console.error("Error unfollowing:", err);
+                          }
                         }}
                       >
                         <UserMinus className="w-3 h-3 mr-1" /> Unfollow
@@ -159,19 +163,23 @@ const index = () => {
                       <Button
                         variant="default"
                         className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.preventDefault();
-                          addFriend(user._id).then((res: any) => {
+                          try {
+                            const res = await addFriend(user._id);
+                            // Update target user in local state
                             if (res?.target?._id) {
                               setusers((prev: any[]) =>
                                 (prev || []).map((u) =>
                                   u._id === res.target._id
-                                    ? { ...u, followers: res.target.followers, following: res.target.following }
+                                    ? { ...u, followers: res.target.followers || [], following: res.target.following || [] }
                                     : u
                                 )
                               );
                             }
-                          });
+                          } catch (err) {
+                            console.error("Error following:", err);
+                          }
                         }}
                       >
                         <UserPlus className="w-3 h-3 mr-1" /> Add Friend

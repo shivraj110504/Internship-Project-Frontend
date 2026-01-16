@@ -109,14 +109,28 @@ export default function Home() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPost.mediaUrl) return toast.error("Media URL is required");
+    if (!newPost.mediaUrl) {
+      toast.error("Media URL is required");
+      return;
+    }
+
+    // Client-side validation for immediate feedback
+    const friendsCount = Array.isArray(user?.following) ? user.following.length : 0;
+    if (friendsCount === 0) {
+      toast.error("You cannot post anything on the public page until you have at least 1 friend.");
+      setIsPostDialogOpen(false);
+      return;
+    }
+
     try {
       await createPost(newPost);
       setIsPostDialogOpen(false);
       setNewPost({ caption: "", mediaUrl: "", mediaType: "image" });
       const pRes = await fetchPosts();
       setPosts(pRes);
-    } catch (err) {
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "Failed to create post";
+      toast.error(msg);
       console.error(err);
     }
   };
@@ -285,14 +299,14 @@ export default function Home() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-blue-900">
-                        Posting Status: {user?.followers?.length || 0} Followers
+                        Posting Status: {user?.following?.length || 0} Friends
                       </h4>
                       <p className="text-xs text-blue-700">
-                        {user?.followers?.length === 0
-                          ? "You need at least 1 follower to post in the Public Space."
-                          : user?.followers?.length > 10
-                            ? "You have more than 10 followers! You can post unlimited times."
-                            : `With ${user?.followers?.length} follower${user?.followers?.length > 1 ? 's' : ''}, you can post ${user?.followers?.length} time${user?.followers?.length > 1 ? 's' : ''} a day.`}
+                        {user?.following?.length === 0
+                          ? "You need at least 1 friend to post in the Public Space."
+                          : user?.following?.length > 10
+                            ? "You have more than 10 friends! You can post unlimited times."
+                            : `With ${user?.following?.length} friend${user?.following?.length > 1 ? 's' : ''}, you can post ${user?.following?.length} time${user?.following?.length > 1 ? 's' : ''} a day.`}
                       </p>
                     </div>
                   </div>
@@ -303,7 +317,7 @@ export default function Home() {
                       <DialogTrigger asChild>
                         <Button
                           className="bg-orange-500 hover:bg-orange-600 text-white"
-                          disabled={user?.followers?.length === 0}
+                          disabled={user?.following?.length === 0}
                         >
                           <Plus className="w-4 h-4 mr-2" /> Share Post
                         </Button>

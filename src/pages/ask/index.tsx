@@ -38,10 +38,18 @@ const index = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      toast.error("PLlease login to ask question");
+      toast.error("Please login to ask question");
       router.push("/auth");
       return;
     }
+
+    // Client-side validation for immediate feedback
+    const friendsCount = Array.isArray(user.following) ? user.following.length : 0;
+    if (friendsCount === 0) {
+      toast.error("You are not allowed to post. You need at least 1 friend to ask questions.");
+      return;
+    }
+
     try {
       const res = await axiosInstance.post("/question/ask", {
         postquestiondata: {
