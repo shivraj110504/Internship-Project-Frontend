@@ -195,6 +195,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const createPost = async (postData) => {
+    // Client-side guardrails: warn early based on friends (followers) count
+    const followerCount = Array.isArray(user?.followers) ? user.followers.length : 0;
+    if (followerCount === 0) {
+      toast.warning(
+        "You cannot post on the public page until you have at least 1 friend (follower)."
+      );
+      return Promise.reject(new Error("No friends to allow posting"));
+    }
+
     setLoading(true);
     try {
       const res = await axiosInstance.post("/post/create", postData);
