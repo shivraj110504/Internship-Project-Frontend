@@ -176,15 +176,52 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refreshUser = async () => {
-    if (!user?._id) return;
+    if (!user?._id) {
+      // Try to get user from localStorage if state is empty
+      if (typeof window !== "undefined") {
+        try {
+          const stored = localStorage.getItem("user");
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed._id) {
+              const res = await axiosInstance.get(`/user/get-user/${parsed._id}`);
+              const updatedUser = { ...res.data, token: parsed.token || user?.token };
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+              setUser(updatedUser);
+              return res.data;
+            }
+          }
+        } catch (err) {
+          console.error("Error refreshing user from localStorage:", err);
+        }
+      }
+      return;
+    }
     try {
+      const currentToken = user?.token;
       const res = await axiosInstance.get(`/user/get-user/${user._id}`);
-      const updatedUser = { ...res.data, token: user.token };
+      // Always preserve the token when refreshing
+      const updatedUser = { ...res.data, token: currentToken || res.data.token };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
       return res.data;
     } catch (err) {
       console.error("Error refreshing user:", err);
+      // If refresh fails due to auth, try to get token from localStorage
+      if (typeof window !== "undefined") {
+        try {
+          const stored = localStorage.getItem("user");
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.token && parsed._id === user._id) {
+              // Token might still be valid, keep it
+              return parsed;
+            }
+          }
+        } catch (parseErr) {
+          console.error("Error parsing stored user:", parseErr);
+        }
+      }
     }
   };
 
@@ -257,6 +294,33 @@ export const AuthProvider = ({ children }) => {
     // Immediately dismiss any existing toasts
     toast.dismiss();
     
+    // Check if user is logged in and has a token
+    if (!user?._id) {
+      // Try to get from localStorage
+      if (typeof window !== "undefined") {
+        try {
+          const stored = localStorage.getItem("user");
+          if (!stored) {
+            toast.error("Please log in to add friends", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+            throw new Error("User not logged in");
+          }
+          const parsed = JSON.parse(stored);
+          if (!parsed.token) {
+            toast.error("Session expired. Please log in again", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+            throw new Error("No token found");
+          }
+        } catch (err) {
+          throw err;
+        }
+      }
+    }
+    
     try {
       const res = await axiosInstance.post("/post/follow", { followId });
       
@@ -273,10 +337,20 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       // Show error message immediately
       const msg = err.response?.data?.message || err.message || "Failed to perform action. Please try again.";
-      toast.error(msg, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      
+      // If it's an auth error, suggest re-login
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Please log in again", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(msg, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+      
       throw err;
     }
   };
