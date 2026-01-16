@@ -77,6 +77,18 @@ const index = () => {
     };
     fetchuser();
   }, [id]);
+  
+  // Keep edit form in sync when user data loads/changes
+  useEffect(() => {
+    if (users) {
+      setEditForm({
+        name: users.name || "",
+        about: users.about || "",
+        tags: users.tags || [],
+        phone: users.phone || "",
+      });
+    }
+  }, [users]);
   if (loading) {
     return (
       <Mainlayout>
@@ -99,6 +111,7 @@ const index = () => {
           name: editForm.name,
           about: editForm.about,
           tags: editForm.tags,
+          phone: editForm.phone,
         };
 
         setusers(updatedUser);
