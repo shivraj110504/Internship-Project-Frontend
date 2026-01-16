@@ -398,16 +398,17 @@ export default function Home() {
 
                   <div className="bg-white border rounded-lg p-4 shadow-sm">
                     <h3 className="text-sm font-bold text-gray-700 mb-4">Your Social Stats</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <p className="text-2xl font-bold text-gray-900">{user?.followers?.length || 0}</p>
-                        <p className="text-[10px] uppercase text-gray-500 font-bold">Followers</p>
-                      </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <p className="text-2xl font-bold text-gray-900">{user?.following?.length || 0}</p>
-                        <p className="text-[10px] uppercase text-gray-500 font-bold">Following</p>
-                      </div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                      <p className="text-2xl font-bold text-gray-900">{user?.friends?.length || 0}</p>
+                      <p className="text-[10px] uppercase text-gray-500 font-bold">Friends</p>
                     </div>
+                    {user?.receivedFriendRequests?.length > 0 && (
+                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-blue-700 font-medium">
+                          You have {user.receivedFriendRequests.length} pending friend request{user.receivedFriendRequests.length > 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

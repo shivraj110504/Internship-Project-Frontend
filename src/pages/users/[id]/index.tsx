@@ -19,7 +19,7 @@ import { Calendar, Edit, Plus, X, Users } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FollowersList from "@/components/FollowersList";
+import FriendsList from "@/components/FriendsList";
 const getUserData = (id: string) => {
   const users = {
     "1": {
@@ -52,7 +52,7 @@ const index = () => {
   const [transferAmount, setTransferAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFriends, setShowFriends] = useState(false);
   const [editForm, setEditForm] = useState({
     name: users?.name || "",
     about: users?.about || "",
@@ -168,10 +168,10 @@ const index = () => {
                   <Button
                     variant="outline"
                     className="flex items-center gap-2 bg-transparent border-gray-300"
-                    onClick={() => setShowFollowers(true)}
+                    onClick={() => setShowFriends(true)}
                   >
                     <Users className="w-4 h-4" />
-                    Followers ({users.followers?.length || 0})
+                    Friends ({users.friends?.length || 0})
                   </Button>
                   <Button
                     variant="outline"
@@ -443,12 +443,8 @@ const index = () => {
               </div>
               <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
                 <div>
-                  <span className="font-bold text-gray-900">{users.followers?.length || 0}</span>
-                  <span className="text-gray-600 ml-1">followers</span>
-                </div>
-                <div>
-                  <span className="font-bold text-gray-900">{users.following?.length || 0}</span>
-                  <span className="text-gray-600 ml-1">following</span>
+                  <span className="font-bold text-gray-900">{users.friends?.length || 0}</span>
+                  <span className="text-gray-600 ml-1">friends</span>
                 </div>
                 <div>
                   <span className="font-bold text-gray-900">{users.points || 0}</span>
@@ -518,11 +514,11 @@ const index = () => {
           </div>
         </div>
 
-        {/* Followers List Dialog */}
+        {/* Friends List Dialog */}
         {isOwnProfile && (
-          <FollowersList
-            open={showFollowers}
-            onOpenChange={setShowFollowers}
+          <FriendsList
+            open={showFriends}
+            onOpenChange={setShowFriends}
           />
         )}
       </div>

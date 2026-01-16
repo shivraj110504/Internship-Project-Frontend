@@ -1,7 +1,16 @@
 import { useAuth } from "@/lib/AuthContext";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, X, Bell } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/router";
 
 // const User = {
 //   _id: "1",
@@ -9,11 +18,67 @@ import { useEffect, useState } from "react";
 // };
 
 const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
-  const { user, Logout } = useAuth();
+  const { user, Logout, getFriendRequests, confirmFriendRequest, rejectFriendRequest, refreshUser } = useAuth();
+  const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [friendRequests, setFriendRequests] = useState<any[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (user && showNotifications) {
+      fetchFriendRequests();
+    }
+  }, [user, showNotifications]);
+
+  // Auto-refresh friend requests periodically when notification dialog is closed
+  useEffect(() => {
+    if (!user?._id) return;
+    
+    const interval = setInterval(() => {
+      // Refresh user data to update notification count
+      refreshUser().catch(() => {});
+    }, 60000); // Check every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [user?._id, refreshUser]);
+
+  const fetchFriendRequests = async () => {
+    setLoadingRequests(true);
+    try {
+      const requests = await getFriendRequests();
+      setFriendRequests(requests || []);
+    } catch (err) {
+      console.error("Error fetching friend requests:", err);
+    } finally {
+      setLoadingRequests(false);
+    }
+  };
+
+  const handleAcceptRequest = async (friendId: string) => {
+    try {
+      await confirmFriendRequest(friendId);
+      await fetchFriendRequests();
+      await refreshUser();
+    } catch (err) {
+      console.error("Error accepting request:", err);
+    }
+  };
+
+  const handleRejectRequest = async (friendId: string) => {
+    try {
+      await rejectFriendRequest(friendId);
+      await fetchFriendRequests();
+      await refreshUser();
+    } catch (err) {
+      console.error("Error rejecting request:", err);
+    }
+  };
+
   const handlelogout = () => {
     Logout();
   };
@@ -74,6 +139,76 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
             </div>
           ) : (
             <>
+              <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="relative p-2"
+                    onClick={() => setShowNotifications(true)}
+                  >
+                    <Bell className="w-5 h-5" />
+                    {user?.receivedFriendRequests?.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {user.receivedFriendRequests.length}
+                      </span>
+                    )}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Friend Requests</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3 mt-4">
+                    {loadingRequests ? (
+                      <div className="text-center py-8 text-gray-500">Loading...</div>
+                    ) : friendRequests.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">No pending friend requests</div>
+                    ) : (
+                      friendRequests.map((request: any) => (
+                        <div
+                          key={request._id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10">
+                              <AvatarFallback className="bg-blue-100 text-blue-600">
+                                {request.name?.charAt(0).toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium text-sm text-gray-900">
+                                {request.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                wants to be your friend
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white text-xs"
+                              onClick={() => handleAcceptRequest(request._id)}
+                            >
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="text-xs"
+                              onClick={() => handleRejectRequest(request._id)}
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               <Link
                 href={`/users/${user._id}`}
                 className="flex items-center justify-center bg-orange-600 text-white text-sm font-semibold w-9 h-9 rounded-full"
