@@ -17,11 +17,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const Signup = async ({ name, email, password }) => {
+  const Signup = async ({ name, email, password, phone }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.post("/user/signup", { name, email, password });
+      const res = await axiosInstance.post("/user/signup", { name, email, password, phone });
       const { data, token } = res.data;
       localStorage.setItem("user", JSON.stringify({ ...data, token }));
       setUser(data);
@@ -30,6 +30,22 @@ export const AuthProvider = ({ children }) => {
       const msg = err.response?.data?.message || "Signup failed";
       setError(msg);
       toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const changePassword = async ({ currentPassword, newPassword }) => {
+    if (!currentPassword || !newPassword) throw new Error("Both current and new passwords are required");
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/user/change-password", { currentPassword, newPassword });
+      toast.success(res.data.message || "Password changed successfully");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to change password";
+      toast.error(msg);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -292,6 +308,7 @@ export const AuthProvider = ({ children }) => {
         resetPasswordWithOtp,
         forgotPasswordByPhone,
         transferPoints,
+        changePassword,
         GetLoginHistory,
         Logout,
         createPost,

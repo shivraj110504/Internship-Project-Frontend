@@ -140,7 +140,17 @@ const index = () => {
                         className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white"
                         onClick={(e) => {
                           e.preventDefault();
-                          addFriend(user._id);
+                          addFriend(user._id).then((res: any) => {
+                            if (res?.target?._id) {
+                              setusers((prev: any[]) =>
+                                (prev || []).map((u) =>
+                                  u._id === res.target._id
+                                    ? { ...u, followers: res.target.followers, following: res.target.following }
+                                    : u
+                                )
+                              );
+                            }
+                          });
                         }}
                       >
                         <UserMinus className="w-3 h-3 mr-1" /> Unfollow
@@ -151,7 +161,17 @@ const index = () => {
                         className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={(e) => {
                           e.preventDefault();
-                          addFriend(user._id);
+                          addFriend(user._id).then((res: any) => {
+                            if (res?.target?._id) {
+                              setusers((prev: any[]) =>
+                                (prev || []).map((u) =>
+                                  u._id === res.target._id
+                                    ? { ...u, followers: res.target.followers, following: res.target.following }
+                                    : u
+                                )
+                              );
+                            }
+                          });
                         }}
                       >
                         <UserPlus className="w-3 h-3 mr-1" /> Add Friend

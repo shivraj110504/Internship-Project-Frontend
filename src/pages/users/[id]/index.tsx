@@ -41,7 +41,7 @@ const getUserData = (id: string) => {
   return users[id as keyof typeof users] || users["1"];
 };
 const index = () => {
-  const { user, transferPoints } = useAuth();
+  const { user, transferPoints, changePassword } = useAuth();
   const router = useRouter();
   const { id } = router.query;
   const [users, setusers] = useState<any>(null);
@@ -57,6 +57,7 @@ const index = () => {
     name: users?.name || "",
     about: users?.about || "",
     tags: users?.tags || [],
+    phone: users?.phone || "",
   });
   const [newTag, setNewTag] = useState("");
 
@@ -182,7 +183,8 @@ const index = () => {
                         <DialogTitle>Edit Profile</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-6 py-4">
-                        {/* Basic Information */}
+                        {/* Basic Information */
+                        }
                         <div className="space-y-4">
                           <h3 className="text-lg font-semibold">
                             Basic Information
@@ -200,6 +202,21 @@ const index = () => {
                                   })
                                 }
                                 placeholder="Your display name"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="phone">Mobile Number</Label>
+                              <Input
+                                id="phone"
+                                type="tel"
+                                value={editForm.phone}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    phone: e.target.value,
+                                  })
+                                }
+                                placeholder="e.g. 9876543210"
                               />
                             </div>
                           </div>
@@ -272,6 +289,41 @@ const index = () => {
                           </div>
                         </div>
 
+                        {/* Change Password */}
+                        <div className="space-y-4 border-t pt-4">
+                          <h3 className="text-lg font-semibold">Change Password</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="sm:col-span-1">
+                              <Label htmlFor="currentPassword">Current Password</Label>
+                              <Input id="currentPassword" type="password" />
+                            </div>
+                            <div className="sm:col-span-1">
+                              <Label htmlFor="newPassword">New Password</Label>
+                              <Input id="newPassword" type="password" />
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={async () => {
+                                const current = (document.getElementById("currentPassword") as HTMLInputElement)?.value;
+                                const next = (document.getElementById("newPassword") as HTMLInputElement)?.value;
+                                if (!current || !next) {
+                                  toast.error("Enter both current and new password");
+                                  return;
+                                }
+                                try {
+                                  await changePassword({ currentPassword: current, newPassword: next });
+                                  (document.getElementById("currentPassword") as HTMLInputElement).value = "";
+                                  (document.getElementById("newPassword") as HTMLInputElement).value = "";
+                                } catch (e) {}
+                              }}
+                            >
+                              Update Password
+                            </Button>
+                          </div>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex justify-end gap-3 pt-4 border-t">
                           <Button
@@ -281,6 +333,7 @@ const index = () => {
                           >
                             Cancel
                           </Button>
+                          
                           <Button
                             onClick={handleSaveProfile}
                             className="bg-blue-600 hover:bg-blue-700"

@@ -20,12 +20,13 @@ interface SignupForm {
   name: string;
   email: string;
   password: string;
+  phone?: string;
 }
 
 export default function SignUpPage() {
   const router = useRouter();
   const { Signup, loading } = useAuth();
-  const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "" });
+  const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "", phone: "" });
   const [showVerify, setShowVerify] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -115,6 +116,16 @@ export default function SignUpPage() {
                     type="email"
                     placeholder="m@example.com"
                     value={form.email}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm">Mobile number (for OTP reset)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="e.g. 9876543210"
+                    value={form.phone}
                     onChange={handleChange}
                   />
                 </div>
