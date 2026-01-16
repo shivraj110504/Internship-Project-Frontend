@@ -198,6 +198,7 @@ export const AuthProvider = ({ children }) => {
     // Client-side guardrails: warn early based on friends (followers) count
     const followerCount = Array.isArray(user?.followers) ? user.followers.length : 0;
     if (followerCount === 0) {
+      toast.dismiss();
       toast.warning(
         "You cannot post on the public page until you have at least 1 friend (follower)."
       );
@@ -207,11 +208,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/post/create", postData);
+      toast.dismiss();
       toast.success("Post created successfully");
       await refreshUser();
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to create post";
+      toast.dismiss();
       toast.error(msg);
       throw err;
     } finally {
@@ -253,11 +256,13 @@ export const AuthProvider = ({ children }) => {
   const followUser = async (followId) => {
     try {
       const res = await axiosInstance.post("/post/follow", { followId });
+      toast.dismiss();
       toast.success(res.data.message);
       await refreshUser();
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to follow user";
+      toast.dismiss();
       toast.error(msg);
       throw err;
     }
