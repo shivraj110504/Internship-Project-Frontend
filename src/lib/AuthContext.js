@@ -114,6 +114,41 @@ export const AuthProvider = ({ children }) => {
   };
   // --- END ADD ---
 
+  const forgotPasswordByPhone = async (phone) => {
+    if (!phone) throw new Error("Phone is required");
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/user/forgot-password-phone", { phone });
+      toast.success(res.data.message || "OTP sent to your mobile number.");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to send OTP";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const transferPoints = async ({ toUserId, amount }) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/user/transfer-points", {
+        fromUserId: user?._id,
+        toUserId,
+        amount,
+      });
+      toast.success(res.data.message || "Transfer successful");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to transfer points";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const GetLoginHistory = async (userId) => {
     try {
       const res = await axiosInstance.get(`/user/login-history/${userId}`);
@@ -255,6 +290,8 @@ export const AuthProvider = ({ children }) => {
         VerifyOTP,
         sendForgotPasswordEmail,
         resetPasswordWithOtp,
+        forgotPasswordByPhone,
+        transferPoints,
         GetLoginHistory,
         Logout,
         createPost,

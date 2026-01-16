@@ -20,7 +20,7 @@ const ForgotPassword = () => {
     const [otp, setOtp] = useState("");
     const [method, setMethod] = useState<"email" | "phone">("email");
     const [generatedPassword, setGeneratedPassword] = useState("");
-    const { sendForgotPasswordEmail, resetPasswordWithOtp, loading } = useAuth();
+    const { sendForgotPasswordEmail, resetPasswordWithOtp, forgotPasswordByPhone, loading } = useAuth();
     const router = useRouter();
 
     const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -136,6 +136,24 @@ const ForgotPassword = () => {
                                                 onChange={(e) => setPhone(e.target.value)}
                                                 required
                                             />
+                                        </div>
+                                        <div>
+                                            <Button
+                                                type="button"
+                                                onClick={async () => {
+                                                    if (!phone) {
+                                                        toast.error("Enter phone number");
+                                                        return;
+                                                    }
+                                                    try {
+                                                        await forgotPasswordByPhone(phone);
+                                                    } catch (e) {}
+                                                }}
+                                                className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300"
+                                                disabled={loading}
+                                            >
+                                                {loading ? "Sending..." : "Send OTP"}
+                                            </Button>
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="otp">OTP</Label>

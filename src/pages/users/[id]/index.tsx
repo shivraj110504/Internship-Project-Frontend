@@ -41,11 +41,16 @@ const getUserData = (id: string) => {
   return users[id as keyof typeof users] || users["1"];
 };
 const index = () => {
-  const { user } = useAuth();
+  const { user, transferPoints } = useAuth();
   const router = useRouter();
   const { id } = router.query;
   const [users, setusers] = useState<any>(null);
   const [loading, setloading] = useState(true);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferQuery, setTransferQuery] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -59,7 +64,9 @@ const index = () => {
     const fetchuser = async () => {
       try {
         const res = await axiosInstance.get("/user/getalluser");
-        const matcheduser = res.data.data.find((u: any) => u._id === id);
+        const list = res.data.data || [];
+        setAllUsers(list);
+        const matcheduser = list.find((u: any) => u._id === id);
         setusers(matcheduser);
       } catch (error) {
         console.log(error);
@@ -284,6 +291,81 @@ const index = () => {
                       </div>
                     </DialogContent>
                   </Dialog>
+                  <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2 bg-transparent"
+                      >
+                        Transfer Points
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md bg-white text-gray-900">
+                      <DialogHeader>
+                        <DialogTitle>Transfer Points</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 py-2">
+                        <div>
+                          <Label htmlFor="search">Search User</Label>
+                          <Input
+                            id="search"
+                            value={transferQuery}
+                            onChange={(e) => {
+                              setTransferQuery(e.target.value);
+                              setSelectedUser(null);
+                            }}
+                            placeholder="Type a name to search"
+                          />
+                          {transferQuery && (
+                            <div className="max-h-40 overflow-auto border rounded mt-2">
+                              {allUsers
+                                .filter((u: any) => u._id !== user?._id && (u.name || "").toLowerCase().includes(transferQuery.toLowerCase()))
+                                .slice(0, 10)
+                                .map((u: any) => (
+                                  <button
+                                    key={u._id}
+                                    onClick={() => {
+                                      setSelectedUser(u);
+                                      setTransferQuery(u.name);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 hover:bg-gray-100 ${selectedUser?._id === u._id ? "bg-gray-100" : ""}`}
+                                  >
+                                    {u.name} ({u.points || 0} pts)
+                                  </button>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <Label htmlFor="amount">Amount</Label>
+                          <Input
+                            id="amount"
+                            type="number"
+                            min={1}
+                            value={transferAmount}
+                            onChange={(e) => setTransferAmount(e.target.value)}
+                            placeholder="Enter points to transfer"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setTransferOpen(false)}>Cancel</Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            disabled={!selectedUser || !transferAmount}
+                            onClick={async () => {
+                              try {
+                                await transferPoints({ toUserId: selectedUser._id, amount: Number(transferAmount) });
+                                toast.success("Points transferred");
+                                setTransferOpen(false);
+                              } catch (e) {}
+                            }}
+                          >
+                            Transfer
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
             </div>
@@ -301,6 +383,10 @@ const index = () => {
                 <div>
                   <span className="font-bold text-gray-900">{users.following?.length || 0}</span>
                   <span className="text-gray-600 ml-1">following</span>
+                </div>
+                <div>
+                  <span className="font-bold text-gray-900">{users.points || 0}</span>
+                  <span className="text-gray-600 ml-1">points</span>
                 </div>
               </div>
             </div>
