@@ -93,7 +93,9 @@ const Notifications = () => {
                                                 <span className="font-semibold">{notification.sender?.name}</span>
                                                 {notification.type === 'FRIEND_REQUEST'
                                                     ? ' sent you a friend request'
-                                                    : ' accepted your friend request'}
+                                                    : notification.type === 'FRIEND_ACCEPT'
+                                                        ? ' accepted your friend request'
+                                                        : ' rejected your friend request'}
                                             </p>
                                             <p className="text-[10px] text-gray-500 mt-1">
                                                 {new Date(notification.createdAt).toLocaleString()}
@@ -132,6 +134,12 @@ const Notifications = () => {
                                             {notification.type === 'FRIEND_ACCEPT' && (
                                                 <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700 hover:bg-green-100 border-none">
                                                     <UserCheck className="w-3 h-3 mr-1" /> Now Friends
+                                                </Badge>
+                                            )}
+
+                                            {notification.type === 'FRIEND_REJECT' && (
+                                                <Badge variant="outline" className="mt-2 text-red-500 border-red-200">
+                                                    <X className="w-3 h-3 mr-1" /> Rejected
                                                 </Badge>
                                             )}
                                         </div>
