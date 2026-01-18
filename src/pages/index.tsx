@@ -122,6 +122,16 @@ export default function Home() {
       return;
     }
 
+    // Logic for client side limit check (optional but good for UX)
+    // 1 friend = 1, 2-10 = 2, >10 = Infinity
+    let limit = 0;
+    if (friendsCount === 1) limit = 1;
+    else if (friendsCount >= 2 && friendsCount <= 10) limit = 2;
+    else if (friendsCount > 10) limit = Infinity;
+
+    // We can't easily check today's posts count on client, so we rely on backend for exact count
+    // but we can at least block 0 friends.
+
     try {
       await createPost(newPost);
       setIsPostDialogOpen(false);
@@ -208,16 +218,16 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {/* Reputation Card */}
             <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
-              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Reputation</h3>
+              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Points</h3>
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-medium text-[#232629]">1</span>
+                <span className="text-3xl font-medium text-[#232629]">{user?.points || 0}</span>
                 <div className="flex-1 h-2 bg-gray-100 rounded-full relative overflow-hidden">
                   <div className="absolute inset-y-0 left-0 w-1/3 bg-blue-400 opacity-20" />
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 border-b border-dotted border-blue-400" />
                 </div>
               </div>
               <p className="text-xs text-[#6A737C]">
-                Earn reputation by <span className="text-blue-600 cursor-pointer">Asking</span>, <span className="text-blue-600 cursor-pointer">Answering</span> & <span className="text-blue-600 cursor-pointer">Editing</span>.
+                Earn points by <span className="text-blue-600 cursor-pointer">Answering</span> questions and receiving upvotes.
               </p>
             </div>
 
@@ -304,9 +314,11 @@ export default function Home() {
                       <p className="text-xs text-blue-700">
                         {user?.friends?.length === 0
                           ? "You need at least 1 confirmed friend to post in the Public Space."
-                          : user?.friends?.length > 10
-                            ? "You have more than 10 friends! You can post unlimited times."
-                            : `With ${user?.friends?.length} friend${user?.friends?.length > 1 ? 's' : ''}, you can post ${user?.friends?.length} time${user?.friends?.length > 1 ? 's' : ''} a day.`}
+                          : user?.friends?.length === 1
+                            ? "With 1 friend, you can post 1 time a day."
+                            : user?.friends?.length <= 10
+                              ? `With ${user?.friends?.length} friends, you can post 2 times a day.`
+                              : "You have more than 10 friends! You can post unlimited times."}
                       </p>
                     </div>
                   </div>
@@ -398,14 +410,10 @@ export default function Home() {
 
                   <div className="bg-white border rounded-lg p-4 shadow-sm">
                     <h3 className="text-sm font-bold text-gray-700 mb-4">Your Social Stats</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <p className="text-2xl font-bold text-gray-900">{user?.followers?.length || 0}</p>
-                        <p className="text-[10px] uppercase text-gray-500 font-bold">Followers</p>
-                      </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <p className="text-2xl font-bold text-gray-900">{user?.following?.length || 0}</p>
-                        <p className="text-[10px] uppercase text-gray-500 font-bold">Following</p>
+                        <p className="text-2xl font-bold text-gray-900">{user?.friends?.length || 0}</p>
+                        <p className="text-[10px] uppercase text-gray-500 font-bold">Friends</p>
                       </div>
                     </div>
                   </div>

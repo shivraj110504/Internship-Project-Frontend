@@ -2,6 +2,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Notifications from "./Notifications";
 
 // const User = {
 //   _id: "1",
@@ -74,6 +75,7 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
             </div>
           ) : (
             <>
+              <Notifications />
               <Link
                 href={`/users/${user._id}`}
                 className="flex items-center justify-center bg-orange-600 text-white text-sm font-semibold w-9 h-9 rounded-full"

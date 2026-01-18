@@ -19,7 +19,7 @@ import { Calendar, Edit, Plus, X, Users } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FollowersList from "@/components/FollowersList";
+import FriendsList from "@/components/FriendsList";
 const getUserData = (id: string) => {
   const users = {
     "1": {
@@ -41,7 +41,7 @@ const getUserData = (id: string) => {
   return users[id as keyof typeof users] || users["1"];
 };
 const index = () => {
-  const { user, transferPoints, changePassword } = useAuth();
+  const { user, transferPoints, changePassword, searchUsers } = useAuth();
   const router = useRouter();
   const { id } = router.query;
   const [users, setusers] = useState<any>(null);
@@ -52,7 +52,7 @@ const index = () => {
   const [transferAmount, setTransferAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFriends, setShowFriends] = useState(false);
   const [editForm, setEditForm] = useState({
     name: users?.name || "",
     about: users?.about || "",
@@ -77,7 +77,7 @@ const index = () => {
     };
     fetchuser();
   }, [id]);
-  
+
   // Keep edit form in sync when user data loads/changes
   useEffect(() => {
     if (users) {
@@ -168,10 +168,10 @@ const index = () => {
                   <Button
                     variant="outline"
                     className="flex items-center gap-2 bg-transparent border-gray-300"
-                    onClick={() => setShowFollowers(true)}
+                    onClick={() => setShowFriends(true)}
                   >
                     <Users className="w-4 h-4" />
-                    Followers ({users.followers?.length || 0})
+                    Friends ({users.friends?.length || 0})
                   </Button>
                   <Button
                     variant="outline"
@@ -329,7 +329,7 @@ const index = () => {
                                   await changePassword({ currentPassword: current, newPassword: next });
                                   (document.getElementById("currentPassword") as HTMLInputElement).value = "";
                                   (document.getElementById("newPassword") as HTMLInputElement).value = "";
-                                } catch (e) {}
+                                } catch (e) { }
                               }}
                             >
                               Update Password
@@ -346,7 +346,7 @@ const index = () => {
                           >
                             Cancel
                           </Button>
-                          
+
                           <Button
                             onClick={handleSaveProfile}
                             className="bg-blue-600 hover:bg-blue-700"
@@ -376,16 +376,27 @@ const index = () => {
                           <Input
                             id="search"
                             value={transferQuery}
-                            onChange={(e) => {
-                              setTransferQuery(e.target.value);
+                            onChange={async (e) => {
+                              const val = e.target.value;
+                              setTransferQuery(val);
                               setSelectedUser(null);
+                              if (val.trim().length > 1) {
+                                try {
+                                  const results = await searchUsers(val);
+                                  setAllUsers(results || []);
+                                } catch (err) {
+                                  console.error(err);
+                                }
+                              } else {
+                                setAllUsers([]);
+                              }
                             }}
                             placeholder="Type a name to search"
                           />
-                          {transferQuery && (
+                          {transferQuery && allUsers.length > 0 && (
                             <div className="max-h-40 overflow-auto border rounded mt-2">
                               {allUsers
-                                .filter((u: any) => u._id !== user?._id && (u.name || "").toLowerCase().includes(transferQuery.toLowerCase()))
+                                .filter((u: any) => u._id !== user?._id)
                                 .slice(0, 10)
                                 .map((u: any) => (
                                   <button
@@ -393,6 +404,7 @@ const index = () => {
                                     onClick={() => {
                                       setSelectedUser(u);
                                       setTransferQuery(u.name);
+                                      setAllUsers([]);
                                     }}
                                     className={`w-full text-left px-3 py-2 hover:bg-gray-100 ${selectedUser?._id === u._id ? "bg-gray-100" : ""}`}
                                   >
@@ -423,7 +435,7 @@ const index = () => {
                                 await transferPoints({ toUserId: selectedUser._id, amount: Number(transferAmount) });
                                 toast.success("Points transferred");
                                 setTransferOpen(false);
-                              } catch (e) {}
+                              } catch (e) { }
                             }}
                           >
                             Transfer
@@ -443,12 +455,8 @@ const index = () => {
               </div>
               <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
                 <div>
-                  <span className="font-bold text-gray-900">{users.followers?.length || 0}</span>
-                  <span className="text-gray-600 ml-1">followers</span>
-                </div>
-                <div>
-                  <span className="font-bold text-gray-900">{users.following?.length || 0}</span>
-                  <span className="text-gray-600 ml-1">following</span>
+                  <span className="font-bold text-gray-900">{users.friends?.length || 0}</span>
+                  <span className="text-gray-600 ml-1">friends</span>
                 </div>
                 <div>
                   <span className="font-bold text-gray-900">{users.points || 0}</span>
@@ -520,9 +528,9 @@ const index = () => {
 
         {/* Followers List Dialog */}
         {isOwnProfile && (
-          <FollowersList
-            open={showFollowers}
-            onOpenChange={setShowFollowers}
+          <FriendsList
+            open={showFriends}
+            onOpenChange={setShowFriends}
           />
         )}
       </div>

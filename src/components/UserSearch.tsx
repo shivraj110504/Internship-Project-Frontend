@@ -38,13 +38,13 @@ const UserSearch = () => {
             } else {
                 res = await rejectFriendRequest(userId);
             }
-            
+
             // Refresh search results to get updated friend status
             if (query.trim()) {
                 const data = await searchUsers(query.trim());
                 setResults(data);
             }
-            
+
             await refreshUser();
         } catch (err: any) {
             console.error("Friend action error:", err);
@@ -81,7 +81,7 @@ const UserSearch = () => {
                                 </Avatar>
                                 <div>
                                     <p className="text-sm font-medium text-gray-900">{u.name}</p>
-                                    <p className="text-xs text-gray-500">{u.friendsCount || 0} friends</p>
+                                    <p className="text-xs text-gray-500">{(u.friends || []).length} friends</p>
                                 </div>
                             </div>
                             {currentUser?._id !== u._id && (() => {

@@ -11,28 +11,28 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from '@/lib/AuthContext';
 
-interface FollowersListProps {
+interface FriendsListProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
 
-const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => {
-    const [followers, setFollowers] = useState<any[]>([]);
+const FriendsList: React.FC<FriendsListProps> = ({ open, onOpenChange }) => {
+    const [friends, setFriends] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [removing, setRemoving] = useState<string | null>(null);
-    const { getFollowers, removeFollower } = useAuth();
+    const { getFriends, removeFriend } = useAuth();
 
     useEffect(() => {
         if (open) {
-            fetchFollowers();
+            fetchFriends();
         }
     }, [open]);
 
-    const fetchFollowers = async () => {
+    const fetchFriends = async () => {
         setLoading(true);
         try {
-            const data = await getFollowers();
-            setFollowers(data);
+            const data = await getFriends();
+            setFriends(data);
         } catch (err) {
             console.error(err);
         } finally {
@@ -40,12 +40,12 @@ const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => 
         }
     };
 
-    const handleRemove = async (followerId: string) => {
-        setRemoving(followerId);
+    const handleRemove = async (friendId: string) => {
+        setRemoving(friendId);
         try {
-            await removeFollower(followerId);
+            await removeFriend(friendId);
             // Remove from local state
-            setFollowers(prev => prev.filter(f => f._id !== followerId));
+            setFriends(prev => prev.filter(f => f._id !== friendId));
         } catch (err) {
             console.error(err);
         } finally {
@@ -57,9 +57,9 @@ const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => 
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Your Followers</DialogTitle>
+                    <DialogTitle>Your Friends</DialogTitle>
                     <DialogDescription>
-                        People who follow you. You can remove anyone from your followers list.
+                        People you are connected with. You can remove anyone from your friends list.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -68,28 +68,28 @@ const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => 
                         <div className="flex justify-center items-center py-8">
                             <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
                         </div>
-                    ) : followers.length === 0 ? (
+                    ) : friends.length === 0 ? (
                         <div className="text-center py-12 text-gray-500">
-                            <p className="text-sm">No followers yet</p>
+                            <p className="text-sm">No friends yet</p>
                         </div>
                     ) : (
-                        followers.map((follower) => (
+                        friends.map((friend) => (
                             <div
-                                key={follower._id}
+                                key={friend._id}
                                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
                                     <Avatar className="h-10 w-10">
                                         <AvatarFallback className="bg-blue-100 text-blue-600">
-                                            {follower.name?.charAt(0).toUpperCase() || 'U'}
+                                            {friend.name?.charAt(0).toUpperCase() || 'U'}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
                                         <p className="font-medium text-sm text-gray-900">
-                                            {follower.name}
+                                            {friend.name}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            {follower.email}
+                                            {friend.email}
                                         </p>
                                     </div>
                                 </div>
@@ -97,10 +97,10 @@ const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => 
                                     size="sm"
                                     variant="destructive"
                                     className="h-8"
-                                    onClick={() => handleRemove(follower._id)}
-                                    disabled={removing === follower._id}
+                                    onClick={() => handleRemove(friend._id)}
+                                    disabled={removing === friend._id}
                                 >
-                                    {removing === follower._id ? (
+                                    {removing === friend._id ? (
                                         <Loader2 className="w-3 h-3 animate-spin" />
                                     ) : (
                                         <>
@@ -118,4 +118,4 @@ const FollowersList: React.FC<FollowersListProps> = ({ open, onOpenChange }) => 
     );
 };
 
-export default FollowersList;
+export default FriendsList;

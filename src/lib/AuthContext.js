@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   const Signup = async ({ name, email, password, phone }) => {
     setLoading(true);
@@ -112,7 +113,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
   const resetPasswordWithOtp = async ({ phone, otp }) => {
     if (!phone || !otp) throw new Error("Phone and OTP are required");
     setLoading(true);
@@ -155,6 +156,7 @@ export const AuthProvider = ({ children }) => {
         amount,
       });
       toast.success(res.data.message || "Transfer successful");
+      await refreshUser();
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to transfer points";
@@ -233,11 +235,11 @@ export const AuthProvider = ({ children }) => {
 
   const createPost = async (postData) => {
     // Client-side guardrails: warn early based on friends (followers) count
-    const followerCount = Array.isArray(user?.followers) ? user.followers.length : 0;
-    if (followerCount === 0) {
+    const friendsCount = Array.isArray(user?.friends) ? user.friends.length : 0;
+    if (friendsCount === 0) {
       toast.dismiss();
       toast.warning(
-        "You cannot post on the public page until you have at least 1 friend (follower)."
+        "You cannot post on the public page until you have at least 1 friend."
       );
       return Promise.reject(new Error("No friends to allow posting"));
     }
@@ -293,7 +295,7 @@ export const AuthProvider = ({ children }) => {
   // Send friend request
   const sendFriendRequest = async (friendId) => {
     toast.dismiss();
-    
+
     if (!user?._id) {
       if (typeof window !== "undefined") {
         try {
@@ -318,20 +320,20 @@ export const AuthProvider = ({ children }) => {
         }
       }
     }
-    
+
     try {
       const res = await axiosInstance.post("/post/friend/request", { friendId });
-      
+
       toast.success(res.data.message || "Friend request sent successfully", {
         position: "top-right",
         autoClose: 2000,
       });
-      
+
       await refreshUser();
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to send friend request. Please try again.";
-      
+
       if (err.response?.status === 401) {
         toast.error("Session expired. Please log in again", {
           position: "top-right",
@@ -343,7 +345,7 @@ export const AuthProvider = ({ children }) => {
           autoClose: 3000,
         });
       }
-      
+
       throw err;
     }
   };
@@ -351,15 +353,15 @@ export const AuthProvider = ({ children }) => {
   // Confirm friend request
   const confirmFriendRequest = async (friendId) => {
     toast.dismiss();
-    
+
     try {
       const res = await axiosInstance.post("/post/friend/confirm", { friendId });
-      
+
       toast.success(res.data.message || "Friend request confirmed!", {
         position: "top-right",
         autoClose: 2000,
       });
-      
+
       await refreshUser();
       return res.data;
     } catch (err) {
@@ -375,15 +377,15 @@ export const AuthProvider = ({ children }) => {
   // Reject friend request
   const rejectFriendRequest = async (friendId) => {
     toast.dismiss();
-    
+
     try {
       const res = await axiosInstance.post("/post/friend/reject", { friendId });
-      
+
       toast.success(res.data.message || "Friend request rejected", {
         position: "top-right",
         autoClose: 2000,
       });
-      
+
       await refreshUser();
       return res.data;
     } catch (err) {
@@ -442,16 +444,36 @@ export const AuthProvider = ({ children }) => {
   // Backward compatibility
   const getFollowers = getFriends;
 
-  const removeFollower = async (followerId) => {
+  const removeFriend = async (friendId) => {
     try {
-      const res = await axiosInstance.delete(`/post/follower/${followerId}`);
-      toast.success(res.data.message || "Follower removed");
+      const res = await axiosInstance.delete(`/post/friend/${friendId}`);
+      toast.success(res.data.message || "Friend removed");
       await refreshUser();
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to remove follower";
+      const msg = err.response?.data?.message || "Failed to remove friend";
       toast.error(msg);
       throw err;
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await axiosInstance.get("/post/notifications");
+      setNotifications(res.data);
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+      return [];
+    }
+  };
+
+  const markNotificationsRead = async () => {
+    try {
+      await axiosInstance.patch("/post/notifications/read");
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("Error marking notifications as read:", err);
     }
   };
 
@@ -480,8 +502,12 @@ export const AuthProvider = ({ children }) => {
         rejectFriendRequest,
         getFriends,
         getFriendRequests,
-        getFollowers,
-        removeFollower,
+        removeFriend,
+        removeFollower: removeFriend,
+        getFollowers: getFriends,
+        fetchNotifications,
+        markNotificationsRead,
+        notifications,
         searchUsers,
         refreshUser,
         loading,
