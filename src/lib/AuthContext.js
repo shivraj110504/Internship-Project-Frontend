@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await axiosInstance.post("/user/signup", { name, email, password, phone });
-      const { data, token } = res.data;
-      localStorage.setItem("user", JSON.stringify({ ...data, token }));
+      const { data } = res.data;
+      localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       toast.success("Signup Successful");
     } catch (err) {
@@ -63,8 +63,8 @@ export const AuthProvider = ({ children }) => {
         return res.data; // Return to UI to show OTP input
       }
 
-      const { data, token } = res.data;
-      localStorage.setItem("user", JSON.stringify({ ...data, token }));
+      const { data } = res.data;
+      localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       toast.success("Login Successful");
       return res.data;
@@ -82,8 +82,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/user/verify-otp", { userId, otp });
-      const { data, token } = res.data;
-      localStorage.setItem("user", JSON.stringify({ ...data, token }));
+      const { data } = res.data;
+      localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       toast.success("OTP Verified! Login Successful");
       return res.data;
@@ -200,34 +200,21 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
-      const currentToken = user?.token;
       const res = await axiosInstance.get(`/user/get-user/${user._id}`);
-      // Always preserve the token when refreshing
-      const updatedUser = { ...res.data, token: currentToken || res.data.token };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setUser(res.data);
       return res.data;
     } catch (err) {
       console.error("Error refreshing user:", err);
-      // If refresh fails due to auth, try to get token from localStorage
-      if (typeof window !== "undefined") {
-        try {
-          const stored = localStorage.getItem("user");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (parsed.token && parsed._id === user._id) {
-              // Token might still be valid, keep it
-              return parsed;
-            }
-          }
-        } catch (parseErr) {
-          console.error("Error parsing stored user:", parseErr);
-        }
-      }
     }
   };
 
-  const Logout = () => {
+  const Logout = async () => {
+    try {
+      await axiosInstance.post("/user/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
     setUser(null);
     localStorage.removeItem("user");
     toast.info("Logged out");
@@ -480,6 +467,23 @@ export const AuthProvider = ({ children }) => {
         window.removeEventListener('focus', handleFocus);
       };
     }
+  }, [user?._id]);
+
+  // Realtime Polling for Notifications
+  useEffect(() => {
+    let interval;
+    if (user?._id) {
+      // Fetch immediately on login
+      fetchNotifications();
+
+      // Then poll every 10 seconds
+      interval = setInterval(() => {
+        fetchNotifications();
+      }, 10000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [user?._id]);
 
   const fetchNotifications = async () => {
