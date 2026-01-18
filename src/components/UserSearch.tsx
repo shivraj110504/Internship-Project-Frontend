@@ -86,9 +86,9 @@ const UserSearch = () => {
                             </div>
                             {currentUser?._id !== u._id && (() => {
                                 const friendStatus = u.friendStatus || "none";
-                                const isFriend = (friendStatus === "friends") || (currentUser?.friends || []).includes(u._id);
-                                const requestSent = (friendStatus === "request_sent") || (currentUser?.sentFriendRequests || []).includes(u._id);
-                                const requestReceived = (friendStatus === "request_received") || (currentUser?.receivedFriendRequests || []).includes(u._id);
+                                const isFriend = (friendStatus === "friends");
+                                const requestSent = (friendStatus === "request_sent");
+                                const requestReceived = (friendStatus === "request_received");
 
                                 if (isFriend) {
                                     return (

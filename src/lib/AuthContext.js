@@ -457,13 +457,50 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Background polling for notifications and user sync
+  useEffect(() => {
+    if (user) {
+      // initial fetch
+      fetchNotifications();
+
+      // poll every 15 seconds for notifications
+      const intervalId = setInterval(() => {
+        fetchNotifications();
+      }, 15000);
+
+      // Also refresh on window focus
+      const handleFocus = () => {
+        fetchNotifications();
+        refreshUser();
+      };
+      window.addEventListener('focus', handleFocus);
+
+      return () => {
+        clearInterval(intervalId);
+        window.removeEventListener('focus', handleFocus);
+      };
+    }
+  }, [user?._id]);
+
   const fetchNotifications = async () => {
+    if (!user?._id) return [];
     try {
-      const res = await axiosInstance.get("/post/notifications");
-      setNotifications(res.data);
-      return res.data;
+      const { data } = await axiosInstance.get('/post/notifications');
+
+      // If we see a new FRIEND_ACCEPT or FRIEND_REJECT, refresh user data to keep UI in sync
+      const hasNewFriendAlerts = data.some(n => !n.read && (n.type === 'FRIEND_ACCEPT' || n.type === 'FRIEND_REJECT'));
+      if (hasNewFriendAlerts) {
+        refreshUser();
+      }
+
+      setNotifications(data);
+      return data;
     } catch (err) {
       console.error("Error fetching notifications:", err);
+      // If we get a 401 here, it's likely the session really is expired
+      if (err.response?.status === 401) {
+        console.warn("Unauthorized in fetchNotifications. Token might be stale.");
+      }
       return [];
     }
   };
