@@ -487,8 +487,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axiosInstance.get('/post/notifications');
 
-      // If we see a new FRIEND_ACCEPT or FRIEND_REJECT, refresh user data to keep UI in sync
-      const hasNewFriendAlerts = data.some(n => !n.read && (n.type === 'FRIEND_ACCEPT' || n.type === 'FRIEND_REJECT'));
+      // If we see a new FRIEND_REQUEST, FRIEND_ACCEPT or FRIEND_REJECT, refresh user data
+      const hasNewFriendAlerts = data.some(n => !n.read && (n.type === 'FRIEND_REQUEST' || n.type === 'FRIEND_ACCEPT' || n.type === 'FRIEND_REJECT'));
       if (hasNewFriendAlerts) {
         refreshUser();
       }
