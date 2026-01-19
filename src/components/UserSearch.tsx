@@ -141,8 +141,11 @@ const UserSearch = () => {
                             })()}
                         </div>
                     ))
-                ) : query && !searching ? (
-                    <p className="text-center text-xs text-gray-500 py-2">No users found for "{query}"</p>
+                ) : (query && !searching) ? (
+                    <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                        <p className="text-sm text-gray-500">No users found for "{query}"</p>
+                        <p className="text-[10px] text-gray-400 mt-1">Try searching by full name or email</p>
+                    </div>
                 ) : null}
             </div>
         </div>

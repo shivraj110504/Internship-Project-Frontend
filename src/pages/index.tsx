@@ -419,11 +419,20 @@ export default function Home() {
                   <UserSearch />
 
                   <div className="bg-white border rounded-lg p-4 shadow-sm">
-                    <h3 className="text-sm font-bold text-gray-700 mb-4">Your Social Stats</h3>
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-bold text-gray-700">Your Social Stats</h3>
+                      <Link href={`/users/${user?._id}`} className="text-[10px] text-blue-600 hover:underline">
+                        View Profile
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <p className="text-2xl font-bold text-gray-900">{user?.friends?.length || 0}</p>
+                        <p className="text-xl font-bold text-gray-900">{user?.friends?.length || 0}</p>
                         <p className="text-[10px] uppercase text-gray-500 font-bold">Friends</p>
+                      </div>
+                      <div className="text-center p-3 bg-orange-50 rounded-lg">
+                        <p className="text-[10px] font-bold text-orange-600 truncate">@{user?.handle || 'none'}</p>
+                        <p className="text-[10px] uppercase text-gray-500 font-bold mt-1">Handle</p>
                       </div>
                     </div>
                   </div>

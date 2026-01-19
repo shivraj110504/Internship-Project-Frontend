@@ -58,6 +58,7 @@ const index = () => {
     about: users?.about || "",
     tags: users?.tags || [],
     phone: users?.phone || "",
+    handle: users?.handle || "",
   });
   const [newTag, setNewTag] = useState("");
 
@@ -86,6 +87,7 @@ const index = () => {
         about: users.about || "",
         tags: users.tags || [],
         phone: users.phone || "",
+        handle: users.handle || "",
       });
     }
   }, [users]);
@@ -112,6 +114,7 @@ const index = () => {
           about: editForm.about,
           tags: editForm.tags,
           phone: editForm.phone,
+          handle: editForm.handle,
         };
 
         setusers(updatedUser);
@@ -229,132 +232,144 @@ const index = () => {
                                     phone: e.target.value,
                                   })
                                 }
-                                placeholder="e.g. 9876543210"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="handle">Public Handle (@)</Label>
+                              <Input
+                                id="handle"
+                                value={editForm.handle}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    handle: e.target.value.replace(/^@/, ""),
+                                  })
+                                }
+                                placeholder="e.g. shivraj"
                               />
                             </div>
                           </div>
-                        </div>
-                        {/* About Section */}
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">About</h3>
-                          <div>
-                            <Label htmlFor="about">About Me</Label>
-                            <Textarea
-                              id="about"
-                              value={editForm.about}
-                              onChange={(e) =>
-                                setEditForm({
-                                  ...editForm,
-                                  about: e.target.value,
-                                })
-                              }
-                              placeholder="Tell us about yourself, your experience, and interests..."
-                              className="min-h-32"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Tags/Skills Section */}
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">
-                            Skills & Technologies
-                          </h3>
-
-                          <div className="space-y-3">
-                            <div className="flex gap-2">
-                              <Input
-                                value={newTag}
-                                onChange={(e) => setNewTag(e.target.value)}
-                                placeholder="Add a skill or technology"
-                                onKeyPress={(e) =>
-                                  e.key === "Enter" && handleAddTag()
+                          {/* About Section */}
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">About</h3>
+                            <div>
+                              <Label htmlFor="about">About Me</Label>
+                              <Textarea
+                                id="about"
+                                value={editForm.about}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    about: e.target.value,
+                                  })
                                 }
+                                placeholder="Tell us about yourself, your experience, and interests..."
+                                className="min-h-32"
                               />
+                            </div>
+                          </div>
+
+                          {/* Tags/Skills Section */}
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">
+                              Skills & Technologies
+                            </h3>
+
+                            <div className="space-y-3">
+                              <div className="flex gap-2">
+                                <Input
+                                  value={newTag}
+                                  onChange={(e) => setNewTag(e.target.value)}
+                                  placeholder="Add a skill or technology"
+                                  onKeyPress={(e) =>
+                                    e.key === "Enter" && handleAddTag()
+                                  }
+                                />
+                                <Button
+                                  onClick={handleAddTag}
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-orange-600 text-white"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                {editForm.tags.map((tag: any) => {
+                                  return (
+                                    <Badge
+                                      key={tag}
+                                      variant="secondary"
+                                      className="bg-orange-100 text-orange-800 flex items-center gap-1"
+                                    >
+                                      {tag}
+                                      <button
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className="ml-1 hover:text-red-600"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </Badge>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Change Password */}
+                          <div className="space-y-4 border-t pt-4">
+                            <h3 className="text-lg font-semibold">Change Password</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="sm:col-span-1">
+                                <Label htmlFor="currentPassword">Current Password</Label>
+                                <Input id="currentPassword" type="password" />
+                              </div>
+                              <div className="sm:col-span-1">
+                                <Label htmlFor="newPassword">New Password</Label>
+                                <Input id="newPassword" type="password" />
+                              </div>
+                            </div>
+                            <div className="flex justify-end">
                               <Button
-                                onClick={handleAddTag}
-                                variant="outline"
-                                size="sm"
-                                className="bg-orange-600 text-white"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                onClick={async () => {
+                                  const current = (document.getElementById("currentPassword") as HTMLInputElement)?.value;
+                                  const next = (document.getElementById("newPassword") as HTMLInputElement)?.value;
+                                  if (!current || !next) {
+                                    toast.error("Enter both current and new password");
+                                    return;
+                                  }
+                                  try {
+                                    await changePassword({ currentPassword: current, newPassword: next });
+                                    (document.getElementById("currentPassword") as HTMLInputElement).value = "";
+                                    (document.getElementById("newPassword") as HTMLInputElement).value = "";
+                                  } catch (e) { }
+                                }}
                               >
-                                <Plus className="w-4 h-4" />
+                                Update Password
                               </Button>
                             </div>
-
-                            <div className="flex flex-wrap gap-2">
-                              {editForm.tags.map((tag: any) => {
-                                return (
-                                  <Badge
-                                    key={tag}
-                                    variant="secondary"
-                                    className="bg-orange-100 text-orange-800 flex items-center gap-1"
-                                  >
-                                    {tag}
-                                    <button
-                                      onClick={() => handleRemoveTag(tag)}
-                                      className="ml-1 hover:text-red-600"
-                                    >
-                                      <X className="w-3 h-3" />
-                                    </button>
-                                  </Badge>
-                                );
-                              })}
-                            </div>
                           </div>
-                        </div>
 
-                        {/* Change Password */}
-                        <div className="space-y-4 border-t pt-4">
-                          <h3 className="text-lg font-semibold">Change Password</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="sm:col-span-1">
-                              <Label htmlFor="currentPassword">Current Password</Label>
-                              <Input id="currentPassword" type="password" />
-                            </div>
-                            <div className="sm:col-span-1">
-                              <Label htmlFor="newPassword">New Password</Label>
-                              <Input id="newPassword" type="password" />
-                            </div>
-                          </div>
-                          <div className="flex justify-end">
+                          {/* Action Buttons */}
+                          <div className="flex justify-end gap-3 pt-4 border-t">
                             <Button
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
-                              onClick={async () => {
-                                const current = (document.getElementById("currentPassword") as HTMLInputElement)?.value;
-                                const next = (document.getElementById("newPassword") as HTMLInputElement)?.value;
-                                if (!current || !next) {
-                                  toast.error("Enter both current and new password");
-                                  return;
-                                }
-                                try {
-                                  await changePassword({ currentPassword: current, newPassword: next });
-                                  (document.getElementById("currentPassword") as HTMLInputElement).value = "";
-                                  (document.getElementById("newPassword") as HTMLInputElement).value = "";
-                                } catch (e) { }
-                              }}
+                              variant="outline"
+                              onClick={() => setIsEditing(false)}
+                              className="bg-white text-gray-800 hover:text-gray-900"
                             >
-                              Update Password
+                              Cancel
+                            </Button>
+
+                            <Button
+                              onClick={handleSaveProfile}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              Save Changes
                             </Button>
                           </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex justify-end gap-3 pt-4 border-t">
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsEditing(false)}
-                            className="bg-white text-gray-800 hover:text-gray-900"
-                          >
-                            Cancel
-                          </Button>
-
-                          <Button
-                            onClick={handleSaveProfile}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            Save Changes
-                          </Button>
-                        </div>
-                      </div>
                     </DialogContent>
                   </Dialog>
                   <Dialog open={transferOpen} onOpenChange={setTransferOpen}>

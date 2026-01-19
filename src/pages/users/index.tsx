@@ -48,14 +48,14 @@ const index = () => {
         const results = await searchUsers(query);
         setusers(results);
       } else {
-        // When not searching, show only current user
+        // When not searching, show all other users
         const res = await axiosInstance.get("/user/getalluser");
         const allUsers = res.data.data || res.data;
         if (currentUser) {
-          const onlyMe = allUsers.filter((u: any) => u._id === currentUser._id);
-          setusers(onlyMe);
+          const others = allUsers.filter((u: any) => u._id !== currentUser._id);
+          setusers(others);
         } else {
-          setusers([]);
+          setusers(allUsers);
         }
       }
     } catch (error) {
@@ -121,7 +121,7 @@ const index = () => {
                         {user.name}
                       </h3>
                       <p className="text-sm text-gray-600 truncate">
-                        @{user.name?.replace(/\s/g, "").toLowerCase()}
+                        @{user.handle || user.name?.replace(/\s/g, "").toLowerCase()}
                       </p>
                     </div>
                   </div>
