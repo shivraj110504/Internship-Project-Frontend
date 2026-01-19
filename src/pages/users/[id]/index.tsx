@@ -370,6 +370,7 @@ const index = () => {
                             </Button>
                           </div>
                         </div>
+                      </div>
                     </DialogContent>
                   </Dialog>
                   <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
