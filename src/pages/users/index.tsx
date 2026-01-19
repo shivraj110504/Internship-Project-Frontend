@@ -48,14 +48,11 @@ const index = () => {
         const results = await searchUsers(query);
         setusers(results);
       } else {
-        // When not searching, show all other users
-        const res = await axiosInstance.get("/user/getalluser");
-        const allUsers = res.data.data || res.data;
+        // When not searching, show only the current logged-in user
         if (currentUser) {
-          const others = allUsers.filter((u: any) => u._id !== currentUser._id);
-          setusers(others);
+          setusers([currentUser]);
         } else {
-          setusers(allUsers);
+          setusers([]);
         }
       }
     } catch (error) {
@@ -72,7 +69,7 @@ const index = () => {
     }, searchQuery ? 500 : 0);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  }, [searchQuery, currentUser?._id]);
 
   if (loading && !users) {
     return (
@@ -103,7 +100,9 @@ const index = () => {
 
         {!users || users.length === 0 ? (
           <div className="text-center text-gray-500 mt-20 py-20 bg-gray-50 rounded-xl border-2 border-dashed">
-            No users found for "{searchQuery}"
+            {searchQuery.trim()
+              ? `No users found for "${searchQuery}"`
+              : "No users found. Please try searching for someone!"}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
