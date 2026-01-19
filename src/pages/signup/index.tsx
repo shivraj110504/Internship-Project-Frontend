@@ -21,12 +21,13 @@ interface SignupForm {
   email: string;
   password: string;
   phone?: string;
+  handle?: string;
 }
 
 export default function SignUpPage() {
   const router = useRouter();
   const { Signup, loading } = useAuth();
-  const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "", phone: "" });
+  const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "", phone: "", handle: "" });
   const [showVerify, setShowVerify] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -108,6 +109,16 @@ export default function SignUpPage() {
                     value={form.name}
                     onChange={handleChange}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="handle" className="text-sm">Public handle (@username)</Label>
+                  <Input
+                    id="handle"
+                    placeholder="e.g. shivraj"
+                    value={form.handle}
+                    onChange={handleChange}
+                  />
+                  <p className="text-[10px] text-gray-500">This will be your unique identifier.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm">Email</Label>

@@ -18,11 +18,11 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  const Signup = async ({ name, email, password, phone }) => {
+  const Signup = async ({ name, email, password, phone, handle }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.post("/user/signup", { name, email, password, phone });
+      const res = await axiosInstance.post("/user/signup", { name, email, password, phone, handle });
       const { data } = res.data;
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
@@ -205,7 +205,9 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
       return res.data;
     } catch (err) {
-      console.error("Error refreshing user:", err);
+      if (err.response?.status !== 401) {
+        console.error("Error refreshing user:", err);
+      }
     }
   };
 
@@ -275,6 +277,17 @@ export const AuthProvider = ({ children }) => {
       return res.data;
     } catch (err) {
       toast.error("Failed to add comment");
+      throw err;
+    }
+  };
+
+  const sharePost = async (postId) => {
+    try {
+      const res = await axiosInstance.patch(`/post/share/${postId}`);
+      toast.success("Shared successfully");
+      return res.data;
+    } catch (err) {
+      toast.error("Failed to share post");
       throw err;
     }
   };
@@ -500,10 +513,8 @@ export const AuthProvider = ({ children }) => {
       setNotifications(data);
       return data;
     } catch (err) {
-      console.error("Error fetching notifications:", err);
-      // If we get a 401 here, it's likely the session really is expired
-      if (err.response?.status === 401) {
-        console.warn("Unauthorized in fetchNotifications. Token might be stale.");
+      if (err.response?.status !== 401) {
+        console.error("Error fetching notifications:", err);
       }
       return [];
     }
@@ -536,6 +547,7 @@ export const AuthProvider = ({ children }) => {
         fetchPosts,
         likePost,
         commentPost,
+        sharePost,
         followUser,
         addFriend,
         sendFriendRequest,

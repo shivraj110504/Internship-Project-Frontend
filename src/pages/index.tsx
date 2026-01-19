@@ -86,7 +86,7 @@ export default function Home() {
   const [isPostDialogOpen, setIsPostDialogOpen] = useState(false);
   const [newPost, setNewPost] = useState({ caption: "", mediaUrl: "", mediaType: "image" });
 
-  const { fetchPosts, createPost, likePost, commentPost, user } = useAuth();
+  const { fetchPosts, createPost, likePost, commentPost, sharePost, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -157,6 +157,15 @@ export default function Home() {
   const handleComment = async (postId: string, text: string) => {
     try {
       const updatedPost = await commentPost(postId, text);
+      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleShare = async (postId: string) => {
+    try {
+      const updatedPost = await sharePost(postId);
       setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
     } catch (err) {
       console.error(err);
@@ -389,6 +398,7 @@ export default function Home() {
                         post={post}
                         onLike={handleLike}
                         onComment={handleComment}
+                        onShare={handleShare}
                       />
                     ))
                   ) : (

@@ -81,7 +81,10 @@ const UserSearch = () => {
                                 </Avatar>
                                 <div>
                                     <p className="text-sm font-medium text-gray-900">{u.name}</p>
-                                    <p className="text-xs text-gray-500">{(u.friends || []).length} friends</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-[10px] text-orange-600 font-bold">@{u.handle || 'unknown'}</p>
+                                        <p className="text-xs text-gray-500">• {(u.friends || []).length} friends</p>
+                                    </div>
                                 </div>
                             </div>
                             {currentUser?._id !== u._id && (() => {

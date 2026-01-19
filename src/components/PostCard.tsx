@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Heart, MessageCircle, Share2, Send } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 
-const PostCard = ({ post, onLike, onComment }: { post: any, onLike: any, onComment: any }) => {
+const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any, onComment: any, onShare: any }) => {
     const { user } = useAuth();
     const [comment, setComment] = useState("");
     const isLiked = post.likes.includes(user?._id);
@@ -68,7 +68,10 @@ const PostCard = ({ post, onLike, onComment }: { post: any, onLike: any, onComme
                         <MessageCircle size={20} />
                         <span className="text-xs font-medium">{post.comments.length}</span>
                     </div>
-                    <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
+                    <button
+                        onClick={() => onShare(post._id)}
+                        className="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition-colors"
+                    >
                         <Share2 size={20} />
                         <span className="text-xs font-medium">{post.shares || 0}</span>
                     </button>
