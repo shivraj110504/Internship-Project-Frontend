@@ -64,14 +64,14 @@ const index = () => {
 
   useEffect(() => {
     const fetchuser = async () => {
+      if (!id) return;
+      setloading(true);
       try {
-        const res = await axiosInstance.get("/user/getalluser");
-        const list = res.data.data || [];
-        setAllUsers(list);
-        const matcheduser = list.find((u: any) => u._id === id);
-        setusers(matcheduser);
+        const res = await axiosInstance.get(`/user/get-user/${id}`);
+        setusers(res.data);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching user:", error);
+        setusers(null);
       } finally {
         setloading(false);
       }
@@ -150,11 +150,14 @@ const index = () => {
         {/* User Header */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 mb-8">
           <Avatar className="w-24 h-24 lg:w-32 lg:h-32">
-            <AvatarFallback className="text-2xl lg:text-3xl">
+            <AvatarFallback className="text-2xl lg:text-3xl bg-blue-100 text-blue-600">
               {users.name
-                .split(" ")
-                .map((n: any) => n[0])
-                .join("")}
+                ? users.name
+                  .split(" ")
+                  .map((n: any) => n[0])
+                  .join("")
+                  .toUpperCase()
+                : "U"}
             </AvatarFallback>
           </Avatar>
 

@@ -411,7 +411,10 @@ export const AuthProvider = ({ children }) => {
       if (res.data && Array.isArray(res.data.data)) return res.data.data;
       return [];
     } catch (err) {
-      console.error("Error searching users:", err);
+      console.error("Error searching users:", err.response?.data || err.message);
+      if (err.response?.status === 403) {
+        toast.error(err.response?.data?.message || "Access denied by security rules.");
+      }
       return [];
     }
   };
