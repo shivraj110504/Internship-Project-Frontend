@@ -403,7 +403,7 @@ export const AuthProvider = ({ children }) => {
 
   const searchUsers = async (query) => {
     try {
-      const res = await axiosInstance.get(`/post/search?query=${query}`);
+      const res = await axiosInstance.get("/post/search", { params: { query } });
       console.log("Search result raw:", res.data);
       // Normalize response: could be array, could be {data: []}, could be {value: []}
       if (Array.isArray(res.data)) return res.data;
