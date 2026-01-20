@@ -1,3 +1,5 @@
+// Training/stackoverflow/stack/src/pages/users/[id]/index.tsx
+
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

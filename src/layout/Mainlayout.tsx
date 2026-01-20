@@ -1,3 +1,5 @@
+// Training/stackoverflow/stack/src/layout/Mainlayout.tsx
+
 import Navbar from "@/components/Navbar";
 import RightSideBar from "@/components/RightSideBar";
 import Sidebar from "@/components/Sidebar";
