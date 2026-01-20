@@ -1,3 +1,5 @@
+// Training/stackoverflow/stack/src/pages/subscription/history.tsx
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/router";

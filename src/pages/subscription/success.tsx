@@ -1,21 +1,20 @@
+// Training/stackoverflow/stack/src/pages/subscription/success.tsx
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Mainlayout from "@/layout/Mainlayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Mail } from "lucide-react";
-import { useAuth } from "@/lib/AuthContext";
 
 export default function SubscriptionSuccess() {
   const router = useRouter();
-  const { sessionId } = router.query;
-  const { refreshUser } = useAuth();
+  const { session_id } = router.query;
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    if (sessionId) {
-      refreshUser();
-      
+    if (session_id) {
+      // Start countdown to redirect
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -29,7 +28,7 @@ export default function SubscriptionSuccess() {
 
       return () => clearInterval(timer);
     }
-  }, [sessionId]);
+  }, [session_id, router]);
 
   return (
     <Mainlayout>
@@ -45,7 +44,7 @@ export default function SubscriptionSuccess() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-lg">
               Your subscription has been activated successfully.
             </p>
 
@@ -60,10 +59,10 @@ export default function SubscriptionSuccess() {
             </div>
 
             <div className="text-sm text-gray-500">
-              Redirecting to home page in {countdown} seconds...
+              Redirecting to home page in <span className="font-bold text-gray-700">{countdown}</span> seconds...
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-4 justify-center flex-wrap">
               <Button onClick={() => router.push("/")}>
                 Go to Home
               </Button>
