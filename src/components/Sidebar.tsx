@@ -3,6 +3,7 @@ import {
   Bookmark,
   Bot,
   Building,
+  Crown,
   FileText,
   Home,
   MessageSquare,
@@ -13,12 +14,32 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
+import { useAuth } from "@/lib/AuthContext";
+import axiosInstance from "@/lib/axiosinstance";
 
 const Sidebar = ({ isopen, setsidebaropen }: any) => {
   const router = useRouter();
   const path = router.pathname;
+  const { user } = useAuth();
+  const [subscription, setSubscription] = useState<any>(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchSubscription();
+    }
+  }, [user]);
+
+  const fetchSubscription = async () => {
+    try {
+      const { data } = await axiosInstance.get("/subscription/current");
+      setSubscription(data);
+    } catch (error) {
+      // Silently fail - subscription feature might not be available yet
+      console.log("Subscription not available yet");
+    }
+  };
 
   const getLinkClasses = (href: string) => {
     const isActive = path === href;
@@ -28,6 +49,19 @@ const Sidebar = ({ isopen, setsidebaropen }: any) => {
         ? "text-[#0C0D0E] bg-[#F1F2F3] border-r-4 border-orange-500 font-bold"
         : "text-[#525960] hover:bg-[#F1F2F3]"
     );
+  };
+
+  const getPlanBadgeColor = (plan: string) => {
+    switch (plan) {
+      case "GOLD":
+        return "bg-yellow-500 text-white";
+      case "SILVER":
+        return "bg-gray-400 text-white";
+      case "BRONZE":
+        return "bg-orange-500 text-white";
+      default:
+        return "bg-blue-100 text-blue-700";
+    }
   };
 
   return (
@@ -86,6 +120,29 @@ const Sidebar = ({ isopen, setsidebaropen }: any) => {
                 Saves
               </Link>
             </li>
+
+            {/* SUBSCRIPTION LINK */}
+            {user && (
+              <li>
+                <Link href="/subscription" className={getLinkClasses("/subscription")}>
+                  <Crown className="w-4 h-4 mr-2" />
+                  Subscription
+                  {subscription && subscription.plan !== "FREE" && (
+                    <Badge className={cn(
+                      "ml-auto text-[10px] border-none px-1 h-4",
+                      getPlanBadgeColor(subscription.plan)
+                    )}>
+                      {subscription.plan}
+                    </Badge>
+                  )}
+                  {(!subscription || subscription.plan === "FREE") && (
+                    <Badge className="ml-auto text-[10px] bg-orange-100 text-orange-700 hover:bg-orange-100 border-none px-1 h-4">
+                      Free
+                    </Badge>
+                  )}
+                </Link>
+              </li>
+            )}
 
             <li className="pt-4 pb-2 px-4 flex items-center justify-between group cursor-pointer">
               <span className="text-[11px] font-semibold text-[#6a737c] uppercase tracking-wider">

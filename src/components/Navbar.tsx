@@ -1,3 +1,5 @@
+// Training/stackoverflow/stack/src/components/Navbar.tsx
+
 import { useAuth } from "@/lib/AuthContext";
 import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";

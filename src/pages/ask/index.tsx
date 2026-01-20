@@ -7,12 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import Mainlayout from "@/layout/Mainlayout";
 import { useAuth } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
-import { Plus, X } from "lucide-react";
+import { Plus, X, AlertCircle, Crown } from "lucide-react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-const index = () => {
+const AskQuestion = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -21,13 +21,31 @@ const index = () => {
     tags: [] as string[],
   });
   const [newTag, setNewTag] = useState("");
+  const [questionLimit, setQuestionLimit] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchQuestionLimit();
+    }
+  }, [user]);
+
+  const fetchQuestionLimit = async () => {
+    try {
+      const { data } = await axiosInstance.get("/subscription/check-limit");
+      setQuestionLimit(data);
+    } catch (error) {
+      console.error("Error fetching question limit:", error);
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { id, value } = e.target;
     if (id === "tags") {
       const tagarray = value
-        .split(/[s,]+/)
+        .split(/[\s,]+/)
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
       setFormData((prev) => ({ ...prev, tags: tagarray }));
@@ -35,21 +53,39 @@ const index = () => {
       setFormData((prev) => ({ ...prev, [id]: value }));
     }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!user) {
       toast.error("Please login to ask question");
       router.push("/auth");
       return;
     }
 
-    // Client-side validation for immediate feedback
+    // Check friend requirement
     const friendsCount = Array.isArray(user.friends) ? user.friends.length : 0;
     if (friendsCount === 0) {
-      toast.error("You are not allowed to post. You need at least 1 confirmed friend to ask questions.");
+      toast.error("You need at least 1 confirmed friend to ask questions.");
       return;
     }
 
+    // Check subscription limit
+    if (questionLimit && !questionLimit.canAsk) {
+      toast.error(
+        `Daily question limit reached! You can ask ${questionLimit.limit} question(s) per day on the ${questionLimit.plan} plan.`,
+        { autoClose: 5000 }
+      );
+      
+      if (questionLimit.upgradeRequired) {
+        setTimeout(() => {
+          router.push("/subscription");
+        }, 2000);
+      }
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await axiosInstance.post("/question/ask", {
         postquestiondata: {
@@ -60,16 +96,27 @@ const index = () => {
           userid: user?._id,
         },
       });
+      
       if (res.data.data) {
         toast.success("Question posted successfully");
+        await fetchQuestionLimit(); // Refresh limit
         router.push("/");
       }
     } catch (error: any) {
       console.log(error);
       const msg = error.response?.data?.message || "Something went wrong";
       toast.error(msg);
+      
+      if (error.response?.data?.upgradeRequired) {
+        setTimeout(() => {
+          router.push("/subscription");
+        }, 2000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleAddTag = (e: any) => {
     e.preventDefault();
     const trimmedTag = newTag.trim();
@@ -78,18 +125,54 @@ const index = () => {
       setNewTag("");
     }
   };
+
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
       tags: formData.tags.filter((tag: any) => tag !== tagToRemove),
     });
   };
+
   return (
     <Mainlayout>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-xl lg:text-2xl font-semibold mb-6">
-          Ask a public question
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl lg:text-2xl font-semibold">
+            Ask a public question
+          </h1>
+          
+          {questionLimit && (
+            <Badge 
+              className={`text-sm ${
+                questionLimit.canAsk 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {questionLimit.remaining}/{questionLimit.limit} questions remaining today
+            </Badge>
+          )}
+        </div>
+
+        {questionLimit && !questionLimit.canAsk && (
+          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="text-yellow-600 mt-0.5 flex-shrink-0" size={20} />
+            <div className="flex-1">
+              <p className="font-semibold text-yellow-800">Daily Limit Reached</p>
+              <p className="text-yellow-700 text-sm mb-3">
+                You've used all {questionLimit.limit} questions for today on the {questionLimit.plan} plan.
+              </p>
+              <Button 
+                onClick={() => router.push("/subscription")}
+                className="bg-yellow-600 hover:bg-yellow-700"
+                size="sm"
+              >
+                <Crown className="mr-2" size={16} />
+                Upgrade Plan
+              </Button>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <Card>
@@ -105,8 +188,7 @@ const index = () => {
                   Title
                 </Label>
                 <p className="text-sm text-gray-600 mb-2">
-                  Be specific and imagine you're asking a question to another
-                  person.
+                  Be specific and imagine you're asking a question to another person.
                 </p>
                 <Input
                   id="title"
@@ -114,6 +196,7 @@ const index = () => {
                   onChange={handleChange}
                   placeholder="e.g. How to center a div in CSS?"
                   className="w-full"
+                  required
                 />
               </div>
 
@@ -131,8 +214,11 @@ const index = () => {
                   onChange={handleChange}
                   placeholder="Describe your problem in detail..."
                   className="min-h-32 lg:min-h-48 w-full"
+                  required
+                  minLength={20}
                 />
               </div>
+
               <div>
                 <Label htmlFor="tags" className="text-base font-semibold">
                   Tags
@@ -146,6 +232,12 @@ const index = () => {
                     onChange={(e) => setNewTag(e.target.value)}
                     placeholder="e.g. javascript react nextjs"
                     className="w-full"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddTag(e);
+                      }
+                    }}
                   />
                   <Button
                     onClick={handleAddTag}
@@ -158,30 +250,33 @@ const index = () => {
                   </Button>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {formData.tags.map((tag: any) => {
-                    return (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-orange-100 text-orange-800 flex items-center gap-1"
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.tags.map((tag: any) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="bg-orange-100 text-orange-800 flex items-center gap-1"
+                    >
+                      {tag}
+                      <Button
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-1 hover:text-red-600"
+                        type="button"
                       >
-                        {tag}
-                        <Button
-                          onClick={() => handleRemoveTag(tag)}
-                          className="ml-1 hover:text-red-600"
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </Badge>
-                    );
-                  })}
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </Badge>
+                  ))}
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                <Button type="submit" className="bg-blue-600 text-white">
-                  Review your question
+                <Button 
+                  type="submit" 
+                  className="bg-blue-600 text-white"
+                  disabled={loading || (questionLimit && !questionLimit.canAsk)}
+                >
+                  {loading ? "Posting..." : "Post Your Question"}
                 </Button>
               </div>
             </CardContent>
@@ -192,4 +287,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default AskQuestion;

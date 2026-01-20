@@ -1,4 +1,3 @@
-// lib/AuthContext.js
 import { useState, createContext, useContext, useEffect } from "react";
 import axiosInstance from "./axiosinstance";
 import { toast } from "react-toastify";
@@ -60,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
       if (res.data.otpRequired) {
         setLoading(false);
-        return res.data; // Return to UI to show OTP input
+        return res.data;
       }
 
       const { data } = res.data;
@@ -96,13 +95,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // --- ADD THIS ---
   const sendForgotPasswordEmail = async (email) => {
     if (!email) throw new Error("Email is required");
     setLoading(true);
     try {
       const res = await axiosInstance.post("/user/forgot-password", { email });
-      // Backend sends SMS OTP to the user's registered phone
       toast.success("OTP sent to your registered mobile number.");
       return res.data;
     } catch (err) {
@@ -120,7 +117,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axiosInstance.post("/user/reset-password-otp", { phone, otp });
       toast.success("Password reset successful");
-      return res.data; // contains newPassword
+      return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to reset password";
       toast.error(msg);
@@ -129,7 +126,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  // --- END ADD ---
 
   const forgotPasswordByPhone = async (phone) => {
     if (!phone) throw new Error("Phone is required");
@@ -179,7 +175,6 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     if (!user?._id) {
-      // Try to get user from localStorage if state is empty
       if (typeof window !== "undefined") {
         try {
           const stored = localStorage.getItem("user");
@@ -223,7 +218,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const createPost = async (postData) => {
-    // Client-side guardrails: warn early based on friends (followers) count
     const friendsCount = Array.isArray(user?.friends) ? user.friends.length : 0;
     if (friendsCount === 0) {
       toast.dismiss();
@@ -292,7 +286,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Send friend request
   const sendFriendRequest = async (friendId) => {
     toast.dismiss();
 
@@ -350,7 +343,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Confirm friend request
   const confirmFriendRequest = async (friendId) => {
     toast.dismiss();
 
@@ -374,7 +366,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Reject friend request
   const rejectFriendRequest = async (friendId) => {
     toast.dismiss();
 
@@ -398,14 +389,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Backward compatibility
   const followUser = sendFriendRequest;
 
   const searchUsers = async (query) => {
     try {
       const res = await axiosInstance.get("/post/search", { params: { query } });
       console.log("Search result raw:", res.data);
-      // Normalize response: could be array, could be {data: []}, could be {value: []}
       if (Array.isArray(res.data)) return res.data;
       if (res.data && Array.isArray(res.data.value)) return res.data.value;
       if (res.data && Array.isArray(res.data.data)) return res.data.data;
@@ -444,7 +433,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Backward compatibility
   const getFollowers = getFriends;
 
   const removeFriend = async (friendId) => {
@@ -460,18 +448,53 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // SAFE Notification Fetching - Won't throw errors
+  const fetchNotifications = async () => {
+    if (!user?._id) return [];
+    try {
+      const { data } = await axiosInstance.get('/post/notifications');
+
+      const hasNewFriendAlerts = data.some(n => !n.read && (n.type === 'FRIEND_REQUEST' || n.type === 'FRIEND_ACCEPT' || n.type === 'FRIEND_REJECT'));
+      if (hasNewFriendAlerts) {
+        refreshUser();
+      }
+
+      setNotifications(data);
+      return data;
+    } catch (err) {
+      // SAFE: Handle all error types gracefully
+      if (err.code === 'ERR_NETWORK' || err.response?.status === 404) {
+        // Endpoint doesn't exist yet - this is OK
+        setNotifications([]);
+        return [];
+      }
+      
+      if (err.response?.status !== 401) {
+        // Only log unexpected errors
+        console.log("Notifications not available");
+      }
+      return [];
+    }
+  };
+
+  const markNotificationsRead = async () => {
+    try {
+      await axiosInstance.patch("/post/notifications/read");
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch (err) {
+      console.log("Mark read not available");
+    }
+  };
+
   // Background polling for notifications and user sync
   useEffect(() => {
     if (user) {
-      // initial fetch
       fetchNotifications();
 
-      // poll every 15 seconds for notifications
       const intervalId = setInterval(() => {
         fetchNotifications();
       }, 15000);
 
-      // Also refresh on window focus
       const handleFocus = () => {
         fetchNotifications();
         refreshUser();
@@ -484,53 +507,6 @@ export const AuthProvider = ({ children }) => {
       };
     }
   }, [user?._id]);
-
-  // Realtime Polling for Notifications
-  useEffect(() => {
-    let interval;
-    if (user?._id) {
-      // Fetch immediately on login
-      fetchNotifications();
-
-      // Then poll every 10 seconds
-      interval = setInterval(() => {
-        fetchNotifications();
-      }, 10000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [user?._id]);
-
-  const fetchNotifications = async () => {
-    if (!user?._id) return [];
-    try {
-      const { data } = await axiosInstance.get('/post/notifications');
-
-      // If we see a new FRIEND_REQUEST, FRIEND_ACCEPT or FRIEND_REJECT, refresh user data
-      const hasNewFriendAlerts = data.some(n => !n.read && (n.type === 'FRIEND_REQUEST' || n.type === 'FRIEND_ACCEPT' || n.type === 'FRIEND_REJECT'));
-      if (hasNewFriendAlerts) {
-        refreshUser();
-      }
-
-      setNotifications(data);
-      return data;
-    } catch (err) {
-      if (err.response?.status !== 401) {
-        console.error("Error fetching notifications:", err);
-      }
-      return [];
-    }
-  };
-
-  const markNotificationsRead = async () => {
-    try {
-      await axiosInstance.patch("/post/notifications/read");
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    } catch (err) {
-      console.error("Error marking notifications as read:", err);
-    }
-  };
 
   return (
     <AuthContext.Provider
