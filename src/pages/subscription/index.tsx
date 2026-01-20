@@ -8,9 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Crown, Zap, Rocket, AlertCircle } from "lucide-react";
 import axiosInstance from "@/lib/axiosinstance";
 import { toast } from "react-toastify";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const PLANS = [
   {
@@ -99,18 +96,12 @@ export default function SubscriptionPage() {
     try {
       const { data } = await axiosInstance.post("/subscription/create-checkout-session", { plan });
       
-      const stripe = await stripePromise;
-      if (!stripe) {
-        toast.error("Stripe failed to load");
-        return;
-      }
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: data.sessionId,
-      });
-
-      if (error) {
-        toast.error(error.message);
+      // Simply redirect to the Stripe Checkout URL
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("Invalid response from server");
+        setLoading(false);
       }
     } catch (error: any) {
       const message = error.response?.data?.message || "Failed to create checkout session";
@@ -119,7 +110,6 @@ export default function SubscriptionPage() {
       if (error.response?.data?.allowedTime) {
         toast.info(`Payment window: ${error.response.data.allowedTime}`);
       }
-    } finally {
       setLoading(false);
     }
   };
@@ -206,7 +196,7 @@ export default function SubscriptionPage() {
                     disabled={loading || isCurrent || planItem.disabled || timeWarning}
                     variant={isCurrent ? "outline" : "default"}
                   >
-                    {isCurrent ? "Current Plan" : planItem.buttonText}
+                    {loading ? "Processing..." : isCurrent ? "Current Plan" : planItem.buttonText}
                   </Button>
                 </CardContent>
               </Card>
