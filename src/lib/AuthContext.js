@@ -1,5 +1,3 @@
-// Training/stackoverflow/stack/src/lib/AuthContext.js
-
 import { useState, createContext, useContext, useEffect } from "react";
 import axiosInstance from "./axiosinstance";
 import { toast } from "react-toastify";
@@ -24,9 +22,13 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await axiosInstance.post("/user/signup", { name, email, password, phone, handle });
-      const { data } = res.data;
-      localStorage.setItem("user", JSON.stringify(data));
-      setUser(data);
+      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      
+      // Store user with token
+      const userData = { ...data, token };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+      
       toast.success("Signup Successful");
     } catch (err) {
       const msg = err.response?.data?.message || "Signup failed";
@@ -64,9 +66,13 @@ export const AuthProvider = ({ children }) => {
         return res.data;
       }
 
-      const { data } = res.data;
-      localStorage.setItem("user", JSON.stringify(data));
-      setUser(data);
+      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      
+      // Store user with token
+      const userData = { ...data, token };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+      
       toast.success("Login Successful");
       return res.data;
     } catch (err) {
@@ -83,9 +89,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/user/verify-otp", { userId, otp });
-      const { data } = res.data;
-      localStorage.setItem("user", JSON.stringify(data));
-      setUser(data);
+      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      
+      // Store user with token
+      const userData = { ...data, token };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+      
       toast.success("OTP Verified! Login Successful");
       return res.data;
     } catch (err) {
@@ -184,7 +194,8 @@ export const AuthProvider = ({ children }) => {
             const parsed = JSON.parse(stored);
             if (parsed._id) {
               const res = await axiosInstance.get(`/user/get-user/${parsed._id}`);
-              const updatedUser = { ...res.data, token: parsed.token || user?.token };
+              // Preserve token when refreshing
+              const updatedUser = { ...res.data, token: parsed.token };
               localStorage.setItem("user", JSON.stringify(updatedUser));
               setUser(updatedUser);
               return res.data;
@@ -198,8 +209,10 @@ export const AuthProvider = ({ children }) => {
     }
     try {
       const res = await axiosInstance.get(`/user/get-user/${user._id}`);
-      localStorage.setItem("user", JSON.stringify(res.data));
-      setUser(res.data);
+      // Preserve token when refreshing
+      const updatedUser = { ...res.data, token: user.token };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       return res.data;
     } catch (err) {
       if (err.response?.status !== 401) {
@@ -450,7 +463,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // SAFE Notification Fetching - Won't throw errors
   const fetchNotifications = async () => {
     if (!user?._id) return [];
     try {
@@ -464,15 +476,12 @@ export const AuthProvider = ({ children }) => {
       setNotifications(data);
       return data;
     } catch (err) {
-      // SAFE: Handle all error types gracefully
       if (err.code === 'ERR_NETWORK' || err.response?.status === 404) {
-        // Endpoint doesn't exist yet - this is OK
         setNotifications([]);
         return [];
       }
       
       if (err.response?.status !== 401) {
-        // Only log unexpected errors
         console.log("Notifications not available");
       }
       return [];
@@ -488,7 +497,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Background polling for notifications and user sync
   useEffect(() => {
     if (user) {
       fetchNotifications();
