@@ -1,4 +1,4 @@
-// lib/AuthContext.js
+// lib/AuthContext.js - Updated createPost function
 
 import { useState, createContext, useContext, useEffect } from "react";
 import axiosInstance from "./axiosinstance";
@@ -19,14 +19,15 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
+  // ... (keep all your existing functions: Signup, Login, etc.)
+
   const Signup = async ({ name, email, password, phone, handle }) => {
     setLoading(true);
     setError(null);
     try {
       const res = await axiosInstance.post("/user/signup", { name, email, password, phone, handle });
-      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      const { data, token } = res.data;
       
-      // Store user with token
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
@@ -68,9 +69,8 @@ export const AuthProvider = ({ children }) => {
         return res.data;
       }
 
-      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      const { data, token } = res.data;
       
-      // Store user with token
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
@@ -91,9 +91,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/user/verify-otp", { userId, otp });
-      const { data, token } = res.data; // GET TOKEN FROM RESPONSE
+      const { data, token } = res.data;
       
-      // Store user with token
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
@@ -196,7 +195,6 @@ export const AuthProvider = ({ children }) => {
             const parsed = JSON.parse(stored);
             if (parsed._id) {
               const res = await axiosInstance.get(`/user/get-user/${parsed._id}`);
-              // Preserve token when refreshing
               const updatedUser = { ...res.data, token: parsed.token };
               localStorage.setItem("user", JSON.stringify(updatedUser));
               setUser(updatedUser);
@@ -211,7 +209,6 @@ export const AuthProvider = ({ children }) => {
     }
     try {
       const res = await axiosInstance.get(`/user/get-user/${user._id}`);
-      // Preserve token when refreshing
       const updatedUser = { ...res.data, token: user.token };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -234,12 +231,16 @@ export const AuthProvider = ({ children }) => {
     toast.info("Logged out");
   };
 
+  // UPDATED: Better post creation with detailed error handling
   const createPost = async (postData) => {
+    // Check if user has friends
     const friendsCount = Array.isArray(user?.friends) ? user.friends.length : 0;
+    
     if (friendsCount === 0) {
       toast.dismiss();
-      toast.warning(
-        "You cannot post on the public page until you have at least 1 friend."
+      toast.error(
+        "❌ You need at least 1 friend to post on the community page. Start connecting with others!",
+        { autoClose: 5000 }
       );
       return Promise.reject(new Error("No friends to allow posting"));
     }
@@ -247,17 +248,73 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/post/create", postData);
+      
       toast.dismiss();
-      toast.success("Post created successfully");
+      toast.success(
+        `✅ ${res.data.message || "Post created successfully!"}`,
+        { autoClose: 3000 }
+      );
+
+      // Show posting stats if relevant
+      if (res.data.dailyLimit !== "Unlimited") {
+        const remaining = res.data.dailyLimit - res.data.postsToday;
+        if (remaining > 0) {
+          toast.info(
+            `📊 You can post ${remaining} more time(s) today (${res.data.friendsCount} friends)`,
+            { autoClose: 4000 }
+          );
+        } else {
+          toast.warning(
+            `⚠️ Daily limit reached! Add more friends to increase your posting limit. (10+ friends = unlimited posts)`,
+            { autoClose: 5000 }
+          );
+        }
+      }
+
       await refreshUser();
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to create post";
+      const errorData = err.response?.data;
+      const msg = errorData?.message || "Failed to create post";
+      
       toast.dismiss();
-      toast.error(msg);
+      
+      // Show detailed error with stats
+      if (errorData?.friendsCount !== undefined) {
+        if (errorData.friendsCount === 0) {
+          toast.error(
+            `❌ ${msg}`,
+            { autoClose: 5000 }
+          );
+        } else if (errorData.postsToday >= errorData.dailyLimit) {
+          toast.warning(
+            `⚠️ Daily limit reached!\n\n` +
+            `Posts today: ${errorData.postsToday}/${errorData.dailyLimit}\n` +
+            `Friends: ${errorData.friendsCount}\n\n` +
+            `💡 Add ${10 - errorData.friendsCount} more friend(s) to unlock unlimited posts!`,
+            { autoClose: 6000 }
+          );
+        } else {
+          toast.error(msg, { autoClose: 4000 });
+        }
+      } else {
+        toast.error(msg, { autoClose: 4000 });
+      }
+      
       throw err;
     } finally {
       setLoading(false);
+    }
+  };
+
+  // NEW: Get posting stats
+  const getPostingStats = async () => {
+    try {
+      const res = await axiosInstance.get("/post/stats");
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching posting stats:", err);
+      return null;
     }
   };
 
@@ -535,6 +592,7 @@ export const AuthProvider = ({ children }) => {
         GetLoginHistory,
         Logout,
         createPost,
+        getPostingStats,
         fetchPosts,
         likePost,
         commentPost,
