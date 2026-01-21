@@ -1,30 +1,67 @@
+// pages/questions/index.tsx
+
 import { Badge } from "@/components/ui/badge";
 import Mainlayout from "@/layout/Mainlayout";
 import axiosInstance from "@/lib/axiosinstance";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import QuestionCard from "@/components/QuestionCard";
+import { toast } from "react-toastify";
 
 export default function QuestionsPage() {
-    const [questions, setQuestions] = useState<any>([]);
+    const [questions, setQuestions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
+                setLoading(true);
+                setError(null);
+                
                 const res = await axiosInstance.get("/question/getallquestion");
+                
+                console.log("📦 Raw API response:", res.data);
+                
+                // Handle different response formats
+                let questionData: any[] = [];
+                
+                if (Array.isArray(res.data)) {
+                    // Backend returns array directly
+                    questionData = res.data;
+                } else if (res.data.data && Array.isArray(res.data.data)) {
+                    // Backend returns { data: [...] }
+                    questionData = res.data.data;
+                } else if (res.data.success && Array.isArray(res.data.data)) {
+                    // Backend returns { success: true, data: [...] }
+                    questionData = res.data.data;
+                } else {
+                    console.error("❌ Unexpected response format:", res.data);
+                    throw new Error("Invalid response format from server");
+                }
+                
+                console.log(`✅ Fetched ${questionData.length} questions`);
+                
                 // Sort by date descending (newest first)
-                const sorted = res.data.data.sort((a: any, b: any) =>
-                    new Date(b.askedon).getTime() - new Date(a.askedon).getTime()
-                );
+                const sorted = questionData.sort((a: any, b: any) => {
+                    const dateA = new Date(a.askedon).getTime();
+                    const dateB = new Date(b.askedon).getTime();
+                    return dateB - dateA;
+                });
+                
                 setQuestions(sorted);
-            } catch (error) {
-                console.error("Error fetching questions:", error);
+            } catch (error: any) {
+                console.error("❌ Error fetching questions:", error);
+                const errorMessage = error.response?.data?.message || error.message || "Failed to load questions";
+                setError(errorMessage);
+                toast.error(errorMessage);
+                setQuestions([]); // Set empty array on error
             } finally {
                 setLoading(false);
             }
         };
+        
         fetchQuestions();
     }, []);
 
@@ -33,6 +70,24 @@ export default function QuestionsPage() {
             <Mainlayout>
                 <div className="flex justify-center py-20">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
+                </div>
+            </Mainlayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <Mainlayout>
+                <div className="flex flex-col items-center justify-center py-20">
+                    <div className="text-red-500 text-lg font-semibold mb-4">
+                        {error}
+                    </div>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+                    >
+                        Retry
+                    </button>
                 </div>
             </Mainlayout>
         );
@@ -97,7 +152,13 @@ export default function QuestionsPage() {
                         ))
                     ) : (
                         <div className="text-center py-20 text-gray-500">
-                            No questions found.
+                            <p className="text-lg mb-2">No questions found.</p>
+                            <button
+                                onClick={() => router.push("/ask")}
+                                className="text-blue-600 hover:underline"
+                            >
+                                Be the first to ask a question!
+                            </button>
                         </div>
                     )}
                 </div>
