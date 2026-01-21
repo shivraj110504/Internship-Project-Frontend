@@ -35,6 +35,13 @@ const Notifications = () => {
     };
 
     const handleAction = async (friendId: string, action: 'confirm' | 'reject') => {
+        console.log('🔄 Action triggered:', { friendId, action });
+        
+        if (!friendId) {
+            console.error('❌ No friendId provided');
+            return;
+        }
+
         setActionId(friendId);
         try {
             if (action === 'confirm') {
@@ -44,7 +51,7 @@ const Notifications = () => {
             }
             await fetchNotifications();
         } catch (err) {
-            console.error(err);
+            console.error('❌ Action failed:', err);
         } finally {
             setActionId(null);
         }
@@ -77,75 +84,93 @@ const Notifications = () => {
                                 <p>No notifications yet</p>
                             </div>
                         ) : (
-                            notifications.map((notification: any) => (
-                                <div
-                                    key={notification._id}
-                                    className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-blue-50/30' : ''}`}
-                                >
-                                    <div className="flex gap-3">
-                                        <Avatar className="w-10 h-10">
-                                            <AvatarFallback className="bg-orange-100 text-orange-600">
-                                                {notification.sender?.name?.charAt(0).toUpperCase() || 'U'}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <p className="text-sm text-gray-900">
-                                                <span className="font-semibold">{notification.sender?.name}</span>
-                                                {notification.type === 'FRIEND_REQUEST'
-                                                    ? ' sent you a friend request'
-                                                    : notification.type === 'FRIEND_ACCEPT'
-                                                        ? ' accepted your friend request'
-                                                        : ' rejected your friend request'}
-                                            </p>
-                                            <p className="text-[10px] text-gray-500 mt-1">
-                                                {new Date(notification.createdAt).toLocaleString()}
-                                            </p>
+                            notifications.map((notification: any) => {
+                                // 🔧 FIX: Use fromUserId instead of sender
+                                const fromUser = notification.fromUserId;
+                                const fromUserId = fromUser?._id || fromUser;
+                                const fromUserName = fromUser?.name || 'Unknown User';
 
-                                            {notification.type === 'FRIEND_REQUEST' && (
-                                                <div className="flex gap-2 mt-3">
-                                                    <Button
-                                                        size="sm"
-                                                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white flex-1"
-                                                        onClick={() => handleAction(notification.sender?._id, 'confirm')}
-                                                        disabled={actionId === notification.sender?._id}
-                                                    >
-                                                        {actionId === notification.sender?._id ? (
-                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            <>
-                                                                <Check className="w-3 h-3 mr-1" />
-                                                                Accept
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="h-8 flex-1"
-                                                        onClick={() => handleAction(notification.sender?._id, 'reject')}
-                                                        disabled={actionId === notification.sender?._id}
-                                                    >
-                                                        <X className="w-3 h-3 mr-1" />
-                                                        Decline
-                                                    </Button>
-                                                </div>
-                                            )}
+                                console.log('📋 Notification:', {
+                                    id: notification._id,
+                                    type: notification.type,
+                                    fromUserId,
+                                    fromUserName,
+                                    rawNotification: notification
+                                });
 
-                                            {notification.type === 'FRIEND_ACCEPT' && (
-                                                <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700 hover:bg-green-100 border-none">
-                                                    <UserCheck className="w-3 h-3 mr-1" /> Now Friends
-                                                </Badge>
-                                            )}
+                                return (
+                                    <div
+                                        key={notification._id}
+                                        className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-blue-50/30' : ''}`}
+                                    >
+                                        <div className="flex gap-3">
+                                            <Avatar className="w-10 h-10">
+                                                <AvatarFallback className="bg-orange-100 text-orange-600">
+                                                    {fromUserName.charAt(0).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1">
+                                                <p className="text-sm text-gray-900">
+                                                    <span className="font-semibold">{fromUserName}</span>
+                                                    {' '}
+                                                    {notification.message || (
+                                                        notification.type === 'FRIEND_REQUEST'
+                                                            ? 'sent you a friend request'
+                                                            : notification.type === 'FRIEND_ACCEPT'
+                                                                ? 'accepted your friend request'
+                                                                : 'rejected your friend request'
+                                                    )}
+                                                </p>
+                                                <p className="text-[10px] text-gray-500 mt-1">
+                                                    {new Date(notification.createdAt).toLocaleString()}
+                                                </p>
 
-                                            {notification.type === 'FRIEND_REJECT' && (
-                                                <Badge variant="outline" className="mt-2 text-red-500 border-red-200">
-                                                    <X className="w-3 h-3 mr-1" /> Rejected
-                                                </Badge>
-                                            )}
+                                                {notification.type === 'FRIEND_REQUEST' && (
+                                                    <div className="flex gap-2 mt-3">
+                                                        <Button
+                                                            size="sm"
+                                                            className="h-8 bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                                                            onClick={() => handleAction(fromUserId, 'confirm')}
+                                                            disabled={actionId === fromUserId || !fromUserId}
+                                                        >
+                                                            {actionId === fromUserId ? (
+                                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                            ) : (
+                                                                <>
+                                                                    <Check className="w-3 h-3 mr-1" />
+                                                                    Accept
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="h-8 flex-1"
+                                                            onClick={() => handleAction(fromUserId, 'reject')}
+                                                            disabled={actionId === fromUserId || !fromUserId}
+                                                        >
+                                                            <X className="w-3 h-3 mr-1" />
+                                                            Decline
+                                                        </Button>
+                                                    </div>
+                                                )}
+
+                                                {notification.type === 'FRIEND_ACCEPT' && (
+                                                    <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700 hover:bg-green-100 border-none">
+                                                        <UserCheck className="w-3 h-3 mr-1" /> Now Friends
+                                                    </Badge>
+                                                )}
+
+                                                {notification.type === 'FRIEND_REJECT' && (
+                                                    <Badge variant="outline" className="mt-2 text-red-500 border-red-200">
+                                                        <X className="w-3 h-3 mr-1" /> Rejected
+                                                    </Badge>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>

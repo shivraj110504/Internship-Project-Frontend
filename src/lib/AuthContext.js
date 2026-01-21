@@ -1,4 +1,4 @@
-// AuthContext.js
+// lib/AuthContext.js
 
 import { useState, createContext, useContext, useEffect } from "react";
 import axiosInstance from "./axiosinstance";
