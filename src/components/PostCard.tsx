@@ -1,3 +1,5 @@
+// components/PostCard.tsx
+
 import React, { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
