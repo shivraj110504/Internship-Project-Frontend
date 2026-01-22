@@ -1,3 +1,5 @@
+// components/QuestionDetail.tsx
+
 import {
   Bookmark,
   ChevronDown,
@@ -18,237 +20,74 @@ import { Textarea } from "./ui/textarea";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import axiosInstance from "@/lib/axiosinstance";
-import Mainlayout from "@/layout/Mainlayout";
 import { useAuth } from "@/lib/AuthContext";
-const questionData = {
-  id: 3,
-  title: "How can i block user with middleware?",
-  content: `
-## The problem
 
-I am trying to create a complete user login form in NextJS and I want to block the user to go to other pages without a login process before. So online i found that one of the most complete solution could be the use of a middleware but i don't know how it doesn't work.
+// Utility function to sanitize and format text content
+const formatContent = (content: string) => {
+  if (!content) return "";
 
-## Middleware code:
+  // Escape HTML to prevent XSS and form rendering
+  const escapeHtml = (text: string) => {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  };
 
-\`\`\`javascript
-// middleware.ts (position: root)
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+  // Process markdown-like formatting
+  let formatted = content;
 
-export default async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  // Extract and store code blocks to prevent double processing
+  const codeBlocks: { [key: string]: string } = {};
+  let codeBlockIndex = 0;
+
+  // Handle code blocks with language specification (```language\ncode```)
+  formatted = formatted.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    const placeholder = `__CODE_BLOCK_${codeBlockIndex}__`;
+    const escapedCode = escapeHtml(code.trim());
+    const languageClass = lang ? `language-${lang}` : '';
+    codeBlocks[placeholder] = `<pre class="code-block ${languageClass}"><code>${escapedCode}</code></pre>`;
+    codeBlockIndex++;
+    return placeholder;
+  });
+
+  // Escape remaining HTML
+  formatted = escapeHtml(formatted);
+
+  // Restore code blocks
+  Object.keys(codeBlocks).forEach(placeholder => {
+    formatted = formatted.replace(placeholder, codeBlocks[placeholder]);
+  });
+
+  // Format inline code
+  formatted = formatted.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+  // Format headers
+  formatted = formatted.replace(/^### (.*$)/gm, '<h4 class="text-base font-semibold mt-4 mb-2 text-gray-900">$1</h4>');
+  formatted = formatted.replace(/^## (.*$)/gm, '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900">$1</h3>');
+  formatted = formatted.replace(/^# (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 text-gray-900">$1</h2>');
+
+  // Format bold text
+  formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // Format italic text
+  formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  // Format lists
+  formatted = formatted.replace(/^\d+\.\s+(.*)$/gm, '<li class="ml-6 list-decimal">$1</li>');
+  formatted = formatted.replace(/^[-*]\s+(.*)$/gm, '<li class="ml-6 list-disc">$1</li>');
   
-  const token = req.cookies.get("authToken")?.value;
-  
-  if (!token) {
-    console.log("[middleware] No token on", pathname, "-> redirect to /");
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-  
-  try {
-    await jwtVerify(token, secret);
-    return NextResponse.next();
-  } catch (err) {
-    console.log("[middleware] Invalid token on", pathname, "->", err);
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-}
+  // Wrap consecutive list items in ul/ol tags
+  formatted = formatted.replace(/(<li class="ml-6 list-decimal">.*<\/li>\n?)+/g, '<ol class="my-3">$&</ol>');
+  formatted = formatted.replace(/(<li class="ml-6 list-disc">.*<\/li>\n?)+/g, '<ul class="my-3">$&</ul>');
 
-export const config = {
-  matcher: [
-    "/dashboard",
-    "/dashboard/:path*",
-    "/add-todo",
-    "/add-todo/:path*",
-    "/edit-todo",
-    "/edit-todo/:path*",
-    "/settings",
-  ]
-}
-\`\`\`
+  // Format paragraphs (preserve line breaks)
+  formatted = formatted.replace(/\n\n/g, '</p><p class="mb-4">');
+  formatted = formatted.replace(/\n/g, '<br/>');
+  formatted = `<p class="mb-4">${formatted}</p>`;
 
-What I'm expecting is that when the user tries to access protected routes without being authenticated, they should be redirected to the login page. However, the middleware doesn't seem to be working as expected.
-
-## What I tried:
-
-1. Placed the middleware.ts file in the root directory
-2. Configured the matcher to include all protected routes
-3. Used JWT verification to check token validity
-4. Added proper error handling and logging
-
-The middleware runs but the redirects don't work properly. Sometimes users can still access protected pages even without valid tokens.
-  `,
-  votes: -4,
-  answers: 2,
-  views: 38,
-  tags: ["node.js", "forms", "authentication", "next.js", "middleware"],
-  author: {
-    id: 3,
-    name: "Aledi5",
-    avatar: "A",
-  },
-  askedDate: "3 days ago",
-  modifiedDate: "3 days ago",
-  isBookmarked: false,
-  userVote: null, // null, 'up', or 'down'
+  return formatted;
 };
 
-// Mock answers data
-const answersData = [
-  {
-    id: 1,
-    content: `The issue you're experiencing is likely due to the middleware configuration and how NextJS handles redirects. Here are a few things to check:
-
-## 1. Middleware File Location
-Make sure your \`middleware.ts\` file is in the correct location - it should be in the root of your project (same level as \`pages\` or \`app\` directory).
-
-## 2. Import Statements
-You're missing some important imports in your middleware:
-
-\`\`\`javascript
-import { NextRequest, NextResponse } from 'next/server'
-import { jwtVerify } from 'jose'
-\`\`\`
-
-## 3. Updated Middleware Code
-
-\`\`\`javascript
-import { NextRequest, NextResponse } from 'next/server'
-import { jwtVerify } from 'jose'
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-
-export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Get token from cookies
-  const token = request.cookies.get("authToken")?.value;
-  
-  if (!token) {
-    console.log("[middleware] No token found, redirecting to login");
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-  
-  try {
-    // Verify the JWT token
-    const { payload } = await jwtVerify(token, secret);
-    console.log("[middleware] Token verified for user:", payload.sub);
-    return NextResponse.next();
-  } catch (error) {
-    console.log("[middleware] Token verification failed:", error);
-    // Clear the invalid token
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete('authToken');
-    return response;
-  }
-}
-
-export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/add-todo/:path*',
-    '/edit-todo/:path*',
-    '/settings/:path*'
-  ]
-}
-\`\`\`
-
-## Key Changes:
-- Added proper imports
-- Redirect to \`/login\` instead of \`/\`
-- Clear invalid tokens from cookies
-- Simplified matcher patterns
-- Better error handling
-
-This should resolve your middleware issues.`,
-    votes: 5,
-    author: {
-      id: 1,
-      name: "John Doe",
-      reputation: 15420,
-      avatar: "JD",
-    },
-    answeredDate: "2 days ago",
-    isAccepted: true,
-    userVote: null,
-  },
-  {
-    id: 2,
-    content: `Another approach you might consider is using NextAuth.js which handles authentication middleware automatically:
-
-## Installation
-\`\`\`bash
-npm install next-auth
-\`\`\`
-
-## Configuration
-Create \`pages/api/auth/[...nextauth].js\`:
-
-\`\`\`javascript
-import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-
-export default NextAuth({
-  providers: [
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        // Add your authentication logic here
-        const user = await authenticateUser(credentials)
-        return user ? user : null
-      }
-    })
-  ],
-  pages: {
-    signIn: '/login'
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      return { ...token, ...user }
-    },
-    async session({ session, token }) {
-      return { ...session, user: token }
-    }
-  }
-})
-\`\`\`
-
-## Middleware with NextAuth
-\`\`\`javascript
-import { withAuth } from 'next-auth/middleware'
-
-export default withAuth(
-  function middleware(req) {
-    // Additional middleware logic here
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    }
-  }
-)
-
-export const config = {
-  matcher: ['/dashboard/:path*', '/settings/:path*']
-}
-\`\`\`
-
-This approach is more robust and handles many edge cases automatically.`,
-    votes: 2,
-    author: {
-      id: 2,
-      name: "Felix Rodriguez",
-      reputation: 799,
-      avatar: "FR",
-    },
-    answeredDate: "1 day ago",
-    isAccepted: false,
-    userVote: null,
-  },
-];
 const QuestionDetail = ({ questionId }: any) => {
   const router = useRouter();
   const [question, setquestion] = useState<any>(null);
@@ -257,6 +96,7 @@ const QuestionDetail = ({ questionId }: any) => {
   const [isSubmitting, setisSubmitting] = useState(false);
   const [loading, setloading] = useState(true);
   const { user } = useAuth();
+
   useEffect(() => {
     const fetchuser = async () => {
       try {
@@ -274,11 +114,15 @@ const QuestionDetail = ({ questionId }: any) => {
     };
     fetchuser();
   }, [questionId]);
+
   if (loading) {
     return (
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center py-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
     );
   }
+
   if (!question) {
     return (
       <div className="text-center text-gray-500 mt-4">No question found.</div>
@@ -286,10 +130,10 @@ const QuestionDetail = ({ questionId }: any) => {
   }
 
   const handleVote = async (vote: String) => {
-    if(!user){
-      toast.info("Please login to continue")
-      router.push("/auth")
-      return
+    if (!user) {
+      toast.info("Please login to continue");
+      router.push("/auth");
+      return;
     }
     try {
       const res = await axiosInstance.patch(`/question/vote/${question._id}`, {
@@ -305,14 +149,16 @@ const QuestionDetail = ({ questionId }: any) => {
       toast.error("Failed to Vote question");
     }
   };
+
   const handlebookmark = () => {
     setquestion((prev: any) => ({ ...prev, isBookmarked: !prev.isBookmarked }));
   };
+
   const handleSubmitanswer = async () => {
-    if(!user){
-      toast.info("Please login to continue")
-      router.push("/auth")
-      return
+    if (!user) {
+      toast.info("Please login to continue");
+      router.push("/auth");
+      return;
     }
     if (!newanswer.trim()) return;
     setisSubmitting(true);
@@ -348,11 +194,12 @@ const QuestionDetail = ({ questionId }: any) => {
       setisSubmitting(false);
     }
   };
+
   const handleDelete = async () => {
-    if(!user){
-      toast.info("Please login to continue")
-      router.push("/auth")
-      return
+    if (!user) {
+      toast.info("Please login to continue");
+      router.push("/auth");
+      return;
     }
     if (!window.confirm("Are you sure you want to delete this question?"))
       return;
@@ -369,11 +216,12 @@ const QuestionDetail = ({ questionId }: any) => {
       toast.error("Failed to delete question");
     }
   };
+
   const handleDeleteanswer = async (id: String) => {
-    if(!user){
-      toast.info("Please login to continue")
-      router.push("/auth")
-      return
+    if (!user) {
+      toast.info("Please login to continue");
+      router.push("/auth");
+      return;
     }
     if (!window.confirm("Are you sure you want to delete this answer?"))
       return;
@@ -403,6 +251,39 @@ const QuestionDetail = ({ questionId }: any) => {
 
   return (
     <div className="max-w-5xl">
+      <style jsx global>{`
+        /* Code block styling with syntax-like colors */
+        .code-block {
+          background: #1e1e1e;
+          color: #d4d4d4;
+          padding: 1.5rem;
+          border-radius: 0.5rem;
+          overflow-x: auto;
+          margin: 1.5rem 0;
+          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+          font-size: 0.875rem;
+          line-height: 1.6;
+          border: 1px solid #333;
+        }
+
+        .code-block code {
+          color: #d4d4d4;
+          font-family: inherit;
+          white-space: pre;
+        }
+
+        /* Inline code styling */
+        .inline-code {
+          background: #f1f1f1;
+          color: #c7254e;
+          padding: 0.125rem 0.375rem;
+          border-radius: 0.25rem;
+          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+          font-size: 0.875em;
+          border: 1px solid #e1e1e1;
+        }
+      `}</style>
+
       {/* Question Header */}
       <div className="mb-6">
         <h1 className="text-xl lg:text-2xl font-semibold mb-4 text-gray-900">
@@ -426,16 +307,18 @@ const QuestionDetail = ({ questionId }: any) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-2 ${"text-gray-600 hover:text-orange-500"}`}
+                className="p-2 text-gray-600 hover:text-orange-500"
                 onClick={() => handleVote("upvote")}
               >
                 <ChevronUp className="w-6 h-6" />
               </Button>
-              <span>{question.upvote.length - question.downvote.length}</span>
+              <span className="text-xl font-semibold">
+                {question.upvote.length - question.downvote.length}
+              </span>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-2 ${"text-gray-600 hover:text-orange-500"}`}
+                className="p-2 text-gray-600 hover:text-orange-500"
                 onClick={() => handleVote("downvote")}
               >
                 <ChevronDown className="w-6 h-6" />
@@ -465,34 +348,18 @@ const QuestionDetail = ({ questionId }: any) => {
                 </Button>
               </div>
             </div>
+
+            {/* Content Section */}
             <div className="flex-1 p-4 sm:p-6">
               <div className="prose max-w-none mb-6">
                 <div
                   className="text-gray-800 leading-relaxed"
                   dangerouslySetInnerHTML={{
-                    __html: question.questionbody
-                      .replace(
-                        /## (.*)/g,
-                        '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900">$1</h3>'
-                      )
-                      .replace(
-                        /```(\w+)?\n([\s\S]*?)```/g,
-                        '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code class="text-sm">$2</code></pre>'
-                      )
-                      .replace(
-                        /`([^`]+)`/g,
-                        '<code class="bg-gray-100 px-2 py-1 rounded text-sm">$1</code>'
-                      )
-                      .replace(/\n\n/g, '</p><p class="mb-4">')
-                      .replace(/^/, '<p class="mb-4">')
-                      .replace(/$/, "</p>")
-                      .replace(
-                        /\n(\d+\. .*)/g,
-                        '<ol class="list-decimal list-inside my-4"><li>$1</li></ol>'
-                      ),
+                    __html: formatContent(question.questionbody),
                   }}
                 />
               </div>
+
               <div className="flex flex-wrap gap-2 mb-6">
                 {question.questiontags.map((tag: any) => (
                   <Link key={tag} href={`/tags/${tag}`}>
@@ -505,6 +372,7 @@ const QuestionDetail = ({ questionId }: any) => {
                   </Link>
                 ))}
               </div>
+
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex gap-2">
                   <Button
@@ -545,8 +413,8 @@ const QuestionDetail = ({ questionId }: any) => {
                     className="flex items-center gap-2 hover:bg-blue-50 p-2 rounded"
                   >
                     <Avatar className="w-8 h-8">
-                      <AvatarFallback className="text-sm">
-                        {question.userposted[0]}
+                      <AvatarFallback className="text-sm bg-orange-500 text-white">
+                        {question.userposted[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -561,6 +429,8 @@ const QuestionDetail = ({ questionId }: any) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Answers Section */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-6 text-gray-900">
           {question.answer.length} Answer
@@ -568,38 +438,19 @@ const QuestionDetail = ({ questionId }: any) => {
         </h2>
         <div className="space-y-6">
           {question.answer.map((ans: any) => (
-            <Card key={ans._id} className={""}>
+            <Card key={ans._id}>
               <CardContent className="p-0">
                 <div className="flex flex-col sm:flex-row">
-                  {/* Answer Content */}
                   <div className="flex-1 p-4 sm:p-6">
                     <div className="prose max-w-none mb-6">
                       <div
                         className="text-gray-800 leading-relaxed"
                         dangerouslySetInnerHTML={{
-                          __html: ans.answerbody
-                            .replace(
-                              /## (.*)/g,
-                              '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900">$1</h3>'
-                            )
-                            .replace(
-                              /```(\w+)?\n([\s\S]*?)```/g,
-                              '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code class="text-sm">$2</code></pre>'
-                            )
-                            .replace(
-                              /`([^`]+)`/g,
-                              '<code class="bg-gray-100 px-2 py-1 rounded text-sm">$1</code>'
-                            )
-                            .replace(/\n\n/g, '</p><p class="mb-4">')
-                            .replace(/^/, '<p class="mb-4">')
-                            .replace(/$/, "</p>")
-                            .replace(
-                              /\n(\d+\. .*)/g,
-                              '<ol class="list-decimal list-inside my-4"><li>$1</li></ol>'
-                            ),
+                          __html: formatContent(ans.answerbody),
                         }}
                       />
                     </div>
+
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div className="flex gap-2">
                         <Button
@@ -630,17 +481,18 @@ const QuestionDetail = ({ questionId }: any) => {
                           </Button>
                         )}
                       </div>
+
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-gray-600">
-                          answerd {ans.answeredon}
+                          answered {new Date(ans.answeredon).toLocaleDateString()}
                         </span>
                         <Link
                           href={`/users/${ans.userid}`}
                           className="flex items-center gap-2 hover:bg-blue-50 p-2 rounded"
                         >
                           <Avatar className="w-8 h-8">
-                            <AvatarFallback className="text-sm">
-                              {ans.useranswered[0]}
+                            <AvatarFallback className="text-sm bg-orange-500 text-white">
+                              {ans.useranswered[0].toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
@@ -658,16 +510,34 @@ const QuestionDetail = ({ questionId }: any) => {
           ))}
         </div>
       </div>
+
+      {/* Answer Input Section */}
       <Card>
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
             Your Answer
           </h3>
+          <div className="mb-2 text-sm text-gray-600">
+            <p className="font-medium mb-1">You can use Markdown formatting:</p>
+            <ul className="list-disc list-inside ml-2 mt-1 space-y-1">
+              <li>Code blocks: <code className="bg-gray-100 px-1 rounded">```language</code> followed by your code then <code className="bg-gray-100 px-1 rounded">```</code></li>
+              <li>Inline code: <code className="bg-gray-100 px-1 rounded">`your code`</code></li>
+              <li>Headers: <code className="bg-gray-100 px-1 rounded">## Header</code> or <code className="bg-gray-100 px-1 rounded">### Smaller Header</code></li>
+              <li>Bold: <code className="bg-gray-100 px-1 rounded">**text**</code> | Italic: <code className="bg-gray-100 px-1 rounded">*text*</code></li>
+            </ul>
+          </div>
           <Textarea
-            placeholder="Write your answer here... You can use Markdown formatting."
+            placeholder="Write your answer here... 
+
+Example:
+````javascript
+function hello() {
+  console.log('Hello World');
+}
+```"
             value={newanswer}
             onChange={(e) => setnewAnswer(e.target.value)}
-            className="min-h-32 mb-4 resize-none"
+            className="min-h-48 mb-4 resize-none font-mono text-sm"
           />
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <Button

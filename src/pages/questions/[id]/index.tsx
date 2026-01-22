@@ -1,3 +1,5 @@
+// pages/questions/[id]/index.tsx
+
 import QuestionDetail from "@/components/QuestionDetail";
 import Mainlayout from "@/layout/Mainlayout";
 import { useRouter } from "next/router";
