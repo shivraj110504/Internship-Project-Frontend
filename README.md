@@ -1,1 +1,2 @@
-# StackOverflow Clone – Full-Stack Internship Project
+QueryNest – Intelligent Knowledge Exchange Platform
+QueryNest is a rule-driven, full-stack knowledge sharing platform developed during a professional internship. It enables users to ask questions, share answers, earn rewards, and access features through subscription plans, while enforcing strict business rules, secure authentication, multilingual support, payment workflows, and detailed login tracking.
