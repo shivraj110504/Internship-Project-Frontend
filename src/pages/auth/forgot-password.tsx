@@ -162,10 +162,10 @@ const ForgotPassword = () => {
                                             className="w-full bg-blue-600 hover:bg-blue-700"
                                             disabled={loading}
                                         >
-                                            {loading ? "Sending..." : "Send OTP"}
+                                            {loading ? "Sending..." : "Send OTP to Email"}
                                         </Button>
                                         <p className="text-xs text-gray-500 text-center">
-                                            OTP will be sent to both your registered email and mobile number
+                                            OTP will be sent to your registered email address
                                         </p>
                                     </form>
                                 )}
@@ -190,8 +190,11 @@ const ForgotPassword = () => {
                                             className="w-full bg-blue-600 hover:bg-blue-700"
                                             disabled={loading}
                                         >
-                                            {loading ? "Sending..." : "Send OTP"}
+                                            {loading ? "Sending..." : "Send OTP to Phone"}
                                         </Button>
+                                        <p className="text-xs text-gray-500 text-center">
+                                            OTP will be sent to your registered mobile number via SMS
+                                        </p>
                                     </div>
                                 )}
 
@@ -200,7 +203,7 @@ const ForgotPassword = () => {
                                     <form onSubmit={handleOtpReset} className="space-y-4">
                                         <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                                             <p className="text-sm text-green-800">
-                                                ✅ OTP sent successfully! Check your {method === "email" ? "email and phone" : "phone"}.
+                                                ✅ OTP sent successfully! Check your {method === "email" ? "email" : "phone"}.
                                             </p>
                                         </div>
 
