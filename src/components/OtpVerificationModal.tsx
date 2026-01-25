@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import axios from 'axios';
+import axiosInstance from '@/lib/axiosinstance';
 import { toast } from 'react-toastify';
 
 interface OtpVerificationModalProps {
@@ -30,7 +30,7 @@ const OtpVerificationModal = ({ userId, language, onVerify, onClose }: OtpVerifi
     const requestOtp = async () => {
         setIsLoading(true);
         try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/send-language-otp`, {
+            const res = await axiosInstance.post(`/user/send-language-otp`, {
                 userId,
                 language // Now passing the code
             });
@@ -48,7 +48,7 @@ const OtpVerificationModal = ({ userId, language, onVerify, onClose }: OtpVerifi
     const verifyOtp = async () => {
         setIsLoading(true);
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-language-otp`, {
+            await axiosInstance.post(`/user/verify-language-otp`, {
                 userId,
                 otp
             });
