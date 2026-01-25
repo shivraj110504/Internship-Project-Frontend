@@ -149,8 +149,8 @@ export default function Home() {
 
   const handleLike = async (postId: string) => {
     try {
-      const updatedPost = await likePost(postId);
-      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+      const response = await likePost(postId);
+      setPosts(posts.map((p: any) => p._id === postId ? response.post : p));
     } catch (err) {
       console.error(err);
     }
@@ -158,8 +158,8 @@ export default function Home() {
 
   const handleComment = async (postId: string, text: string) => {
     try {
-      const updatedPost = await commentPost(postId, text);
-      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+      const response = await commentPost(postId, text);
+      setPosts(posts.map((p: any) => p._id === postId ? response.post : p));
     } catch (err) {
       console.error(err);
     }
@@ -167,8 +167,8 @@ export default function Home() {
 
   const handleShare = async (postId: string) => {
     try {
-      const updatedPost = await sharePost(postId);
-      setPosts(posts.map((p: any) => p._id === postId ? updatedPost : p));
+      const response = await sharePost(postId);
+      setPosts(posts.map((p: any) => p._id === postId ? response.post : p));
     } catch (err) {
       console.error(err);
     }

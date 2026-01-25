@@ -9,11 +9,11 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Plus, 
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Plus,
   Image as ImageIcon,
   Video,
   Send,
@@ -93,9 +93,9 @@ export default function CommunityPage() {
   const handleLike = async (postId: string) => {
     try {
       const response = await likePost(postId);
-      
+
       // Update the specific post in state immediately for instant UI feedback
-      setPosts(prevPosts => 
+      setPosts(prevPosts =>
         prevPosts.map(post => {
           if (post._id === postId) {
             // Check if response has the updated post data
@@ -117,7 +117,7 @@ export default function CommunityPage() {
               const isLiked = currentLikes.includes(user?._id);
               return {
                 ...post,
-                likes: isLiked 
+                likes: isLiked
                   ? currentLikes.filter((id: string) => id !== user?._id)
                   : [...currentLikes, user?._id]
               };
@@ -137,9 +137,11 @@ export default function CommunityPage() {
     if (!text) return;
 
     try {
-      await commentPost(postId, text);
+      const response = await commentPost(postId, text);
       setCommentInputs({ ...commentInputs, [postId]: "" });
-      await loadPosts(); // Reload to get updated comments
+
+      // Update specific post in state
+      setPosts(prev => prev.map(p => p._id === postId ? response.post : p));
     } catch (error) {
       console.error("Comment error:", error);
     }
@@ -147,14 +149,10 @@ export default function CommunityPage() {
 
   const handleShare = async (postId: string) => {
     try {
-      await sharePost(postId);
-      // Update shares count immediately
-      setPosts(prevPosts =>
-        prevPosts.map(post =>
-          post._id === postId ? { ...post, shares: (post.shares || 0) + 1 } : post
-        )
-      );
-      toast.success("Post shared!");
+      const response = await sharePost(postId);
+      // Update with full post object for consistency
+      setPosts(prev => prev.map(p => p._id === postId ? response.post : p));
+      toast.success(response.message || "Post shared!");
     } catch (error) {
       console.error("Share error:", error);
     }
@@ -193,10 +191,10 @@ export default function CommunityPage() {
                 {friendsCount}
               </span>
             </Button>
-            
+
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
+                <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                   disabled={!canPost}
                 >
@@ -204,12 +202,12 @@ export default function CommunityPage() {
                   Create Post
                 </Button>
               </DialogTrigger>
-              
+
               <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-xl font-bold">Create New Post</DialogTitle>
                 </DialogHeader>
-                
+
                 <div className="space-y-4 py-4">
                   {/* Post Limit Info */}
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
@@ -254,43 +252,37 @@ export default function CommunityPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         type="button"
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          newPost.mediaType === "image"
+                        className={`p-4 rounded-xl border-2 transition-all ${newPost.mediaType === "image"
                             ? "border-blue-500 bg-blue-50"
                             : "border-gray-200 hover:border-gray-300"
-                        }`}
+                          }`}
                         onClick={() => setNewPost({ ...newPost, mediaType: "image" })}
                       >
-                        <ImageIcon 
-                          size={24} 
-                          className={`mx-auto mb-2 ${
-                            newPost.mediaType === "image" ? "text-blue-600" : "text-gray-400"
-                          }`}
+                        <ImageIcon
+                          size={24}
+                          className={`mx-auto mb-2 ${newPost.mediaType === "image" ? "text-blue-600" : "text-gray-400"
+                            }`}
                         />
-                        <p className={`text-sm font-medium ${
-                          newPost.mediaType === "image" ? "text-blue-900" : "text-gray-600"
-                        }`}>
+                        <p className={`text-sm font-medium ${newPost.mediaType === "image" ? "text-blue-900" : "text-gray-600"
+                          }`}>
                           Photo
                         </p>
                       </button>
                       <button
                         type="button"
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          newPost.mediaType === "video"
+                        className={`p-4 rounded-xl border-2 transition-all ${newPost.mediaType === "video"
                             ? "border-blue-500 bg-blue-50"
                             : "border-gray-200 hover:border-gray-300"
-                        }`}
+                          }`}
                         onClick={() => setNewPost({ ...newPost, mediaType: "video" })}
                       >
-                        <Video 
-                          size={24} 
-                          className={`mx-auto mb-2 ${
-                            newPost.mediaType === "video" ? "text-blue-600" : "text-gray-400"
-                          }`}
+                        <Video
+                          size={24}
+                          className={`mx-auto mb-2 ${newPost.mediaType === "video" ? "text-blue-600" : "text-gray-400"
+                            }`}
                         />
-                        <p className={`text-sm font-medium ${
-                          newPost.mediaType === "video" ? "text-blue-900" : "text-gray-600"
-                        }`}>
+                        <p className={`text-sm font-medium ${newPost.mediaType === "video" ? "text-blue-900" : "text-gray-600"
+                          }`}>
                           Video
                         </p>
                       </button>
@@ -335,9 +327,9 @@ export default function CommunityPage() {
                       </label>
                       <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-gray-50">
                         {newPost.mediaType === "image" ? (
-                          <img 
-                            src={newPost.mediaUrl} 
-                            alt="Preview" 
+                          <img
+                            src={newPost.mediaUrl}
+                            alt="Preview"
                             className="w-full max-h-96 object-contain"
                             onError={(e) => {
                               e.currentTarget.style.display = "none";
@@ -345,8 +337,8 @@ export default function CommunityPage() {
                             }}
                           />
                         ) : (
-                          <video 
-                            src={newPost.mediaUrl} 
+                          <video
+                            src={newPost.mediaUrl}
                             className="w-full max-h-96"
                             controls
                           />
@@ -357,8 +349,8 @@ export default function CommunityPage() {
 
                   {/* Actions */}
                   <div className="flex justify-end gap-3 pt-4 border-t">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => {
                         setCreateDialogOpen(false);
                         setNewPost({ mediaUrl: "", mediaType: "image", caption: "" });
@@ -367,7 +359,7 @@ export default function CommunityPage() {
                     >
                       Cancel
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleCreatePost}
                       disabled={!newPost.mediaUrl.trim()}
                       className="bg-blue-600 hover:bg-blue-700 px-6"
@@ -406,7 +398,7 @@ export default function CommunityPage() {
                     <span>→ Unlimited posts!</span>
                   </div>
                 </div>
-                <Button 
+                <Button
                   onClick={() => router.push("/users")}
                   className="bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
                 >
@@ -439,7 +431,7 @@ export default function CommunityPage() {
                 Be the first to share something with the community!
               </p>
               {canPost && (
-                <Button 
+                <Button
                   onClick={() => setCreateDialogOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
@@ -496,14 +488,14 @@ export default function CommunityPage() {
                   {/* Media */}
                   <div className="relative bg-black">
                     {post.mediaType === "image" ? (
-                      <img 
-                        src={post.mediaUrl} 
-                        alt="Post media" 
+                      <img
+                        src={post.mediaUrl}
+                        alt="Post media"
                         className="w-full h-auto max-h-[400px] object-contain"
                       />
                     ) : (
-                      <video 
-                        src={post.mediaUrl} 
+                      <video
+                        src={post.mediaUrl}
                         className="w-full h-auto max-h-[400px]"
                         controls
                       />
@@ -516,27 +508,26 @@ export default function CommunityPage() {
                       <div className="flex items-center gap-4">
                         <button
                           onClick={() => handleLike(post._id)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-                            isLiked 
-                              ? "bg-red-50 text-red-600" 
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${isLiked
+                              ? "bg-red-50 text-red-600"
                               : "text-gray-600 hover:bg-gray-100"
-                          }`}
+                            }`}
                         >
-                          <Heart 
-                            size={20} 
+                          <Heart
+                            size={20}
                             className={isLiked ? "fill-current" : ""}
                           />
                           <span className="text-sm font-semibold">{postLikes.length}</span>
                         </button>
-                        
-                        <button 
+
+                        <button
                           className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
                           onClick={() => toggleComments(post._id)}
                         >
                           <MessageCircle size={20} />
                           <span className="text-sm font-semibold">{postComments.length}</span>
                         </button>
-                        
+
                         <button
                           onClick={() => handleShare(post._id)}
                           className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
@@ -545,7 +536,7 @@ export default function CommunityPage() {
                           <span className="text-sm font-semibold">{post.shares || 0}</span>
                         </button>
                       </div>
-                      
+
                       <button className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors">
                         <Bookmark size={20} />
                       </button>
@@ -567,14 +558,14 @@ export default function CommunityPage() {
                             </div>
                           </div>
                         ))}
-                        
+
                         {postComments.length > 2 && (
                           <button
                             onClick={() => toggleComments(post._id)}
                             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                           >
-                            {showAll 
-                              ? "Show less" 
+                            {showAll
+                              ? "Show less"
                               : `View all ${postComments.length} comments`}
                           </button>
                         )}
@@ -592,7 +583,7 @@ export default function CommunityPage() {
                         <Input
                           placeholder="Write a comment..."
                           value={commentInputs[post._id] || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             setCommentInputs({ ...commentInputs, [post._id]: e.target.value })
                           }
                           onKeyPress={(e) => {

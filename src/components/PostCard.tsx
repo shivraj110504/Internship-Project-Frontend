@@ -13,7 +13,7 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
     const { t } = useTranslation();
     const { user } = useAuth();
     const [comment, setComment] = useState("");
-    const isLiked = post.likes.includes(user?._id);
+    const isLiked = (post.likes || []).includes(user?._id);
 
     const handleCommentSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,11 +66,11 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
                             } hover:text-red-500 transition-colors`}
                     >
                         <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
-                        <span className="text-xs font-medium">{post.likes.length}</span>
+                        <span className="text-xs font-medium">{(post.likes || []).length}</span>
                     </button>
                     <div className="flex items-center space-x-1 text-gray-600">
                         <MessageCircle size={20} />
-                        <span className="text-xs font-medium">{post.comments.length}</span>
+                        <span className="text-xs font-medium">{(post.comments || []).length}</span>
                     </div>
                     <button
                         onClick={() => onShare(post._id)}
@@ -82,15 +82,15 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
                 </div>
 
                 <div className="w-full space-y-3">
-                    {post.comments.slice(0, 2).map((c: any, i: number) => (
+                    {(post.comments || []).slice(0, 2).map((c: any, i: number) => (
                         <div key={i} className="flex space-x-2 text-xs">
                             <span className="font-semibold">{c.userName}:</span>
                             <span className="text-gray-700">{c.text}</span>
                         </div>
                     ))}
-                    {post.comments.length > 2 && (
+                    {(post.comments || []).length > 2 && (
                         <button className="text-xs text-blue-600 hover:underline">
-                            {t("post_card.view_all_comments", { count: post.comments.length })}
+                            {t("post_card.view_all_comments", { count: (post.comments || []).length })}
                         </button>
                     )}
                 </div>
