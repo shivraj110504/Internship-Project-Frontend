@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Badge } from "@/components/ui/badge";
 
 const Notifications = () => {
-    const { fetchNotifications, markNotificationsRead, notifications, confirmFriendRequest, rejectFriendRequest, user } = useAuth();
+    const { fetchNotifications, markNotificationsRead, notifications, confirmFriendRequest, rejectFriendRequest, user, deleteNotification, clearAllNotifications } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [actionId, setActionId] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -36,7 +36,7 @@ const Notifications = () => {
 
     const handleAction = async (friendId: string, action: 'confirm' | 'reject') => {
         console.log('🔄 Action triggered:', { friendId, action });
-        
+
         if (!friendId) {
             console.error('❌ No friendId provided');
             return;
@@ -75,8 +75,16 @@ const Notifications = () => {
 
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-xl z-50 overflow-hidden">
-                    <div className="p-4 border-b">
+                    <div className="p-4 border-b flex justify-between items-center">
                         <h3 className="font-semibold text-sm text-gray-900">Notifications</h3>
+                        {notifications.length > 0 && (
+                            <button
+                                onClick={clearAllNotifications}
+                                className="text-[10px] text-blue-600 hover:text-blue-800 font-medium uppercase tracking-wider"
+                            >
+                                Clear All
+                            </button>
+                        )}
                     </div>
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 ? (
@@ -101,8 +109,18 @@ const Notifications = () => {
                                 return (
                                     <div
                                         key={notification._id}
-                                        className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-blue-50/30' : ''}`}
+                                        className={`p-4 border-b last:border-0 hover:bg-gray-50 transition-colors group relative ${!notification.read ? 'bg-blue-50/30' : ''}`}
                                     >
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteNotification(notification._id);
+                                            }}
+                                            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            title="Delete notification"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
                                         <div className="flex gap-3">
                                             <Avatar className="w-10 h-10">
                                                 <AvatarFallback className="bg-orange-100 text-orange-600">

@@ -557,6 +557,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteNotification = async (notifId) => {
+    try {
+      await axiosInstance.delete(`/post/notifications/${notifId}`);
+      setNotifications(prev => prev.filter(n => n._id !== notifId));
+    } catch (err) {
+      toast.error("Failed to delete notification");
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      await axiosInstance.delete("/post/notifications");
+      setNotifications([]);
+      toast.success("All notifications cleared");
+    } catch (err) {
+      toast.error("Failed to clear notifications");
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchNotifications();
@@ -610,6 +629,8 @@ export const AuthProvider = ({ children }) => {
         getFollowers: getFriends,
         fetchNotifications,
         markNotificationsRead,
+        deleteNotification,
+        clearAllNotifications,
         notifications,
         searchUsers,
         refreshUser,
