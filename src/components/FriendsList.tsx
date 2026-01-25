@@ -10,6 +10,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from '@/lib/AuthContext';
+import { useTranslation } from "react-i18next";
 
 interface FriendsListProps {
     open: boolean;
@@ -17,6 +18,7 @@ interface FriendsListProps {
 }
 
 const FriendsList: React.FC<FriendsListProps> = ({ open, onOpenChange }) => {
+    const { t } = useTranslation();
     const [friends, setFriends] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [removing, setRemoving] = useState<string | null>(null);
@@ -57,9 +59,9 @@ const FriendsList: React.FC<FriendsListProps> = ({ open, onOpenChange }) => {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Your Friends</DialogTitle>
+                    <DialogTitle>{t("friends_list.title")}</DialogTitle>
                     <DialogDescription>
-                        People you are connected with. You can remove anyone from your friends list.
+                        {t("friends_list.desc")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -70,7 +72,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ open, onOpenChange }) => {
                         </div>
                     ) : friends.length === 0 ? (
                         <div className="text-center py-12 text-gray-500">
-                            <p className="text-sm">No friends yet</p>
+                            <p className="text-sm">{t("friends_list.no_friends")}</p>
                         </div>
                     ) : (
                         friends.map((friend) => (
@@ -105,7 +107,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ open, onOpenChange }) => {
                                     ) : (
                                         <>
                                             <UserMinus className="w-3 h-3 mr-1" />
-                                            Remove
+                                            {t("friends_list.remove_btn")}
                                         </>
                                     )}
                                 </Button>

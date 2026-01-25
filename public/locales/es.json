@@ -1,0 +1,245 @@
+{
+    "navbar": {
+        "about": "Acerca de",
+        "products": "Productos",
+        "forTeams": "Para Equipos",
+        "search": "Buscar...",
+        "login": "Iniciar sesión",
+        "signup": "Registrarse",
+        "logout": "Cerrar sesión"
+    },
+    "auth": {
+        "welcome": "Bienvenido de nuevo",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "login_button": "Iniciar sesión",
+        "dont_have_account": "¿No tienes una cuenta?",
+        "signup_now": "Regístrate ahora"
+    },
+    "home": {
+        "welcome": "Hola {{name}}, ¿qué quieres aprender hoy?",
+        "ask_question": "Hacer pregunta",
+        "ai_assist_desc": "Obtenga respuestas instantáneas con AI Assist, basadas en el conocimiento verificado por la comunidad.",
+        "ai_assist_placeholder": "Comienza un chat con AI Assist...",
+        "ai_assist_terms": "Al usar AI Assist, aceptas los Términos de servicio y la Política de privacidad de Stack Overflow. Desarrollado con la ayuda de OpenAI.",
+        "points": "Puntos",
+        "points_desc": "Gana puntos respondiendo preguntas y recibiendo votos positivos.",
+        "badges": "Insignias",
+        "gold": "Oro",
+        "silver": "Plata",
+        "bronze": "Bronce",
+        "watched_tags": "Etiquetas seguidas",
+        "see_all": "Ver todo",
+        "interesting_posts": "Publicaciones interesantes para ti",
+        "public_space": "Espacio público",
+        "no_question": "No se encontraron preguntas."
+    },
+    "ask_question": {
+        "title_page": "Hacer una pregunta pública",
+        "remaining_questions": "{{remaining}}/{{limit}} preguntas restantes hoy",
+        "limit_reached": "Límite diario alcanzado",
+        "limit_reached_desc": "Has usado las {{limit}} preguntas de hoy en el plan {{plan}}.",
+        "upgrade_plan": "Actualizar plan",
+        "writing_guide": "Escribir una buena pregunta",
+        "label_title": "Título",
+        "title_desc": "Sé específico e imagina que estás haciendo una pregunta a otra persona.",
+        "title_placeholder": "ej. ¿Cómo centrar un div en CSS?",
+        "label_body": "¿Cuáles son los detalles de tu problema?",
+        "body_desc": "Introduce el problema y amplía lo que pusiste en el título. Mínimo 20 caracteres.",
+        "body_placeholder": "Describe tu problema en detalle...",
+        "label_tags": "Etiquetas",
+        "tags_desc": "Añade hasta 5 etiquetas para describir de qué trata tu pregunta.",
+        "tags_placeholder": "ej. javascript react nextjs",
+        "post_button": "Publicar tu pregunta",
+        "posting": "Publicando...",
+        "login_required": "Inicia sesión para hacer una pregunta",
+        "friend_required": "Necesitas al menos 1 amigo confirmado para hacer preguntas.",
+        "success": "Pregunta publicada con éxito"
+    },
+    "question_card": {
+        "votes": "votos",
+        "answers": "respuestas",
+        "views": "vistas",
+        "asked": "preguntado"
+    },
+    "post_card": {
+        "view_all_comments": "Ver los {{count}} comentarios",
+        "add_comment": "Añadir un comentario..."
+    },
+    "subscription": {
+        "title": "Elige tu plan",
+        "desc": "Actualiza para hacer más preguntas y desbloquear funciones premium",
+        "payment_window_title": "Ventana de tiempo de pago",
+        "payment_window_desc": "Los pagos solo están permitidos entre las 10:00 AM y las 11:00 AM IST. Por favor, regrese durante este tiempo para actualizar su suscripción.",
+        "current_plan": "Plan actual: {{plan}}",
+        "used_today": "{{asked}}/{{limit}} usados hoy",
+        "most_popular": "Más popular",
+        "per_month": "/mes",
+        "processing": "Procesando...",
+        "view_history": "Ver historial de pagos",
+        "manage_sub": "Gestionar suscripción",
+        "plans": {
+            "free": {
+                "name": "Gratis",
+                "limit": "1 pregunta/día",
+                "button": "Plan actual",
+                "features": [
+                    "1 pregunta al día",
+                    "Soporte comunitario",
+                    "Funciones básicas"
+                ]
+            },
+            "bronze": {
+                "name": "Bronce",
+                "limit": "5 preguntas/día",
+                "button": "Actualizar a Bronce",
+                "features": [
+                    "5 preguntas al día",
+                    "Soporte prioritario",
+                    "Notificaciones por correo electrónico",
+                    "Sin anuncios"
+                ]
+            },
+            "silver": {
+                "name": "Plata",
+                "limit": "10 preguntas/día",
+                "button": "Actualizar a Plata",
+                "features": [
+                    "10 preguntas al día",
+                    "Soporte premium",
+                    "Analítica avanzada",
+                    "Respuestas prioritarias"
+                ]
+            },
+            "gold": {
+                "name": "Oro",
+                "limit": "Preguntas ilimitadas",
+                "button": "Actualizar a Oro",
+                "features": [
+                    "Preguntas ilimitadas",
+                    "Soporte VIP",
+                    "Insignias personalizadas",
+                    "Todas las funciones"
+                ]
+            }
+        }
+    },
+    "payment_history": {
+        "back": "Volver",
+        "title": "Historial de pagos",
+        "loading": "Cargando...",
+        "no_history": "No se encontró historial de pagos",
+        "table": {
+            "date": "Fecha",
+            "plan": "Plan",
+            "amount": "Monto",
+            "status": "Estado",
+            "invoice": "Factura",
+            "download": "Descargar",
+            "na": "N/D"
+        }
+    },
+    "manage_subscription": {
+        "title": "Gestionar suscripción",
+        "status": "Estado",
+        "next_billing": "Próxima fecha de facturación",
+        "cancel_btn": "Cancelar suscripción",
+        "back_btn": "Volver",
+        "confirm_cancel": "¿Estás seguro de que deseas cancelar tu suscripción? Seguirás teniendo acceso hasta el final de tu período de facturación.",
+        "loading": "Cargando...",
+        "no_active_sub": "No tienes una suscripción activa para gestionar.",
+        "view_plans_btn": "Ver planes",
+        "current_plan_title": "Plan actual",
+        "cancels_at_end": "Se cancela al final del período de facturación",
+        "active_details": "Tus detalles de suscripción activa",
+        "daily_limit": "Límite diario de preguntas",
+        "unlimited": "Ilimitado",
+        "used_today": "Preguntas usadas hoy",
+        "billing_ends": "El período de facturación termina",
+        "cancel_title": "Cancelar suscripción",
+        "cancel_desc": "Puedes cancelar tu suscripción en cualquier momento. Seguirás teniendo acceso hasta el final de tu período de facturación actual.",
+        "cancelling": "Cancelando...",
+        "cancelled_title": "Suscripción cancelada",
+        "cancelled_desc_full": "Tu suscripción terminará el {{date}}. Seguirás teniendo acceso hasta entonces.",
+        "reactivate_btn": "Reactivar suscripción",
+        "quick_actions": "Acciones rápidas",
+        "view_all_plans": "Ver todos los planes",
+        "payment_history_btn": "Historial de pagos"
+    },
+    "payment_success": {
+        "title": "¡Pago exitoso!",
+        "desc": "Tu suscripción ha sido activada con éxito.",
+        "invoice_sent": "Factura enviada",
+        "invoice_desc": "Hemos enviado una factura con los detalles de tu suscripción a tu dirección de correo electrónico registrada.",
+        "redirecting": "Redirigiendo a la página de inicio en {{seconds}} segundos...",
+        "back_btn": "Ir a Inicio",
+        "view_sub_btn": "Ver suscripción"
+    },
+    "payment_cancel": {
+        "title": "Pago cancelado",
+        "desc": "Tu pago fue cancelado. No se realizaron cargos en tu cuenta.",
+        "issue_desc": "Si encontraste algún problema durante el proceso de pago, por favor contacta con nuestro equipo de soporte.",
+        "retry_btn": "Intentar de nuevo",
+        "view_plans_btn": "Ver planes de nuevo",
+        "back_home_btn": "Ir a Inicio"
+    },
+    "profile": {
+        "friends": "Amigos",
+        "history": "Historial",
+        "edit_profile": "Editar perfil",
+        "transfer_points": "Transferir puntos",
+        "member_since": "Miembro desde",
+        "points": "puntos",
+        "gold_badges": "insignias de oro",
+        "silver_badges": "insignias de plata",
+        "bronze_badges": "insignias de bronce",
+        "about": "Sobre mí",
+        "top_tags": "Etiquetas principales",
+        "no_user": "No se encontró ningún usuario.",
+        "edit_dialog": {
+            "title": "Editar perfil",
+            "basic_info": "Información básica",
+            "display_name": "Nombre visible",
+            "mobile": "Número de móvil",
+            "handle": "Nombre de usuario (@)",
+            "about_me": "Sobre mí",
+            "about_placeholder": "Cuéntanos sobre ti...",
+            "skills": "Habilidades y tecnologías",
+            "add_skill_placeholder": "Añadir habilidad o tecnología",
+            "change_password": "Cambiar contraseña",
+            "current_password": "Contraseña actual",
+            "new_password": "Nueva contraseña",
+            "update_password_btn": "Actualizar contraseña",
+            "cancel": "Cancelar",
+            "save": "Guardar cambios"
+        },
+        "transfer_dialog": {
+            "title": "Transferir puntos",
+            "search_user": "Buscar usuario",
+            "search_placeholder": "Escribe un nombre para buscar",
+            "amount": "Monto",
+            "amount_placeholder": "Ingresa los puntos a transferir",
+            "cancel": "Cancelar",
+            "transfer_btn": "Transferir"
+        }
+    },
+    "question_detail": {
+        "asked": "Preguntado",
+        "modified": "Modificado",
+        "viewed": "Visto",
+        "times": "veces",
+        "add_comment": "Añadir un comentario",
+        "post_answer": "Publicar tu respuesta",
+        "posting": "Publicando...",
+        "login_to_answer": "Inicia sesión para responder",
+        "no_answers": "Aún no hay respuestas. ¡Sé el primero en responder!",
+        "solutions": "Soluciones",
+        "answers_count": "{{count}} respuestas"
+    },
+    "friends_list": {
+        "title": "Tus amigos",
+        "desc": "Personas con las que estás conectado. Puedes eliminar a cualquiera de tu lista de amigos.",
+        "no_friends": "Todavía no hay amigos",
+        "remove_btn": "Eliminar"
+    }
+}

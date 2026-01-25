@@ -7,8 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Heart, MessageCircle, Share2, Send } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any, onComment: any, onShare: any }) => {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [comment, setComment] = useState("");
     const isLiked = post.likes.includes(user?._id);
@@ -88,14 +90,14 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
                     ))}
                     {post.comments.length > 2 && (
                         <button className="text-xs text-blue-600 hover:underline">
-                            View all {post.comments.length} comments
+                            {t("post_card.view_all_comments", { count: post.comments.length })}
                         </button>
                     )}
                 </div>
 
                 <form onSubmit={handleCommentSubmit} className="flex w-full mt-4 space-x-2">
                     <Input
-                        placeholder="Add a comment..."
+                        placeholder={t("post_card.add_comment")}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         className="flex-1 h-8 text-xs"

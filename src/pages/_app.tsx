@@ -3,6 +3,8 @@ import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/lib/AuthContext";
 import Head from "next/head";
+import "@/lib/i18n";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>

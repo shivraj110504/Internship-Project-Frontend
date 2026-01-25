@@ -27,12 +27,13 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axiosInstance.post("/user/signup", { name, email, password, phone, handle });
       const { data, token } = res.data;
-      
+
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
-      
+
       toast.success("Signup Successful");
+      return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Signup failed";
       setError(msg);
@@ -70,11 +71,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       const { data, token } = res.data;
-      
+
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
-      
+
       toast.success("Login Successful");
       return res.data;
     } catch (err) {
@@ -92,11 +93,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axiosInstance.post("/user/verify-otp", { userId, otp });
       const { data, token } = res.data;
-      
+
       const userData = { ...data, token };
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
-      
+
       toast.success("OTP Verified! Login Successful");
       return res.data;
     } catch (err) {
@@ -235,7 +236,7 @@ export const AuthProvider = ({ children }) => {
   const createPost = async (postData) => {
     // Check if user has friends
     const friendsCount = Array.isArray(user?.friends) ? user.friends.length : 0;
-    
+
     if (friendsCount === 0) {
       toast.dismiss();
       toast.error(
@@ -248,7 +249,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/post/create", postData);
-      
+
       toast.dismiss();
       toast.success(
         `✅ ${res.data.message || "Post created successfully!"}`,
@@ -276,9 +277,9 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       const errorData = err.response?.data;
       const msg = errorData?.message || "Failed to create post";
-      
+
       toast.dismiss();
-      
+
       // Show detailed error with stats
       if (errorData?.friendsCount !== undefined) {
         if (errorData.friendsCount === 0) {
@@ -300,7 +301,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         toast.error(msg, { autoClose: 4000 });
       }
-      
+
       throw err;
     } finally {
       setLoading(false);
@@ -539,7 +540,7 @@ export const AuthProvider = ({ children }) => {
         setNotifications([]);
         return [];
       }
-      
+
       if (err.response?.status !== 401) {
         console.log("Notifications not available");
       }

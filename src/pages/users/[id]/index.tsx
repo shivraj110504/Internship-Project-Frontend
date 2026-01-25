@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import FriendsList from "@/components/FriendsList";
+import { useTranslation } from "react-i18next";
 const getUserData = (id: string) => {
   const users = {
     "1": {
@@ -43,6 +44,7 @@ const getUserData = (id: string) => {
   return users[id as keyof typeof users] || users["1"];
 };
 const index = () => {
+  const { t } = useTranslation();
   const { user, transferPoints, changePassword, searchUsers } = useAuth();
   const router = useRouter();
   const { id } = router.query;
@@ -101,7 +103,7 @@ const index = () => {
     );
   }
   if (!users || users.length === 0) {
-    return <div className="text-center text-gray-500 mt-4">No user found.</div>;
+    return <div className="text-center text-gray-500 mt-4">{t("profile.no_user")}</div>;
   }
 
   const handleSaveProfile = async () => {
@@ -121,7 +123,7 @@ const index = () => {
 
         setusers(updatedUser);
         setIsEditing(false);
-        toast.success("Profile updated successfully!");
+        toast.success(t("profile.edit_dialog.save_success") || "Profile updated successfully!");
       }
     } catch (error) {
       console.log(error);
@@ -179,7 +181,7 @@ const index = () => {
                     onClick={() => setShowFriends(true)}
                   >
                     <Users className="w-4 h-4" />
-                    Friends ({users.friends?.length || 0})
+                    {t("profile.friends")} ({users.friends?.length || 0})
                   </Button>
                   <Button
                     variant="outline"
@@ -187,7 +189,7 @@ const index = () => {
                     onClick={() => router.push(`/users/${id}/history`)}
                   >
                     <Calendar className="w-4 h-4" />
-                    History
+                    {t("profile.history")}
                   </Button>
                   <Dialog open={isEditing} onOpenChange={setIsEditing}>
                     <DialogTrigger asChild>
@@ -196,23 +198,23 @@ const index = () => {
                         className="flex items-center gap-2 bg-transparent"
                       >
                         <Edit className="w-4 h-4" />
-                        Edit Profile
+                        {t("profile.edit_profile")}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-gray-900">
                       <DialogHeader>
-                        <DialogTitle>Edit Profile</DialogTitle>
+                        <DialogTitle>{t("profile.edit_dialog.title")}</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-6 py-4">
                         {/* Basic Information */
                         }
                         <div className="space-y-4">
                           <h3 className="text-lg font-semibold">
-                            Basic Information
+                            {t("profile.edit_dialog.basic_info")}
                           </h3>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="name">Display Name</Label>
+                              <Label htmlFor="name">{t("profile.edit_dialog.display_name")}</Label>
                               <Input
                                 id="name"
                                 value={editForm.name}
@@ -226,7 +228,7 @@ const index = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="phone">Mobile Number</Label>
+                              <Label htmlFor="phone">{t("profile.edit_dialog.mobile")}</Label>
                               <Input
                                 id="phone"
                                 type="tel"
@@ -240,7 +242,7 @@ const index = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="handle">Public Handle (@)</Label>
+                              <Label htmlFor="handle">{t("profile.edit_dialog.handle")}</Label>
                               <Input
                                 id="handle"
                                 value={editForm.handle}
@@ -256,9 +258,9 @@ const index = () => {
                           </div>
                           {/* About Section */}
                           <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">About</h3>
+                            <h3 className="text-lg font-semibold">{t("profile.edit_dialog.about_me")}</h3>
                             <div>
-                              <Label htmlFor="about">About Me</Label>
+                              <Label htmlFor="about">{t("profile.edit_dialog.about_me")}</Label>
                               <Textarea
                                 id="about"
                                 value={editForm.about}
@@ -268,7 +270,7 @@ const index = () => {
                                     about: e.target.value,
                                   })
                                 }
-                                placeholder="Tell us about yourself, your experience, and interests..."
+                                placeholder={t("profile.edit_dialog.about_placeholder")}
                                 className="min-h-32"
                               />
                             </div>
@@ -277,7 +279,7 @@ const index = () => {
                           {/* Tags/Skills Section */}
                           <div className="space-y-4">
                             <h3 className="text-lg font-semibold">
-                              Skills & Technologies
+                              {t("profile.edit_dialog.skills")}
                             </h3>
 
                             <div className="space-y-3">
@@ -285,7 +287,7 @@ const index = () => {
                                 <Input
                                   value={newTag}
                                   onChange={(e) => setNewTag(e.target.value)}
-                                  placeholder="Add a skill or technology"
+                                  placeholder={t("profile.edit_dialog.add_skill_placeholder")}
                                   onKeyPress={(e) =>
                                     e.key === "Enter" && handleAddTag()
                                   }
@@ -324,14 +326,14 @@ const index = () => {
 
                           {/* Change Password */}
                           <div className="space-y-4 border-t pt-4">
-                            <h3 className="text-lg font-semibold">Change Password</h3>
+                            <h3 className="text-lg font-semibold">{t("profile.edit_dialog.change_password")}</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div className="sm:col-span-1">
-                                <Label htmlFor="currentPassword">Current Password</Label>
+                                <Label htmlFor="currentPassword">{t("profile.edit_dialog.current_password")}</Label>
                                 <Input id="currentPassword" type="password" />
                               </div>
                               <div className="sm:col-span-1">
-                                <Label htmlFor="newPassword">New Password</Label>
+                                <Label htmlFor="newPassword">{t("profile.edit_dialog.new_password")}</Label>
                                 <Input id="newPassword" type="password" />
                               </div>
                             </div>
@@ -342,7 +344,7 @@ const index = () => {
                                   const current = (document.getElementById("currentPassword") as HTMLInputElement)?.value;
                                   const next = (document.getElementById("newPassword") as HTMLInputElement)?.value;
                                   if (!current || !next) {
-                                    toast.error("Enter both current and new password");
+                                    toast.error(t("profile.edit_dialog.password_error") || "Enter both current and new password");
                                     return;
                                   }
                                   try {
@@ -352,7 +354,7 @@ const index = () => {
                                   } catch (e) { }
                                 }}
                               >
-                                Update Password
+                                {t("profile.edit_dialog.update_password_btn")}
                               </Button>
                             </div>
                           </div>
@@ -364,14 +366,14 @@ const index = () => {
                               onClick={() => setIsEditing(false)}
                               className="bg-white text-gray-800 hover:text-gray-900"
                             >
-                              Cancel
+                              {t("profile.edit_dialog.cancel")}
                             </Button>
 
                             <Button
                               onClick={handleSaveProfile}
                               className="bg-blue-600 hover:bg-blue-700"
                             >
-                              Save Changes
+                              {t("profile.edit_dialog.save")}
                             </Button>
                           </div>
                         </div>
@@ -389,11 +391,11 @@ const index = () => {
                     </DialogTrigger>
                     <DialogContent className="max-w-md bg-white text-gray-900">
                       <DialogHeader>
-                        <DialogTitle>Transfer Points</DialogTitle>
+                        <DialogTitle>{t("profile.transfer_dialog.title")}</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4 py-2">
                         <div>
-                          <Label htmlFor="search">Search User</Label>
+                          <Label htmlFor="search">{t("profile.transfer_dialog.search_user")}</Label>
                           <Input
                             id="search"
                             value={transferQuery}
@@ -412,7 +414,7 @@ const index = () => {
                                 setAllUsers([]);
                               }
                             }}
-                            placeholder="Type a name to search"
+                            placeholder={t("profile.transfer_dialog.search_placeholder")}
                           />
                           {transferQuery && allUsers.length > 0 && (
                             <div className="max-h-40 overflow-auto border rounded mt-2">
@@ -436,30 +438,30 @@ const index = () => {
                           )}
                         </div>
                         <div>
-                          <Label htmlFor="amount">Amount</Label>
+                          <Label htmlFor="amount">{t("profile.transfer_dialog.amount")}</Label>
                           <Input
                             id="amount"
                             type="number"
                             min={1}
                             value={transferAmount}
                             onChange={(e) => setTransferAmount(e.target.value)}
-                            placeholder="Enter points to transfer"
+                            placeholder={t("profile.transfer_dialog.amount_placeholder")}
                           />
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => setTransferOpen(false)}>Cancel</Button>
+                          <Button variant="outline" onClick={() => setTransferOpen(false)}>{t("profile.transfer_dialog.cancel")}</Button>
                           <Button
                             className="bg-blue-600 hover:bg-blue-700"
                             disabled={!selectedUser || !transferAmount}
                             onClick={async () => {
                               try {
                                 await transferPoints({ toUserId: selectedUser._id, amount: Number(transferAmount) });
-                                toast.success("Points transferred");
+                                toast.success(t("profile.transfer_dialog.success") || "Points transferred");
                                 setTransferOpen(false);
                               } catch (e) { }
                             }}
                           >
-                            Transfer
+                            {t("profile.transfer_dialog.transfer_btn")}
                           </Button>
                         </div>
                       </div>
@@ -471,17 +473,17 @@ const index = () => {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1" />
-                Member since{" "}
+                {t("profile.member_since")}{" "}
                 {new Date(users.joinDate).toISOString().split("T")[0]}
               </div>
               <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
                 <div>
                   <span className="font-bold text-gray-900">{users.friends?.length || 0}</span>
-                  <span className="text-gray-600 ml-1">friends</span>
+                  <span className="text-gray-600 ml-1">{t("profile.friends").toLowerCase()}</span>
                 </div>
                 <div>
                   <span className="font-bold text-gray-900">{users.points || 0}</span>
-                  <span className="text-gray-600 ml-1">points</span>
+                  <span className="text-gray-600 ml-1">{t("profile.points")}</span>
                 </div>
               </div>
             </div>
@@ -489,17 +491,17 @@ const index = () => {
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
                 <span className="font-semibold">{users.goldBadges || 0}</span>
-                <span className="text-gray-600 ml-1">gold badges</span>
+                <span className="text-gray-600 ml-1">{t("profile.gold_badges")}</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
                 <span className="font-semibold">{users.silverBadges || 0}</span>
-                <span className="text-gray-600 ml-1">silver badges</span>
+                <span className="text-gray-600 ml-1">{t("profile.silver_badges")}</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-amber-600 rounded-full mr-2"></div>
                 <span className="font-semibold">{users.bronzeBadges || 0}</span>
-                <span className="text-gray-600 ml-1">bronze badges</span>
+                <span className="text-gray-600 ml-1">{t("profile.bronze_badges")}</span>
               </div>
             </div>
           </div>
@@ -508,7 +510,7 @@ const index = () => {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>About</CardTitle>
+                <CardTitle>{t("profile.about")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none">
@@ -522,7 +524,7 @@ const index = () => {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Top Tags</CardTitle>
+                <CardTitle>{t("profile.top_tags")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

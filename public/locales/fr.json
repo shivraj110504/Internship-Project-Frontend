@@ -1,0 +1,245 @@
+{
+    "navbar": {
+        "about": "À propos",
+        "products": "Produits",
+        "forTeams": "Pour les équipes",
+        "search": "Rechercher...",
+        "login": "Se connecter",
+        "signup": "S'inscrire",
+        "logout": "Déconnexion"
+    },
+    "auth": {
+        "welcome": "Bon retour",
+        "email": "Email",
+        "password": "Mot de passe",
+        "login_button": "Se connecter",
+        "dont_have_account": "Vous n'avez pas de compte?",
+        "signup_now": "Inscrivez-vous maintenant"
+    },
+    "home": {
+        "welcome": "Salut {{name}}, qu'est-ce que tu veux apprendre aujourd'hui ?",
+        "ask_question": "Poser une question",
+        "ai_assist_desc": "Obtenez des réponses instantanées avec AI Assist, basées sur les connaissances vérifiées par la communauté.",
+        "ai_assist_placeholder": "Démarrer une discussion avec AI Assist...",
+        "ai_assist_terms": "En utilisant AI Assist, vous acceptez les conditions d'utilisation et la politique de confidentialité de Stack Overflow. Propulsé avec l'aide d'OpenAI.",
+        "points": "Points",
+        "points_desc": "Gagnez des points en répondant aux questions et en recevant des votes positifs.",
+        "badges": "Badges",
+        "gold": "Or",
+        "silver": "Argent",
+        "bronze": "Bronze",
+        "watched_tags": "Tags suivis",
+        "see_all": "Voir tout",
+        "interesting_posts": "Articles intéressants pour vous",
+        "public_space": "Espace Public",
+        "no_question": "Aucune question trouvée."
+    },
+    "ask_question": {
+        "title_page": "Poser une question publique",
+        "remaining_questions": "{{remaining}}/{{limit}} questions restantes aujourd'hui",
+        "limit_reached": "Limite quotidienne atteinte",
+        "limit_reached_desc": "Vous avez utilisé toutes les {{limit}} questions pour aujourd'hui sur le plan {{plan}}.",
+        "upgrade_plan": "Améliorer le plan",
+        "writing_guide": "Écrire une bonne question",
+        "label_title": "Titre",
+        "title_desc": "Soyez spécifique et imaginez que vous posez une question à une autre personne.",
+        "title_placeholder": "ex. Comment centrer une div en CSS ?",
+        "label_body": "Quels sont les détails de votre problème ?",
+        "body_desc": "Présentez le problème et développez ce que vous avez mis dans le titre. Minimum 20 caractères.",
+        "body_placeholder": "Décrivez votre problème en détail...",
+        "label_tags": "Tags",
+        "tags_desc": "Ajoutez jusqu'à 5 tags pour décrire le sujet de votre question.",
+        "tags_placeholder": "ex. javascript react nextjs",
+        "post_button": "Publier votre question",
+        "posting": "Publication...",
+        "login_required": "Veuillez vous connecter pour poser une question",
+        "friend_required": "Vous avez besoin d'au moins 1 ami confirmé pour poser des questions.",
+        "success": "Question publiée avec succès"
+    },
+    "question_card": {
+        "votes": "votes",
+        "answers": "réponses",
+        "views": "vues",
+        "asked": "posée"
+    },
+    "post_card": {
+        "view_all_comments": "Voir les {{count}} commentaires",
+        "add_comment": "Ajouter un commentaire..."
+    },
+    "subscription": {
+        "title": "Choisissez votre forfait",
+        "desc": "Passez au niveau supérieur pour poser plus de questions et débloquer des fonctionnalités premium",
+        "payment_window_title": "Fenêtre de temps de paiement",
+        "payment_window_desc": "Les paiements ne sont autorisés qu'entre 10h00 et 11h00 IST. Veuillez revenir pendant cette période pour mettre à jour votre abonnement.",
+        "current_plan": "Forfait actuel : {{plan}}",
+        "used_today": "{{asked}}/{{limit}} utilisés aujourd'hui",
+        "most_popular": "Le plus populaire",
+        "per_month": "/mois",
+        "processing": "Traitement...",
+        "view_history": "Voir l'historique des paiements",
+        "manage_sub": "Gérer l'abonnement",
+        "plans": {
+            "free": {
+                "name": "Gratuit",
+                "limit": "1 question/jour",
+                "button": "Forfait actuel",
+                "features": [
+                    "1 question par jour",
+                    "Support communautaire",
+                    "Fonctionnalités de base"
+                ]
+            },
+            "bronze": {
+                "name": "Bronze",
+                "limit": "5 questions/jour",
+                "button": "Passer au Bronze",
+                "features": [
+                    "5 questions par jour",
+                    "Support prioritaire",
+                    "Notifications par e-mail",
+                    "Sans publicité"
+                ]
+            },
+            "silver": {
+                "name": "Argent",
+                "limit": "10 questions/jour",
+                "button": "Passer à l'Argent",
+                "features": [
+                    "10 questions par jour",
+                    "Support premium",
+                    "Analyses avancées",
+                    "Réponses prioritaires"
+                ]
+            },
+            "gold": {
+                "name": "Or",
+                "limit": "Questions illimitées",
+                "button": "Passer à l'Or",
+                "features": [
+                    "Questions illimitées",
+                    "Support VIP",
+                    "Badges personnalisés",
+                    "Toutes les fonctionnalités"
+                ]
+            }
+        }
+    },
+    "payment_history": {
+        "back": "Retour",
+        "title": "Historique des paiements",
+        "loading": "Chargement...",
+        "no_history": "Aucun historique de paiement trouvé",
+        "table": {
+            "date": "Date",
+            "plan": "Forfait",
+            "amount": "Montant",
+            "status": "Statut",
+            "invoice": "Facture",
+            "download": "Télécharger",
+            "na": "N/A"
+        }
+    },
+    "manage_subscription": {
+        "title": "Gérer l'abonnement",
+        "status": "Statut",
+        "next_billing": "Prochaine date de facturation",
+        "cancel_btn": "Résilier l'abonnement",
+        "back_btn": "Retour",
+        "confirm_cancel": "Êtes-vous sûr de vouloir résilier votre abonnement ? Vous continuerez à y avoir accès jusqu'à la fin de votre période de facturation.",
+        "loading": "Chargement...",
+        "no_active_sub": "Vous n'avez pas d'abonnement actif à gérer.",
+        "view_plans_btn": "Voir les forfaits",
+        "current_plan_title": "Forfait actuel",
+        "cancels_at_end": "Se termine à la fin de la période de facturation",
+        "active_details": "Détails de votre abonnement actif",
+        "daily_limit": "Limite quotidienne de questions",
+        "unlimited": "Illimité",
+        "used_today": "Questions utilisées aujourd'hui",
+        "billing_ends": "La période de facturation se termine",
+        "cancel_title": "Résilier l'abonnement",
+        "cancel_desc": "Vous pouvez résilier votre abonnement à tout moment. Vous continuerez à y avoir accès jusqu'à la fin de votre période de facturation actuelle.",
+        "cancelling": "Résiliation...",
+        "cancelled_title": "Abonnement résilié",
+        "cancelled_desc_full": "Votre abonnement se terminera le {{date}}. Vous continuerez à y avoir accès jusque-là.",
+        "reactivate_btn": "Réactiver l'abonnement",
+        "quick_actions": "Actions rapides",
+        "view_all_plans": "Voir tous les forfaits",
+        "payment_history_btn": "Historique des paiements"
+    },
+    "payment_success": {
+        "title": "Paiement réussi !",
+        "desc": "Votre abonnement a été activé avec succès.",
+        "invoice_sent": "Facture envoyée",
+        "invoice_desc": "Nous avons envoyé une facture avec les détails de votre abonnement à votre adresse e-mail enregistrée.",
+        "redirecting": "Redirection vers la page d'accueil dans {{seconds}} secondes...",
+        "back_btn": "Aller à l'accueil",
+        "view_sub_btn": "Voir l'abonnement"
+    },
+    "payment_cancel": {
+        "title": "Paiement annulé",
+        "desc": "Votre paiement a été annulé. Aucun frais n'a été débité de votre compte.",
+        "issue_desc": "Si vous avez rencontré des problèmes lors du paiement, veuillez contacter notre équipe d'assistance.",
+        "retry_btn": "Réessayer",
+        "view_plans_btn": "Voir à nouveau les forfaits",
+        "back_home_btn": "Aller à l'accueil"
+    },
+    "profile": {
+        "friends": "Amis",
+        "history": "Historique",
+        "edit_profile": "Modifier le profil",
+        "transfer_points": "Transférer des points",
+        "member_since": "Membre depuis",
+        "points": "points",
+        "gold_badges": "badges d'or",
+        "silver_badges": "badges d'argent",
+        "bronze_badges": "badges de bronze",
+        "about": "À propos",
+        "top_tags": "Tags principaux",
+        "no_user": "Aucun utilisateur trouvé.",
+        "edit_dialog": {
+            "title": "Modifier le profil",
+            "basic_info": "Informations de base",
+            "display_name": "Nom affiché",
+            "mobile": "Numéro de mobile",
+            "handle": "Identifiant public (@)",
+            "about_me": "À propos de moi",
+            "about_placeholder": "Parlez-nous de vous...",
+            "skills": "Compétences et technologies",
+            "add_skill_placeholder": "Ajouter une compétence ou une technologie",
+            "change_password": "Changer le mot de passe",
+            "current_password": "Mot de passe actuel",
+            "new_password": "Nouveau mot de passe",
+            "update_password_btn": "Mettre à jour le mot de passe",
+            "cancel": "Annuler",
+            "save": "Enregistrer les modifications"
+        },
+        "transfer_dialog": {
+            "title": "Transférer des points",
+            "search_user": "Rechercher un utilisateur",
+            "search_placeholder": "Tapez un nom pour rechercher",
+            "amount": "Montant",
+            "amount_placeholder": "Entrez les points à transférer",
+            "cancel": "Annuler",
+            "transfer_btn": "Transférer"
+        }
+    },
+    "question_detail": {
+        "asked": "Posée",
+        "modified": "Modifiée",
+        "viewed": "Vue",
+        "times": "fois",
+        "add_comment": "Ajouter un commentaire",
+        "post_answer": "Publier votre réponse",
+        "posting": "Publication...",
+        "login_to_answer": "Connectez-vous pour répondre",
+        "no_answers": "Pas encore de réponses. Soyez le premier à répondre !",
+        "solutions": "Solutions",
+        "answers_count": "{{count}} Réponses"
+    },
+    "friends_list": {
+        "title": "Vos amis",
+        "desc": "Les personnes avec lesquelles vous êtes connecté. Vous pouvez supprimer n'importe qui de votre liste d'amis.",
+        "no_friends": "Pas encore d'amis",
+        "remove_btn": "Supprimer"
+    }
+}

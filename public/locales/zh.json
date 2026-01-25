@@ -1,0 +1,245 @@
+{
+    "navbar": {
+        "about": "关于",
+        "products": "产品",
+        "forTeams": "团队版",
+        "search": "搜索...",
+        "login": "登录",
+        "signup": "注册",
+        "logout": "登出"
+    },
+    "auth": {
+        "welcome": "欢迎回来",
+        "email": "电子邮件",
+        "password": "密码",
+        "login_button": "登录",
+        "dont_have_account": "还没有账号?",
+        "signup_now": "立即注册"
+    },
+    "home": {
+        "welcome": "嘿 {{name}}，你今天想学习什么？",
+        "ask_question": "提问",
+        "ai_assist_desc": "通过 AI Assist 获取基于社区验证知识的即时回答。",
+        "ai_assist_placeholder": "开始与 AI Assist 聊天...",
+        "ai_assist_terms": "使用 AI Assist 即表示您同意 Stack Overflow 的服务条款和隐私政策。由 OpenAI 提供支持。",
+        "points": "声望值",
+        "points_desc": "通过回答问题并获得赞成票来赚取声望。 ",
+        "badges": "勋章",
+        "gold": "金牌",
+        "silver": "银牌",
+        "bronze": "铜牌",
+        "watched_tags": "关注的标签",
+        "see_all": "查看全部",
+        "interesting_posts": "为你推荐的有趣帖子",
+        "public_space": "公共空间",
+        "no_question": "未找到相关问题。"
+    },
+    "ask_question": {
+        "title_page": "提出公开问题",
+        "remaining_questions": "今天还剩 {{remaining}}/{{limit}} 个问题",
+        "limit_reached": "已达到每日上限",
+        "limit_reached_desc": "您已用完 {{plan}} 计划今天的全部 {{limit}} 个提问次数。",
+        "upgrade_plan": "升级计划",
+        "writing_guide": "如何写一个好问题",
+        "label_title": "标题",
+        "title_desc": "具体一点，想象你正在向另一个人提问。",
+        "title_placeholder": "例如：如何在 CSS 中居中一个 div？",
+        "label_body": "问题的具体细节是什么？",
+        "body_desc": "介绍问题并详细说明你在标题中提到的内容。最少 20 个字符。",
+        "body_placeholder": "详细描述您的问题...",
+        "label_tags": "标签",
+        "tags_desc": "最多添加 5 个标签来描述您的问题。",
+        "tags_placeholder": "例如：javascript react nextjs",
+        "post_button": "发布您的问题",
+        "posting": "发布中...",
+        "login_required": "请登录后提问",
+        "friend_required": "您至少需要 1 个已确认的朋友才能提问。",
+        "success": "问题发布成功"
+    },
+    "question_card": {
+        "votes": "票数",
+        "answers": "回答",
+        "views": "浏览量",
+        "asked": "提问于"
+    },
+    "post_card": {
+        "view_all_comments": "查看所有 {{count}} 条评论",
+        "add_comment": "添加评论..."
+    },
+    "subscription": {
+        "title": "选择您的计划",
+        "desc": "升级以提更多问题并解锁高级功能",
+        "payment_window_title": "付款时间窗口",
+        "payment_window_desc": "付款仅在印度标准时间 (IST) 上午 10:00 至 11:00 之间允许。请在此期间返回以升级您的订阅。",
+        "current_plan": "当前计划：{{plan}}",
+        "used_today": "今天已使用 {{asked}}/{{limit}}",
+        "most_popular": "最受欢迎",
+        "per_month": "/月",
+        "processing": "处理中...",
+        "view_history": "查看付款历史",
+        "manage_sub": "管理订阅",
+        "plans": {
+            "free": {
+                "name": "免费",
+                "limit": "1 个问题/天",
+                "button": "当前计划",
+                "features": [
+                    "每天 1 个问题",
+                    "社区支持",
+                    "基本功能"
+                ]
+            },
+            "bronze": {
+                "name": "铜牌",
+                "limit": "5 个问题/天",
+                "button": "升级到铜牌",
+                "features": [
+                    "每天 5 个问题",
+                    "优先支持",
+                    "电子邮件通知",
+                    "无广告"
+                ]
+            },
+            "silver": {
+                "name": "银牌",
+                "limit": "10 个问题/天",
+                "button": "升级到银牌",
+                "features": [
+                    "每天 10 个问题",
+                    "高级支持",
+                    "高级分析",
+                    "优先回答"
+                ]
+            },
+            "gold": {
+                "name": "金牌",
+                "limit": "无限提问",
+                "button": "升级到金牌",
+                "features": [
+                    "无限提问",
+                    "VIP 支持",
+                    "自定义徽章",
+                    "所有功能"
+                ]
+            }
+        }
+    },
+    "payment_history": {
+        "back": "返回",
+        "title": "付款历史",
+        "loading": "加载中...",
+        "no_history": "未找到付款历史",
+        "table": {
+            "date": "日期",
+            "plan": "计划",
+            "amount": "金额",
+            "status": "状态",
+            "invoice": "发票",
+            "download": "下载",
+            "na": "无"
+        }
+    },
+    "manage_subscription": {
+        "title": "管理您的订阅",
+        "status": "状态",
+        "next_billing": "下次账单日期",
+        "cancel_btn": "取消订阅",
+        "back_btn": "返回计划列表",
+        "confirm_cancel": "您确定要取消订阅吗？在当前账单周期结束前，您仍可以继续使用。",
+        "loading": "加载中...",
+        "no_active_sub": "您没有可管理的活动订阅。",
+        "view_plans_btn": "查看计划",
+        "current_plan_title": "当前计划",
+        "cancels_at_end": "将在账单周期结束时取消",
+        "active_details": "您的活动订阅详情",
+        "daily_limit": "每日提问上限",
+        "unlimited": "无限制",
+        "used_today": "今日已提问",
+        "billing_ends": "账单周期结束日期",
+        "cancel_title": "取消订阅",
+        "cancel_desc": "您可以随时取消订阅。在当前账单周期结束前，您仍可以继续使用。",
+        "cancelling": "正在取消...",
+        "cancelled_title": "订阅已取消",
+        "cancelled_desc_full": "您的订阅将于 {{date}} 到期。在此之前，您仍可以继续使用。",
+        "reactivate_btn": "重新激活订阅",
+        "quick_actions": "快速操作",
+        "view_all_plans": "查看所有计划",
+        "payment_history_btn": "付款历史"
+    },
+    "payment_success": {
+        "title": "付款成功！",
+        "desc": "您的订阅已成功激活。",
+        "invoice_sent": "发票已发送",
+        "invoice_desc": "我们已将包含订阅详情的发票发送到您的注册电子邮箱。",
+        "redirecting": "将在 {{seconds}} 秒后返回首页...",
+        "back_btn": "回到首页",
+        "view_sub_btn": "查看订阅"
+    },
+    "payment_cancel": {
+        "title": "付款已取消",
+        "desc": "您的付款已取消。您的账户未产生任何费用。",
+        "issue_desc": "如果您在结账过程中遇到任何问题，请联系我们的支持团队。",
+        "retry_btn": "再试一次",
+        "view_plans_btn": "再次查看计划",
+        "back_home_btn": "回到首页"
+    },
+    "profile": {
+        "friends": "好友",
+        "history": "历史",
+        "edit_profile": "编辑资料",
+        "transfer_points": "转账积分",
+        "member_since": "成员自",
+        "points": "积分",
+        "gold_badges": "金牌勋章",
+        "silver_badges": "银牌勋章",
+        "bronze_badges": "铜牌勋章",
+        "about": "关于",
+        "top_tags": "常用标签",
+        "no_user": "未找到该用户。",
+        "edit_dialog": {
+            "title": "编辑资料",
+            "basic_info": "基本信息",
+            "display_name": "显示名称",
+            "mobile": "手机号码",
+            "handle": "公开账号 (@)",
+            "about_me": "关于我",
+            "about_placeholder": "向我们介绍一下你自己...",
+            "skills": "技能与技术",
+            "add_skill_placeholder": "添加技能或技术",
+            "change_password": "修改密码",
+            "current_password": "当前密码",
+            "new_password": "新密码",
+            "update_password_btn": "更新密码",
+            "cancel": "取消",
+            "save": "保存修改"
+        },
+        "transfer_dialog": {
+            "title": "转账积分",
+            "search_user": "搜索用户",
+            "search_placeholder": "输入名称进行搜索",
+            "amount": "积分数量",
+            "amount_placeholder": "输入要转账的积分",
+            "cancel": "取消",
+            "transfer_btn": "转账"
+        }
+    },
+    "question_detail": {
+        "asked": "提问于",
+        "modified": "修改于",
+        "viewed": "浏览量",
+        "times": "次",
+        "add_comment": "添加评论",
+        "post_answer": "发布您的回答",
+        "posting": "发布中...",
+        "login_to_answer": "登录后回答",
+        "no_answers": "暂无回答。快来抢沙发吧！",
+        "solutions": "解决方案",
+        "answers_count": "{{count}} 条回答"
+    },
+    "friends_list": {
+        "title": "您的好友",
+        "desc": "与您建立联系的人。您可以将任何人从好友列表中移除。",
+        "no_friends": "暂无好友",
+        "remove_btn": "移除"
+    }
+}

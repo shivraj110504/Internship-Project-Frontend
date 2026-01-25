@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import UserSearch from "@/components/UserSearch";
 import { Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const questions = [
   {
@@ -79,6 +80,7 @@ const questions = [
   },
 ];
 export default function Home() {
+  const { t } = useTranslation();
   const [question, setquestion] = useState<any>(null);
   const [posts, setPosts] = useState<any>([]);
   const [loading, setloading] = useState(true);
@@ -181,7 +183,7 @@ export default function Home() {
   if (!question || question.length === 0) {
     return (
       <Mainlayout>
-        <div className="text-center text-gray-500 mt-4">No question found.</div>
+        <div className="text-center text-gray-500 mt-4">{t("home.no_question")}</div>
       </Mainlayout>
     );
   }
@@ -194,28 +196,28 @@ export default function Home() {
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-xl lg:text-3xl font-medium text-[#232629] flex items-center">
               <MessageSquareIcon className="w-6 h-6 mr-2 text-gray-800" />
-              Hey {user?.name || "Shivraj Taware"}, what do you want to learn today?
+              {t("home.welcome", { name: user?.name || "User" })}
             </h1>
             <button
               onClick={() => router.push("/ask")}
               className="bg-[#0A95FF] hover:bg-[#0074CC] text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors"
             >
-              Ask Question
+              {t("home.ask_question")}
             </button>
           </div>
           <p className="text-xs text-[#6A737C] mb-6">
-            Get instant answers with AI Assist, grounded in community-verified knowledge.
+            {t("home.ai_assist_desc")}
           </p>
 
           {/* AI Assist Input Area */}
           <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm relative mb-8">
             <textarea
-              placeholder="Start a chat with AI Assist..."
+              placeholder={t("home.ai_assist_placeholder")}
               className="w-full h-24 p-0 border-none focus:ring-0 resize-none text-gray-600 placeholder-gray-400 text-sm"
             />
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
               <span className="text-[10px] text-[#6A737C]">
-                By using AI Assist, you agree to Stack Overflow's <span className="text-blue-600 cursor-pointer">Terms of Service</span> and <span className="text-blue-600 cursor-pointer">Privacy Policy</span>. Powered with the help of OpenAI.
+                {t("home.ai_assist_terms")}
               </span>
               <button className="bg-[#0A95FF] p-1.5 rounded text-white hover:bg-[#0074CC]">
                 <Plus className="w-5 h-5 rotate-45" />
@@ -227,7 +229,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {/* Reputation Card */}
             <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
-              <h3 className="font-bold text-[#3B4045] text-sm mb-4">Points</h3>
+              <h3 className="font-bold text-[#3B4045] text-sm mb-4">{t("home.points")}</h3>
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="text-3xl font-medium text-[#232629]">{user?.points || 0}</span>
                 <div className="flex-1 h-2 bg-gray-100 rounded-full relative overflow-hidden">
@@ -236,27 +238,27 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-xs text-[#6A737C]">
-                Earn points by <span className="text-blue-600 cursor-pointer">Answering</span> questions and receiving upvotes.
+                {t("home.points_desc")}
               </p>
             </div>
 
             {/* Badge Progress Card */}
             <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-[#3B4045] text-sm">Badges</h3>
+                <h3 className="font-bold text-[#3B4045] text-sm">{t("home.badges")}</h3>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center">
                   <div className="text-xl font-bold text-gray-900">{user?.goldBadges || 0}</div>
-                  <div className="text-[10px] text-yellow-600 font-bold uppercase">Gold</div>
+                  <div className="text-[10px] text-yellow-600 font-bold uppercase">{t("home.gold")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold text-gray-900">{user?.silverBadges || 0}</div>
-                  <div className="text-[10px] text-gray-400 font-bold uppercase">Silver</div>
+                  <div className="text-[10px] text-gray-400 font-bold uppercase">{t("home.silver")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold text-gray-900">{user?.bronzeBadges || 0}</div>
-                  <div className="text-[10px] text-orange-400 font-bold uppercase">Bronze</div>
+                  <div className="text-[10px] text-orange-400 font-bold uppercase">{t("home.bronze")}</div>
                 </div>
               </div>
             </div>
@@ -264,7 +266,7 @@ export default function Home() {
             {/* Watched Tags Card */}
             <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-[#3B4045] text-sm">Watched tags</h3>
+                <h3 className="font-bold text-[#3B4045] text-sm">{t("home.watched_tags")}</h3>
                 <Plus className="w-4 h-4 text-[#6A737C] cursor-pointer" />
               </div>
               <div className="flex flex-wrap gap-2 mb-4">
@@ -274,7 +276,7 @@ export default function Home() {
                   </Badge>
                 ))}
               </div>
-              <Link href="/tags" className="text-blue-600 text-xs hover:text-blue-800">See all</Link>
+              <Link href="/tags" className="text-blue-600 text-xs hover:text-blue-800">{t("home.see_all")}</Link>
             </div>
           </div>
         </div>
@@ -285,13 +287,13 @@ export default function Home() {
             onClick={() => setActiveTab("questions")}
             className={`text-lg font-medium pb-2 border-b-2 transition-all ${activeTab === "questions" ? "border-orange-500 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
           >
-            Interesting posts for you
+            {t("home.interesting_posts")}
           </button>
           <button
             onClick={() => setActiveTab("public-space")}
             className={`text-lg font-medium pb-2 border-b-2 transition-all ${activeTab === "public-space" ? "border-orange-500 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
           >
-            Public Space
+            {t("home.public_space")}
           </button>
         </div>
 

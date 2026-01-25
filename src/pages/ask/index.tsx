@@ -11,8 +11,10 @@ import { Plus, X, AlertCircle, Crown } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const AskQuestion = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -56,9 +58,9 @@ const AskQuestion = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
-      toast.error("Please login to ask question");
+      toast.error(t("ask_question.login_required"));
       router.push("/auth");
       return;
     }
@@ -66,17 +68,17 @@ const AskQuestion = () => {
     // Check friend requirement
     const friendsCount = Array.isArray(user.friends) ? user.friends.length : 0;
     if (friendsCount === 0) {
-      toast.error("You need at least 1 confirmed friend to ask questions.");
+      toast.error(t("ask_question.friend_required"));
       return;
     }
 
     // Check subscription limit
     if (questionLimit && !questionLimit.canAsk) {
       toast.error(
-        `Daily question limit reached! You can ask ${questionLimit.limit} question(s) per day on the ${questionLimit.plan} plan.`,
+        t("ask_question.limit_reached_desc", { limit: questionLimit.limit, plan: questionLimit.plan }),
         { autoClose: 5000 }
       );
-      
+
       if (questionLimit.upgradeRequired) {
         setTimeout(() => {
           router.push("/subscription");
@@ -96,9 +98,9 @@ const AskQuestion = () => {
           userid: user?._id,
         },
       });
-      
+
       if (res.data.data) {
-        toast.success("Question posted successfully");
+        toast.success(t("ask_question.success"));
         await fetchQuestionLimit(); // Refresh limit
         router.push("/");
       }
@@ -106,7 +108,7 @@ const AskQuestion = () => {
       console.log(error);
       const msg = error.response?.data?.message || "Something went wrong";
       toast.error(msg);
-      
+
       if (error.response?.data?.upgradeRequired) {
         setTimeout(() => {
           router.push("/subscription");
@@ -138,18 +140,17 @@ const AskQuestion = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl lg:text-2xl font-semibold">
-            Ask a public question
+            {t("ask_question.title_page")}
           </h1>
-          
+
           {questionLimit && (
-            <Badge 
-              className={`text-sm ${
-                questionLimit.canAsk 
-                  ? "bg-green-100 text-green-800" 
-                  : "bg-red-100 text-red-800"
-              }`}
+            <Badge
+              className={`text-sm ${questionLimit.canAsk
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+                }`}
             >
-              {questionLimit.remaining}/{questionLimit.limit} questions remaining today
+              {t("ask_question.remaining_questions", { remaining: questionLimit.remaining, limit: questionLimit.limit })}
             </Badge>
           )}
         </div>
@@ -158,17 +159,17 @@ const AskQuestion = () => {
           <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
             <AlertCircle className="text-yellow-600 mt-0.5 flex-shrink-0" size={20} />
             <div className="flex-1">
-              <p className="font-semibold text-yellow-800">Daily Limit Reached</p>
+              <p className="font-semibold text-yellow-800">{t("ask_question.limit_reached")}</p>
               <p className="text-yellow-700 text-sm mb-3">
-                You've used all {questionLimit.limit} questions for today on the {questionLimit.plan} plan.
+                {t("ask_question.limit_reached_desc", { limit: questionLimit.limit, plan: questionLimit.plan })}
               </p>
-              <Button 
+              <Button
                 onClick={() => router.push("/subscription")}
                 className="bg-yellow-600 hover:bg-yellow-700"
                 size="sm"
               >
                 <Crown className="mr-2" size={16} />
-                Upgrade Plan
+                {t("ask_question.upgrade_plan")}
               </Button>
             </div>
           </div>
@@ -178,23 +179,23 @@ const AskQuestion = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg lg:text-xl">
-                Writing a good question
+                {t("ask_question.writing_guide")}
               </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <div>
                 <Label htmlFor="title" className="text-base font-semibold">
-                  Title
+                  {t("ask_question.label_title")}
                 </Label>
                 <p className="text-sm text-gray-600 mb-2">
-                  Be specific and imagine you're asking a question to another person.
+                  {t("ask_question.title_desc")}
                 </p>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={handleChange}
-                  placeholder="e.g. How to center a div in CSS?"
+                  placeholder={t("ask_question.title_placeholder")}
                   className="w-full"
                   required
                 />
@@ -202,17 +203,16 @@ const AskQuestion = () => {
 
               <div>
                 <Label htmlFor="body" className="text-base font-semibold">
-                  What are the details of your problem?
+                  {t("ask_question.label_body")}
                 </Label>
                 <p className="text-sm text-gray-600 mb-2">
-                  Introduce the problem and expand on what you put in the title.
-                  Minimum 20 characters.
+                  {t("ask_question.body_desc")}
                 </p>
                 <Textarea
                   id="body"
                   value={formData.body}
                   onChange={handleChange}
-                  placeholder="Describe your problem in detail..."
+                  placeholder={t("ask_question.body_placeholder")}
                   className="min-h-32 lg:min-h-48 w-full"
                   required
                   minLength={20}
@@ -221,16 +221,16 @@ const AskQuestion = () => {
 
               <div>
                 <Label htmlFor="tags" className="text-base font-semibold">
-                  Tags
+                  {t("ask_question.label_tags")}
                 </Label>
                 <p className="text-sm text-gray-600 mb-2">
-                  Add up to 5 tags to describe what your question is about.
+                  {t("ask_question.tags_desc")}
                 </p>
                 <div className="flex gap-2">
                   <Input
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="e.g. javascript react nextjs"
+                    placeholder={t("ask_question.tags_placeholder")}
                     className="w-full"
                     onKeyPress={(e) => {
                       if (e.key === "Enter") {
@@ -271,12 +271,12 @@ const AskQuestion = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="bg-blue-600 text-white"
                   disabled={loading || (questionLimit && !questionLimit.canAsk)}
                 >
-                  {loading ? "Posting..." : "Post Your Question"}
+                  {loading ? t("ask_question.posting") : t("ask_question.post_button")}
                 </Button>
               </div>
             </CardContent>

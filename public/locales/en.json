@@ -1,0 +1,245 @@
+{
+    "navbar": {
+        "about": "About",
+        "products": "Products",
+        "forTeams": "For Teams",
+        "search": "Search...",
+        "login": "Log in",
+        "signup": "Sign up",
+        "logout": "Log out"
+    },
+    "auth": {
+        "welcome": "Welcome back",
+        "email": "Email",
+        "password": "Password",
+        "login_button": "Log in",
+        "dont_have_account": "Don't have an account?",
+        "signup_now": "Sign up now"
+    },
+    "home": {
+        "welcome": "Hey {{name}}, what do you want to learn today?",
+        "ask_question": "Ask Question",
+        "ai_assist_desc": "Get instant answers with AI Assist, grounded in community-verified knowledge.",
+        "ai_assist_placeholder": "Start a chat with AI Assist...",
+        "ai_assist_terms": "By using AI Assist, you agree to Stack Overflow's Terms of Service and Privacy Policy. Powered with the help of OpenAI.",
+        "points": "Points",
+        "points_desc": "Earn points by Answering questions and receiving upvotes.",
+        "badges": "Badges",
+        "gold": "Gold",
+        "silver": "Silver",
+        "bronze": "Bronze",
+        "watched_tags": "Watched tags",
+        "see_all": "See all",
+        "interesting_posts": "Interesting posts for you",
+        "public_space": "Public Space",
+        "no_question": "No question found."
+    },
+    "ask_question": {
+        "title_page": "Ask a public question",
+        "remaining_questions": "{{remaining}}/{{limit}} questions remaining today",
+        "limit_reached": "Daily Limit Reached",
+        "limit_reached_desc": "You've used all {{limit}} questions for today on the {{plan}} plan.",
+        "upgrade_plan": "Upgrade Plan",
+        "writing_guide": "Writing a good question",
+        "label_title": "Title",
+        "title_desc": "Be specific and imagine you're asking a question to another person.",
+        "title_placeholder": "e.g. How to center a div in CSS?",
+        "label_body": "What are the details of your problem?",
+        "body_desc": "Introduce the problem and expand on what you put in the title. Minimum 20 characters.",
+        "body_placeholder": "Describe your problem in detail...",
+        "label_tags": "Tags",
+        "tags_desc": "Add up to 5 tags to describe what your question is about.",
+        "tags_placeholder": "e.g. javascript react nextjs",
+        "post_button": "Post Your Question",
+        "posting": "Posting...",
+        "login_required": "Please login to ask question",
+        "friend_required": "You need at least 1 confirmed friend to ask questions.",
+        "success": "Question posted successfully"
+    },
+    "question_card": {
+        "votes": "votes",
+        "answers": "answers",
+        "views": "views",
+        "asked": "asked"
+    },
+    "post_card": {
+        "view_all_comments": "View all {{count}} comments",
+        "add_comment": "Add a comment..."
+    },
+    "subscription": {
+        "title": "Choose Your Plan",
+        "desc": "Upgrade to ask more questions and unlock premium features",
+        "payment_window_title": "Payment Time Window",
+        "payment_window_desc": "Payments are only allowed between 10:00 AM - 11:00 AM IST. Please return during this time to upgrade your subscription.",
+        "current_plan": "Current Plan: {{plan}}",
+        "used_today": "{{asked}}/{{limit}} used today",
+        "most_popular": "Most Popular",
+        "per_month": "/month",
+        "processing": "Processing...",
+        "view_history": "View Payment History",
+        "manage_sub": "Manage Subscription",
+        "plans": {
+            "free": {
+                "name": "Free",
+                "limit": "1 question/day",
+                "button": "Current Plan",
+                "features": [
+                    "1 question per day",
+                    "Community support",
+                    "Basic features"
+                ]
+            },
+            "bronze": {
+                "name": "Bronze",
+                "limit": "5 questions/day",
+                "button": "Upgrade to Bronze",
+                "features": [
+                    "5 questions per day",
+                    "Priority support",
+                    "Email notifications",
+                    "No ads"
+                ]
+            },
+            "silver": {
+                "name": "Silver",
+                "limit": "10 questions/day",
+                "button": "Upgrade to Silver",
+                "features": [
+                    "10 questions per day",
+                    "Premium support",
+                    "Advanced analytics",
+                    "Priority answers"
+                ]
+            },
+            "gold": {
+                "name": "Gold",
+                "limit": "Unlimited questions",
+                "button": "Upgrade to Gold",
+                "features": [
+                    "Unlimited questions",
+                    "VIP support",
+                    "Custom badges",
+                    "All features"
+                ]
+            }
+        }
+    },
+    "payment_history": {
+        "back": "Back",
+        "title": "Payment History",
+        "loading": "Loading...",
+        "no_history": "No payment history found",
+        "table": {
+            "date": "Date",
+            "plan": "Plan",
+            "amount": "Amount",
+            "status": "Status",
+            "invoice": "Invoice",
+            "download": "Download",
+            "na": "N/A"
+        }
+    },
+    "manage_subscription": {
+        "title": "Manage Subscription",
+        "status": "Status",
+        "next_billing": "Next Billing Date",
+        "cancel_btn": "Cancel Subscription",
+        "back_btn": "Back",
+        "confirm_cancel": "Are you sure you want to cancel your subscription? You'll still have access until the end of your billing period.",
+        "loading": "Loading...",
+        "no_active_sub": "You don't have an active subscription to manage.",
+        "view_plans_btn": "View Plans",
+        "current_plan_title": "Current Plan",
+        "cancels_at_end": "Cancels at end of billing period",
+        "active_details": "Your active subscription details",
+        "daily_limit": "Daily Question Limit",
+        "unlimited": "Unlimited",
+        "used_today": "Questions Used Today",
+        "billing_ends": "Billing Period Ends",
+        "cancel_title": "Cancel Subscription",
+        "cancel_desc": "You can cancel your subscription at any time. You'll continue to have access until the end of your current billing period.",
+        "cancelling": "Cancelling...",
+        "cancelled_title": "Subscription Cancelled",
+        "cancelled_desc_full": "Your subscription will end on {{date}}. You'll continue to have access until then.",
+        "reactivate_btn": "Reactivate Subscription",
+        "quick_actions": "Quick Actions",
+        "view_all_plans": "View All Plans",
+        "payment_history_btn": "Payment History"
+    },
+    "payment_success": {
+        "title": "Payment Successful!",
+        "desc": "Your subscription has been activated successfully.",
+        "invoice_sent": "Invoice Sent",
+        "invoice_desc": "We've sent an invoice with your subscription details to your registered email address.",
+        "redirecting": "Redirecting to home page in {{seconds}} seconds...",
+        "back_btn": "Go to Home",
+        "view_sub_btn": "View Subscription"
+    },
+    "payment_cancel": {
+        "title": "Payment Cancelled",
+        "desc": "Your payment was cancelled. No charges were made to your account.",
+        "issue_desc": "If you encountered any issues during checkout, please contact our support team.",
+        "retry_btn": "Try Again",
+        "view_plans_btn": "View Plans Again",
+        "back_home_btn": "Go to Home"
+    },
+    "profile": {
+        "friends": "Friends",
+        "history": "History",
+        "edit_profile": "Edit Profile",
+        "transfer_points": "Transfer Points",
+        "member_since": "Member since",
+        "points": "points",
+        "gold_badges": "gold badges",
+        "silver_badges": "silver badges",
+        "bronze_badges": "bronze badges",
+        "about": "About",
+        "top_tags": "Top Tags",
+        "no_user": "No user found.",
+        "edit_dialog": {
+            "title": "Edit Profile",
+            "basic_info": "Basic Information",
+            "display_name": "Display Name",
+            "mobile": "Mobile Number",
+            "handle": "Public Handle (@)",
+            "about_me": "About Me",
+            "about_placeholder": "Tell us about yourself...",
+            "skills": "Skills & Technologies",
+            "add_skill_placeholder": "Add a skill or technology",
+            "change_password": "Change Password",
+            "current_password": "Current Password",
+            "new_password": "New Password",
+            "update_password_btn": "Update Password",
+            "cancel": "Cancel",
+            "save": "Save Changes"
+        },
+        "transfer_dialog": {
+            "title": "Transfer Points",
+            "search_user": "Search User",
+            "search_placeholder": "Type a name to search",
+            "amount": "Amount",
+            "amount_placeholder": "Enter points to transfer",
+            "cancel": "Cancel",
+            "transfer_btn": "Transfer"
+        }
+    },
+    "question_detail": {
+        "asked": "Asked",
+        "modified": "Modified",
+        "viewed": "Viewed",
+        "times": "times",
+        "add_comment": "Add a comment",
+        "post_answer": "Post Your Answer",
+        "posting": "Posting...",
+        "login_to_answer": "Login to answer",
+        "no_answers": "No answers yet. be the first to answer!",
+        "solutions": "Solutions",
+        "answers_count": "{{count}} Answers"
+    },
+    "friends_list": {
+        "title": "Your Friends",
+        "desc": "People you are connected with. You can remove anyone from your friends list.",
+        "no_friends": "No friends yet",
+        "remove_btn": "Remove"
+    }
+}

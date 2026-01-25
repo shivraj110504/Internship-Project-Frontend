@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
 
 interface QuestionCardProps {
     question: any;
@@ -10,6 +11,7 @@ interface QuestionCardProps {
 }
 
 const QuestionCard = ({ question, alternating = false }: QuestionCardProps) => {
+    const { t } = useTranslation();
     return (
         <div className={`p-4 border-b border-gray-200 ${alternating ? "bg-[#FEF9E7]" : "bg-white"}`}>
             <div className="flex gap-4">
@@ -17,15 +19,15 @@ const QuestionCard = ({ question, alternating = false }: QuestionCardProps) => {
                 <div className="flex flex-col items-end w-24 gap-2 text-[#6A737C] text-sm flex-shrink-0">
                     <div className="flex items-center gap-1">
                         <span className="font-medium text-[#232629]">{question.upvote?.length || 0}</span>
-                        <span>votes</span>
+                        <span>{t("question_card.votes")}</span>
                     </div>
                     <div className={`flex items-center gap-1 border border-transparent rounded px-1 ${question.noofanswer > 0 ? "border-[#2D6A4F] text-[#2D6A4F]" : ""}`}>
                         <span className="font-medium">{question.noofanswer || 0}</span>
-                        <span>answers</span>
+                        <span>{t("question_card.answers")}</span>
                     </div>
                     <div className="flex items-center gap-1 text-[#6A737C]">
                         <span className="font-medium">{(question.views || 0)}</span>
-                        <span>views</span>
+                        <span>{t("question_card.views")}</span>
                     </div>
                 </div>
 
@@ -66,7 +68,7 @@ const QuestionCard = ({ question, alternating = false }: QuestionCardProps) => {
                                 </Link>
                                 <span className="font-bold text-[#3B4045]">{question.authorRep || 1}</span>
                                 <span className="text-[#6A737C]">
-                                    asked {new Date(question.askedon).toLocaleDateString()}
+                                    {t("question_card.asked")} {new Date(question.askedon).toLocaleDateString()}
                                 </span>
                             </div>
                         </div>

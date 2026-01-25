@@ -10,8 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, CreditCard, AlertTriangle } from "lucide-react";
 import axiosInstance from "@/lib/axiosinstance";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function ManageSubscription() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const [subscription, setSubscription] = useState<any>(null);
@@ -39,7 +41,7 @@ export default function ManageSubscription() {
   };
 
   const handleCancelSubscription = async () => {
-    if (!confirm("Are you sure you want to cancel your subscription? You'll still have access until the end of your billing period.")) {
+    if (!confirm(t("manage_subscription.confirm_cancel"))) {
       return;
     }
 
@@ -60,7 +62,7 @@ export default function ManageSubscription() {
     return (
       <Mainlayout>
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="text-center">Loading...</div>
+          <div className="text-center">{t("manage_subscription.loading")}</div>
         </div>
       </Mainlayout>
     );
@@ -72,9 +74,9 @@ export default function ManageSubscription() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <Card>
             <CardContent className="text-center py-8">
-              <p className="text-gray-600 mb-4">You don't have an active subscription to manage.</p>
+              <p className="text-gray-600 mb-4">{t("manage_subscription.no_active_sub")}</p>
               <Button onClick={() => router.push("/subscription")}>
-                View Plans
+                {t("manage_subscription.view_plans_btn")}
               </Button>
             </CardContent>
           </Card>
@@ -89,18 +91,18 @@ export default function ManageSubscription() {
         <div className="mb-6">
           <Button variant="outline" onClick={() => router.back()}>
             <ArrowLeft className="mr-2" size={18} />
-            Back
+            {t("manage_subscription.back_btn")}
           </Button>
         </div>
 
-        <h1 className="text-3xl font-bold mb-6">Manage Subscription</h1>
+        <h1 className="text-3xl font-bold mb-6">{t("manage_subscription.title")}</h1>
 
         <div className="grid gap-6">
           {/* Current Plan Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Current Plan</span>
+                <span>{t("manage_subscription.current_plan_title")}</span>
                 <Badge className="text-lg px-4 py-1">
                   {subscription.plan}
                 </Badge>
@@ -108,10 +110,10 @@ export default function ManageSubscription() {
               <CardDescription>
                 {subscription.cancelAtPeriodEnd ? (
                   <span className="text-orange-600 font-semibold">
-                    Cancels at end of billing period
+                    {t("manage_subscription.cancels_at_end")}
                   </span>
                 ) : (
-                  "Your active subscription details"
+                  t("manage_subscription.active_details")
                 )}
               </CardDescription>
             </CardHeader>
@@ -120,19 +122,19 @@ export default function ManageSubscription() {
                 <div className="flex items-start gap-3">
                   <CreditCard className="text-gray-400 mt-1" size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Daily Question Limit</p>
+                    <p className="text-sm text-gray-500">{t("manage_subscription.daily_limit")}</p>
                     <p className="font-semibold">
-                      {subscription.dailyQuestionLimit === 999999 
-                        ? "Unlimited" 
+                      {subscription.dailyQuestionLimit === 999999
+                        ? t("manage_subscription.unlimited")
                         : subscription.dailyQuestionLimit}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Calendar className="text-gray-400 mt-1" size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Questions Used Today</p>
+                    <p className="text-sm text-gray-500">{t("manage_subscription.used_today")}</p>
                     <p className="font-semibold">
                       {subscription.questionsAskedToday} / {subscription.dailyQuestionLimit === 999999 ? "∞" : subscription.dailyQuestionLimit}
                     </p>
@@ -142,7 +144,7 @@ export default function ManageSubscription() {
                 <div className="flex items-start gap-3">
                   <Calendar className="text-gray-400 mt-1" size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Billing Period Ends</p>
+                    <p className="text-sm text-gray-500">{t("manage_subscription.billing_ends")}</p>
                     <p className="font-semibold">
                       {new Date(subscription.currentPeriodEnd).toLocaleDateString("en-IN", {
                         day: "numeric",
@@ -156,7 +158,7 @@ export default function ManageSubscription() {
                 <div className="flex items-start gap-3">
                   <CreditCard className="text-gray-400 mt-1" size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Status</p>
+                    <p className="text-sm text-gray-500">{t("manage_subscription.status")}</p>
                     <Badge className={subscription.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                       {subscription.status}
                     </Badge>
@@ -172,10 +174,10 @@ export default function ManageSubscription() {
               <CardHeader>
                 <CardTitle className="text-red-600 flex items-center gap-2">
                   <AlertTriangle size={24} />
-                  Cancel Subscription
+                  {t("manage_subscription.cancel_title")}
                 </CardTitle>
                 <CardDescription>
-                  You can cancel your subscription at any time. You'll continue to have access until the end of your current billing period.
+                  {t("manage_subscription.cancel_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -184,7 +186,7 @@ export default function ManageSubscription() {
                   onClick={handleCancelSubscription}
                   disabled={cancelling}
                 >
-                  {cancelling ? "Cancelling..." : "Cancel Subscription"}
+                  {cancelling ? t("manage_subscription.cancelling") : t("manage_subscription.cancel_btn")}
                 </Button>
               </CardContent>
             </Card>
@@ -197,17 +199,9 @@ export default function ManageSubscription() {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="text-orange-600 mt-1" size={24} />
                   <div>
-                    <h3 className="font-semibold text-orange-900 mb-1">Subscription Cancelled</h3>
+                    <h3 className="font-semibold text-orange-900 mb-1">{t("manage_subscription.cancelled_title")}</h3>
                     <p className="text-orange-800 text-sm mb-3">
-                      Your subscription will end on{" "}
-                      <strong>
-                        {new Date(subscription.currentPeriodEnd).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </strong>
-                      . You'll continue to have access until then.
+                      {t("manage_subscription.cancelled_desc_full", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })}
                     </p>
                     <Button
                       variant="outline"
@@ -215,7 +209,7 @@ export default function ManageSubscription() {
                       onClick={() => router.push("/subscription")}
                       className="border-orange-600 text-orange-600 hover:bg-orange-100"
                     >
-                      Reactivate Subscription
+                      {t("manage_subscription.reactivate_btn")}
                     </Button>
                   </div>
                 </div>
@@ -226,20 +220,20 @@ export default function ManageSubscription() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>{t("manage_subscription.quick_actions")}</CardTitle>
             </CardHeader>
             <CardContent className="flex gap-4 flex-wrap">
               <Button
                 variant="outline"
                 onClick={() => router.push("/subscription")}
               >
-                View All Plans
+                {t("manage_subscription.view_all_plans")}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => router.push("/subscription/history")}
               >
-                Payment History
+                {t("manage_subscription.payment_history_btn")}
               </Button>
             </CardContent>
           </Card>

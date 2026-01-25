@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import axiosInstance from "@/lib/axiosinstance";
 import { useAuth } from "@/lib/AuthContext";
+import { useTranslation } from "react-i18next";
 
 // Utility function to sanitize and format text content
 const formatContent = (content: string) => {
@@ -75,7 +76,7 @@ const formatContent = (content: string) => {
   // Format lists
   formatted = formatted.replace(/^\d+\.\s+(.*)$/gm, '<li class="ml-6 list-decimal">$1</li>');
   formatted = formatted.replace(/^[-*]\s+(.*)$/gm, '<li class="ml-6 list-disc">$1</li>');
-  
+
   // Wrap consecutive list items in ul/ol tags
   formatted = formatted.replace(/(<li class="ml-6 list-decimal">.*<\/li>\n?)+/g, '<ol class="my-3">$&</ol>');
   formatted = formatted.replace(/(<li class="ml-6 list-disc">.*<\/li>\n?)+/g, '<ul class="my-3">$&</ul>');
@@ -89,6 +90,7 @@ const formatContent = (content: string) => {
 };
 
 const QuestionDetail = ({ questionId }: any) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [question, setquestion] = useState<any>(null);
   const [answer, setanswer] = useState<any>();
@@ -125,7 +127,7 @@ const QuestionDetail = ({ questionId }: any) => {
 
   if (!question) {
     return (
-      <div className="text-center text-gray-500 mt-4">No question found.</div>
+      <div className="text-center text-gray-500 mt-4">{t("home.no_question")}</div>
     );
   }
 
@@ -293,7 +295,7 @@ const QuestionDetail = ({ questionId }: any) => {
         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
-            <span>Asked {new Date(question.askedon).toLocaleDateString()}</span>
+            <span>{t("question_card.asked")} {new Date(question.askedon).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
@@ -327,11 +329,10 @@ const QuestionDetail = ({ questionId }: any) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`p-2 ${
-                    question?.isBookmarked
+                  className={`p-2 ${question?.isBookmarked
                       ? "text-yellow-500"
                       : "text-gray-600 hover:text-yellow-500"
-                  }`}
+                    }`}
                   onClick={handlebookmark}
                 >
                   <Bookmark
@@ -381,7 +382,7 @@ const QuestionDetail = ({ questionId }: any) => {
                     className="text-gray-600 hover:text-gray-800"
                   >
                     <Share className="w-4 h-4 mr-1" />
-                    Share
+                    {t("post_card.share") || "Share"}
                   </Button>
                   <Button
                     variant="ghost"
@@ -389,7 +390,7 @@ const QuestionDetail = ({ questionId }: any) => {
                     className="text-gray-600 hover:text-gray-800"
                   >
                     <Flag className="w-4 h-4 mr-1" />
-                    Flag
+                    {t("post_card.flag") || "Flag"}
                   </Button>
                   {question.userid === user?._id && (
                     <Button
@@ -399,14 +400,14 @@ const QuestionDetail = ({ questionId }: any) => {
                       className="text-red-600 hover:text-red-800"
                     >
                       <Trash className="w-4 h-4 mr-1" />
-                      Delete
+                      {t("post_card.delete") || "Delete"}
                     </Button>
                   )}
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-gray-600">
-                    asked {new Date(question.askedon).toLocaleDateString()}
+                    {t("question_card.asked")} {new Date(question.askedon).toLocaleDateString()}
                   </span>
                   <Link
                     href={`/users/${question.userid}`}
@@ -433,8 +434,7 @@ const QuestionDetail = ({ questionId }: any) => {
       {/* Answers Section */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-6 text-gray-900">
-          {question.answer.length} Answer
-          {question.answer.length !== 1 ? "s" : ""}
+          {question.answer.length} {question.answer.length !== 1 ? t("question_detail.answers") || "Answers" : t("question_detail.answer") || "Answer"}
         </h2>
         <div className="space-y-6">
           {question.answer.map((ans: any) => (
@@ -459,7 +459,7 @@ const QuestionDetail = ({ questionId }: any) => {
                           className="text-gray-600 hover:text-gray-800"
                         >
                           <Share className="w-4 h-4 mr-1" />
-                          Share
+                          {t("post_card.share") || "Share"}
                         </Button>
                         <Button
                           variant="ghost"
@@ -467,7 +467,7 @@ const QuestionDetail = ({ questionId }: any) => {
                           className="text-gray-600 hover:text-gray-800"
                         >
                           <Flag className="w-4 h-4 mr-1" />
-                          Flag
+                          {t("post_card.flag") || "Flag"}
                         </Button>
                         {ans.userid === user?._id && (
                           <Button
@@ -477,14 +477,14 @@ const QuestionDetail = ({ questionId }: any) => {
                             className="text-red-600 hover:text-red-800"
                           >
                             <Trash className="w-4 h-4 mr-1" />
-                            Delete
+                            {t("post_card.delete") || "Delete"}
                           </Button>
                         )}
                       </div>
 
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-gray-600">
-                          answered {new Date(ans.answeredon).toLocaleDateString()}
+                          {t("question_card.asked")} {new Date(ans.answeredon).toLocaleDateString()}
                         </span>
                         <Link
                           href={`/users/${ans.userid}`}
@@ -515,26 +515,21 @@ const QuestionDetail = ({ questionId }: any) => {
       <Card>
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
-            Your Answer
+            {t("question_detail.post_answer")}
           </h3>
           <div className="mb-2 text-sm text-gray-600">
             <p className="font-medium mb-1">You can use Markdown formatting:</p>
             <ul className="list-disc list-inside ml-2 mt-1 space-y-1">
               <li>Code blocks: <code className="bg-gray-100 px-1 rounded">```language</code> followed by your code then <code className="bg-gray-100 px-1 rounded">```</code></li>
               <li>Inline code: <code className="bg-gray-100 px-1 rounded">`your code`</code></li>
-              <li>Headers: <code className="bg-gray-100 px-1 rounded">## Header</code> or <code className="bg-gray-100 px-1 rounded">### Smaller Header</code></li>
-              <li>Bold: <code className="bg-gray-100 px-1 rounded">**text**</code> | Italic: <code className="bg-gray-100 px-1 rounded">*text*</code></li>
+              <li>{t("question_detail.code_blocks_example") || "Code blocks: "} <code className="bg-gray-100 px-1 rounded">```language</code> {t("question_detail.followed_by_code") || "followed by your code then"} <code className="bg-gray-100 px-1 rounded">```</code></li>
+              <li>{t("question_detail.inline_code_example") || "Inline code: "} <code className="bg-gray-100 px-1 rounded">`your code`</code></li>
+              <li>{t("question_detail.headers_example") || "Headers: "} <code className="bg-gray-100 px-1 rounded">## Header</code> {t("question_detail.or") || "or"} <code className="bg-gray-100 px-1 rounded">### Smaller Header</code></li>
+              <li>{t("question_detail.bold_italic_example") || "Bold: "} <code className="bg-gray-100 px-1 rounded">**text**</code> | {t("question_detail.italic") || "Italic: "} <code className="bg-gray-100 px-1 rounded">*text*</code></li>
             </ul>
           </div>
           <Textarea
-            placeholder="Write your answer here... 
-
-Example:
-````javascript
-function hello() {
-  console.log('Hello World');
-}
-```"
+            placeholder={t("question_detail.add_answer_placeholder") || "Write your answer here..."}
             value={newanswer}
             onChange={(e) => setnewAnswer(e.target.value)}
             className="min-h-48 mb-4 resize-none font-mono text-sm"
@@ -545,7 +540,7 @@ function hello() {
               disabled={!newanswer.trim() || isSubmitting}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isSubmitting ? "Posting..." : "Post Your Answer"}
+              {isSubmitting ? t("question_detail.posting") : t("question_detail.post_answer")}
             </Button>
             <p className="text-sm text-gray-600">
               By posting your answer, you agree to the{" "}

@@ -46,9 +46,12 @@ export default function SignUpPage() {
       // Signup function returns userId for verification
       const data = await Signup(form);
 
-      if (data?.userId) {
-        setUserId(data.userId);
-        setShowVerify(true); // Show OTP/email verification step
+      if (data?.userId || data?.data?._id) {
+        setUserId(data.userId || data.data._id);
+        // If the user entered a phone number, we can skip the manual verification step 
+        // since the backend already saved it. But if you want to SHOW verification:
+        // setShowVerify(true); 
+        router.push("/");
       } else {
         router.push("/"); // fallback redirect
       }

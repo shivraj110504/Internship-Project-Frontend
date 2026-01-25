@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, ArrowLeft } from "lucide-react";
 import axiosInstance from "@/lib/axiosinstance";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentHistory() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const [payments, setPayments] = useState<any[]>([]);
@@ -54,31 +56,31 @@ export default function PaymentHistory() {
         <div className="mb-6">
           <Button variant="outline" onClick={() => router.back()}>
             <ArrowLeft className="mr-2" size={18} />
-            Back
+            {t("payment_history.back")}
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Payment History</CardTitle>
+            <CardTitle className="text-2xl">{t("payment_history.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="text-center py-8">{t("payment_history.loading")}</div>
             ) : payments.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No payment history found
+                {t("payment_history.no_history")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="border-b">
                     <tr>
-                      <th className="text-left py-3 px-4">Date</th>
-                      <th className="text-left py-3 px-4">Plan</th>
-                      <th className="text-left py-3 px-4">Amount</th>
-                      <th className="text-left py-3 px-4">Status</th>
-                      <th className="text-left py-3 px-4">Invoice</th>
+                      <th className="text-left py-3 px-4">{t("payment_history.table.date")}</th>
+                      <th className="text-left py-3 px-4">{t("payment_history.table.plan")}</th>
+                      <th className="text-left py-3 px-4">{t("payment_history.table.amount")}</th>
+                      <th className="text-left py-3 px-4">{t("payment_history.table.status")}</th>
+                      <th className="text-left py-3 px-4">{t("payment_history.table.invoice")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -111,10 +113,10 @@ export default function PaymentHistory() {
                               className="text-blue-600 hover:underline flex items-center gap-1"
                             >
                               <Download size={16} />
-                              Download
+                              {t("payment_history.table.download")}
                             </a>
                           ) : (
-                            <span className="text-gray-400">N/A</span>
+                            <span className="text-gray-400">{t("payment_history.table.na")}</span>
                           )}
                         </td>
                       </tr>

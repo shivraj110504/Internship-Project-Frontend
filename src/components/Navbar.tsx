@@ -5,6 +5,8 @@ import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Notifications from "./Notifications";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 // const User = {
 //   _id: "1",
@@ -13,6 +15,7 @@ import Notifications from "./Notifications";
 
 const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
   const { user, Logout } = useAuth();
+  const { t } = useTranslation();
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
     setHasMounted(true);
@@ -40,39 +43,49 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
           </Link>
 
           <div className="hidden sm:flex gap-1">
-            {["About", "Products", "For Teams"].map((item) => (
-              <Link
-                key={item}
-                href="/"
-                className="text-sm text-[#454545] font-medium px-4 py-2 rounded hover:bg-gray-200 transition"
-              >
-                {item}
-              </Link>
-            ))}
+            <Link
+              href="/"
+              className="text-sm text-[#454545] font-medium px-4 py-2 rounded hover:bg-gray-200 transition"
+            >
+              {t("navbar.about")}
+            </Link>
+            <Link
+              href="/"
+              className="text-sm text-[#454545] font-medium px-4 py-2 rounded hover:bg-gray-200 transition"
+            >
+              {t("navbar.products")}
+            </Link>
+            <Link
+              href="/"
+              className="text-sm text-[#454545] font-medium px-4 py-2 rounded hover:bg-gray-200 transition"
+            >
+              {t("navbar.forTeams")}
+            </Link>
           </div>
           <form className="hidden sm:block flex-grow relative px-3">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t("navbar.search")}
               className="w-full max-w-[600px] pl-9 pr-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
             <Search className="absolute left-4 top-2.5 h-4 w-4 text-gray-600" />
           </form>
         </div>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           {!hasMounted ? null : !user ? (
             <div className="flex gap-2">
               <Link
                 href="/auth"
                 className="text-sm font-medium text-[#3974C9] bg-[#FFFFFF] hover:bg-[#b3d3ea] border border-[#7aa7c7] px-4 py-1.5 rounded transition"
               >
-                Log in
+                {t("navbar.login")}
               </Link>
               <Link
                 href="/signup"
                 className="text-sm font-medium text-white bg-[#3974C9] hover:bg-[#0077cc] px-4 py-1.5 rounded shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] transition"
               >
-                Sign up
+                {t("navbar.signup")}
               </Link>
             </div>
           ) : (
@@ -89,7 +102,7 @@ const Navbar = ({ handleslidein, isSidebarOpen }: any) => {
                 onClick={handlelogout}
                 className="text-sm font-medium text-[#454545] bg-[#e7f8fe] hover:bg-[#d3e4eb] border border-blue-500 px-4 py-1.5 rounded transition"
               >
-                Log out
+                {t("navbar.logout")}
               </button>
             </>
           )}

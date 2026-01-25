@@ -13,8 +13,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const index = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { Login, sendForgotPasswordEmail, VerifyOTP, loading } = useAuth();
   const [form, setform] = useState({ email: "", password: "" });
@@ -80,7 +82,7 @@ const index = () => {
             <Card>
               <CardHeader className="space-y-1 text-center">
                 <CardTitle className="text-xl lg:text-2xl">
-                  Log in to your account
+                  {t("auth.welcome")}
                 </CardTitle>
                 <CardDescription>
                   Enter your email and password to access Stack Overflow
@@ -131,7 +133,7 @@ const index = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm">
-                    Email
+                    {t("auth.email")}
                   </Label>
                   <Input
                     id="email"
@@ -144,7 +146,7 @@ const index = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <Label htmlFor="password" className="text-sm">
-                      Password
+                      {t("auth.password")}
                     </Label>
                     <Link
                       href="/auth/forgot-password"
@@ -162,12 +164,12 @@ const index = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-sm" disabled={loading}>
-                  {loading ? "Loading..." : "Log in"}
+                  {loading ? "Loading..." : t("auth.login_button")}
                 </Button>
                 <div className="text-center text-sm">
-                  Don't have an account?{" "}
+                  {t("auth.dont_have_account")}{" "}
                   <Link href="/signup" className="text-blue-600 hover:underline">
-                    Sign up
+                    {t("auth.signup_now")}
                   </Link>
                 </div>
               </CardContent>
