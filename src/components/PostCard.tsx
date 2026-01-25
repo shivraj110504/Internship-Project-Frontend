@@ -5,14 +5,24 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Heart, MessageCircle, Share2, Send } from "lucide-react";
+import { Heart, MessageCircle, Share2, Send, Copy, Check } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTranslation } from "react-i18next";
+import { Label } from "@/components/ui/label";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "react-toastify";
 
 const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any, onComment: any, onShare: any }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
     const [comment, setComment] = useState("");
+    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
     const isLiked = (post.likes || []).includes(user?._id);
 
     const handleCommentSubmit = (e: React.FormEvent) => {
@@ -21,6 +31,19 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
             onComment(post._id, comment);
             setComment("");
         }
+    };
+
+    const handleShareClick = () => {
+        onShare(post._id);
+        setIsShareDialogOpen(true);
+    };
+
+    const copyToClipboard = () => {
+        const shareUrl = `${window.location.origin}/post/${post._id}`;
+        navigator.clipboard.writeText(shareUrl);
+        setIsCopied(true);
+        toast.success(t("post_card.link_copied"));
+        setTimeout(() => setIsCopied(false), 2000);
     };
 
     return (
@@ -73,7 +96,7 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
                         <span className="text-xs font-medium">{(post.comments || []).length}</span>
                     </div>
                     <button
-                        onClick={() => onShare(post._id)}
+                        onClick={handleShareClick}
                         className="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition-colors"
                     >
                         <Share2 size={20} />
@@ -107,6 +130,36 @@ const PostCard = ({ post, onLike, onComment, onShare }: { post: any, onLike: any
                     </Button>
                 </form>
             </CardFooter>
+
+            <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+                <DialogContent className="sm:max-w-md bg-white">
+                    <DialogHeader>
+                        <DialogTitle>{t("post_card.share_post")}</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex items-center space-x-2 pt-4">
+                        <div className="grid flex-1 gap-2">
+                            <Label htmlFor="link" className="sr-only">
+                                Link
+                            </Label>
+                            <Input
+                                id="link"
+                                defaultValue={`${typeof window !== 'undefined' ? window.location.origin : ''}/post/${post._id}`}
+                                readOnly
+                                className="h-9 text-xs"
+                            />
+                        </div>
+                        <Button
+                            type="button"
+                            size="sm"
+                            className="px-3"
+                            onClick={copyToClipboard}
+                        >
+                            <span className="sr-only">Copy</span>
+                            {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 };
