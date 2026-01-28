@@ -401,6 +401,11 @@ export default function Home() {
                         onLike={handleLike}
                         onComment={handleComment}
                         onShare={handleShare}
+                        onFriendStatusChange={async () => {
+                          // Refresh posts to update friend status
+                          const pRes = await fetchPosts();
+                          setPosts(pRes);
+                        }}
                       />
                     ))
                   ) : (
