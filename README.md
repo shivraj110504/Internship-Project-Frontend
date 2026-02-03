@@ -1,11 +1,11 @@
 # Internship Project – Social & Q&A Platform
 
-**Live Demo:** https://internship-project-frontend-umber.vercel.app/
+### 🚀 Visit Link: [QueryNest Live](https://internship-project-frontend-umber.vercel.app/)
 
 ## Overview
-This project is a full‑stack social interaction and Q&A platform developed as part of an internship assignment. The system combines a **public social space**, **StackOverflow‑like Q&A features**, **subscriptions**, **rewards**, **security controls**, and **multi‑language support**, with multiple business rules and constraints enforced at the application level.
+This project is a full-stack social interaction and Q&A platform developed as part of an internship assignment. The system combines a **public social space**, **StackOverflow-like Q&A features**, **subscriptions**, **rewards**, **security controls**, and **multi-language support**, with multiple business rules and constraints enforced at the application level.
 
-The goal of the project is to demonstrate real‑world problem solving, backend logic enforcement, authentication/authorization workflows, payment integration, and scalable feature design.
+The objective of this project is to demonstrate real-world problem solving, backend business-logic enforcement, authentication and authorization workflows, payment integration, and scalable feature design.
 
 ---
 
@@ -15,17 +15,17 @@ The goal of the project is to demonstrate real‑world problem solving, backend 
 A shared public space where users can connect and interact.
 
 **Capabilities**
-- Users can upload **images and videos**.
-- Users can **like, comment, and share** posts.
-- Posting limits are based on the number of friends:
-  - **0 friends** → Cannot post on the public page.
-  - **1 post/day** → Default user.
-  - **2 friends** → 2 posts/day.
-  - **More than 10 friends** → Unlimited posts/day.
+- Users can upload **images and videos**
+- Users can **like, comment, and share** posts
+- Posting limits based on friend count:
+  - **0 friends** → Cannot post on the public page
+  - **Default user** → 1 post/day
+  - **2 friends** → 2 posts/day
+  - **More than 10 friends** → Unlimited posts/day
 
 **Business Logic**
-- Posting frequency is dynamically calculated based on the user’s friend count.
-- All limits are validated server‑side.
+- Posting limits are dynamically calculated using the user’s friend count
+- All constraints are validated server-side
 
 ---
 
@@ -33,40 +33,38 @@ A shared public space where users can connect and interact.
 A secure password recovery mechanism.
 
 **Rules & Flow**
-- Users can request **Forgot Password only once per day**.
-- Multiple requests in the same day trigger a **warning message**.
-- Password reset can be requested using:
+- Forgot Password can be requested **only once per day**
+- Multiple attempts on the same day trigger a **warning message**
+- Reset can be requested using:
   - Email address, or
-  - Phone number.
+  - Phone number
 
 **Password Generator**
-- Generates a **random password** automatically.
-- Password constraints:
+- Automatically generates a **random password**
+- Constraints:
   - No numbers
   - No special characters
-  - Combination of **uppercase and lowercase letters only**
+  - Only **uppercase and lowercase letters**
 
 ---
 
 ### 3. Subscription & Payment System (Q&A Posting)
-Subscription plans control how many questions a user can post per day.
 
-**Plans**
-| Plan | Price | Questions per Day |
-|-----|------|------------------|
+| Plan | Price | Questions / Day |
+|-----|------|----------------|
 | Free | ₹0 | 1 |
 | Bronze | ₹100/month | 5 |
 | Silver | ₹300/month | 10 |
 | Gold | ₹1000/month | Unlimited |
 
 **Payment Rules**
-- Integrated with a payment gateway (e.g., **Stripe / Razorpay**).
-- Payments are allowed **only between 10:00 AM – 11:00 AM IST**.
-- Any payment attempt outside this window is blocked.
+- Integrated with **Stripe / Razorpay**
+- Payments allowed **only between 10:00 AM – 11:00 AM IST**
+- Attempts outside this window are blocked
 
-**Post‑Payment Actions**
-- An **email invoice** is automatically sent to the user.
-- Email includes:
+**Post-Payment Actions**
+- Automatic **email invoice**
+- Includes:
   - Plan name
   - Price
   - Validity
@@ -75,32 +73,27 @@ Subscription plans control how many questions a user can post per day.
 ---
 
 ### 4. Reward System
-A gamified reward mechanism to encourage user engagement.
 
 **Points Allocation**
-- Answering one question → **+5 points**
-- Answer receives 5 upvotes → **+5 additional points**
+- Answering a question → **+5 points**
+- 5 upvotes on an answer → **+5 additional points**
 
 **Point Management**
-- Points are visible on the user’s profile.
-- Points are **reduced automatically** if:
-  - The answer is removed
-  - The answer is taken down due to moderation/downtime
+- Points visible on user profile
+- Points are **automatically reduced** if:
+  - Answer is deleted
+  - Answer is removed due to moderation or downtime
 
 **Point Transfer**
-- Users can transfer points to other users.
-- Transfer conditions:
-  - Minimum balance required: **10 points**
-  - Users with less than 10 points **cannot transfer** points.
+- Minimum balance required: **10 points**
 - Transfer flow:
   - Search user profile
-  - Enter points to transfer
+  - Enter points
   - Confirm transfer
 
 ---
 
-### 5. Multi‑Language Support
-The platform supports full UI translation across multiple languages.
+### 5. Multi-Language Support
 
 **Supported Languages**
 - English
@@ -110,72 +103,60 @@ The platform supports full UI translation across multiple languages.
 - Chinese
 - French
 
-**Language Switch Authentication**
-- Switching to **French**:
-  - Email verification required
-  - OTP sent to registered email
-- Switching to other languages:
-  - Mobile number verification
-  - OTP sent to registered mobile number
+**Language Switch Verification**
+- **French** → Email OTP verification
+- **Other languages** → Mobile OTP verification
 
 **Scope**
-- Entire website (all pages and components) is translated into the selected language.
+- Entire application UI is translated
 
 ---
 
 ### 6. User Login Tracking & Access Control
-Advanced login tracking and conditional access rules.
 
-**Tracked Data**
-- Browser type (Chrome, Edge, etc.)
+**Tracked Information**
+- Browser type
 - Operating system
-- Device type (Desktop / Laptop / Mobile)
+- Device type
 - IP address
 
 **Login History**
-- Stored in the database
-- Visible to the user in their profile as **Login History**
+- Stored in database
+- Visible in user profile
 
-**Conditional Authentication Rules**
-- **Google Chrome**:
-  - Login requires OTP verification via email
-- **Microsoft Browser (Edge)**:
-  - Login allowed without additional authentication
-- **Mobile Devices**:
-  - Website access allowed **only between 10:00 AM – 1:00 PM**
-  - Access is blocked outside this time window
+**Conditional Rules**
+- **Google Chrome** → Email OTP required
+- **Microsoft Edge** → Direct login allowed
+- **Mobile devices** → Access allowed only **10:00 AM – 1:00 PM**
 
 ---
 
-## Technology Overview
-- **Frontend:** Modern JavaScript framework (deployed on Vercel)
-- **Backend:** API‑driven architecture with strict business rule enforcement
-- **Authentication:** OTP‑based (Email & Mobile)
-- **Payments:** Stripe / Razorpay integration
-- **Database:** Stores users, posts, subscriptions, rewards, login history
-- **Deployment:** Vercel (Frontend)
+## Technology Stack
+- **Frontend:** Modern JavaScript framework (Vercel)
+- **Backend:** API-based architecture with strict rule enforcement
+- **Authentication:** OTP (Email & Mobile)
+- **Payments:** Stripe
+- **Database:** Users, posts, subscriptions, rewards, login history
 
 ---
 
 ## Project Status
-- Core features implemented as per internship requirements
-- Some advanced modules marked as **Pending** during evaluation phase
-- Designed to be scalable and production‑ready
+✅ **All features fully implemented and completed**  
+✅ Business rules enforced as per requirements   
 
 ---
 
 ## Purpose
-This project was built to demonstrate:
-- Real‑world backend logic implementation
-- Secure authentication and authorization flows
-- Payment system constraints
-- Gamification through reward systems
+This project demonstrates:
+- Real-world backend logic
+- Secure authentication workflows
+- Payment constraints
+- Gamification systems
 - Internationalization (i18n)
-- Device‑ and browser‑based access control
+- Device and browser-based access control
 
 ---
 
 ## Author
 **Internship Project**  
-Developed as part of an internship assignment to showcase full‑stack development skills.
-
+Developed as part of an internship assignment to showcase full-stack development skills.
